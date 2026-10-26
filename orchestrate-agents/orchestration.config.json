@@ -1,0 +1,139 @@
+{
+  "_about": "Settings shared by the orchestration hooks and scripts. Every value has a _why beside it. Edit here, never in the scripts.",
+
+  "contextCaps": {
+    "_why": "Per agent type, in tokens. The hook tells an agent at 'warn' to stop building and start closing, and at 'stop' to stop now. Closing a worker run measured at about 25 tool calls (60-80 thousand tokens), so 'warn' sits that far below the cap. The user set the caps on 2026-10-25: workers 400k, leads 500k, main 500k.",
+    "main": { "cap": 500000, "warn": 450000 },
+    "software-developer": { "cap": 400000, "warn": 320000, "stop": 370000 },
+    "task-lead": { "cap": 500000, "warn": 430000, "stop": 470000 },
+    "xpp-porter": { "cap": 400000, "warn": 320000, "stop": 370000 },
+    "navigator-builder": { "cap": 400000, "warn": 320000, "stop": 370000 },
+    "default": { "cap": 500000, "warn": 400000, "stop": 460000 }
+  },
+
+  "usageLimits": {
+    "fiveHourStopPercent": 95,
+    "_whyFiveHourStopPercent": "The user's choice (2026-10-25). Closing every agent and writing the hand-over costs a few warm turns per agent; lower it when many agents run at once.",
+    "weeklyStopPercent": 98,
+    "_whyWeeklyStopPercent": "The user's choice (2026-10-25).",
+    "probeNearEveryMinutes": 3,
+    "probeNearWithinPercent": 10,
+    "_whyProbeNear": "Within this many points of a threshold the watch probes this often instead, so a fast-burning run is not caught late.",
+    "probeModel": "claude-haiku-5-5",
+    "_whyProbeModel": "Haiku 5.5, the user's choice (2026-10-25). The full id, because the alias haiku ran claude-haiku-4-5 (builder A, 2026-10-25). The probe only needs the reply's rate-limit line, not its text.",
+    "probeEffort": "low",
+    "_whyProbeEffort": "The user's choice (2026-10-25): Haiku 5.5 at low effort, always. Passed as --effort.",
+    "stateFile": "%USERPROFILE%\\.claude\\state\\usage-limits.json",
+    "stateFreshMinutes": 15,
+    "_whyStateFile": "Where the probe writes the numbers (%NAME% is an environment variable). stateFreshMinutes is how often the watch asks for new numbers while far from a threshold, and the probe calls the API only when the reading in this file is older than that, so several watches (one per open session) share one call instead of each making its own; near a threshold the age drops to probeNearEveryMinutes. A watch whose session and agents wrote nothing since the last reading does not probe at all. Each probe is one tiny Haiku call (about 7 thousand tokens, measured 2026-10-25). The user dropped the wrapper idea and the separate probeEveryMinutes on 2026-10-25.",
+    "probeTimeoutSeconds": 120,
+    "_whyProbeTimeoutSeconds": "How long the probe's call may take before it is stopped and the probe fails. A healthy call takes seconds.",
+    "probeWorkingFolder": "%TEMP%\\claude-usage-probe",
+    "_whyProbeWorkingFolder": "The empty folder the probe's call runs in, so no project's files or settings come with it (plan 8.1).",
+    "resumeMarginMinutes": 10,
+    "_whyResumeMarginMinutes": "Time the woken session needs after the reset to reach each agent before its cache runs out. An agent whose cache would expire within this margin after the reset counts as going cold.",
+    "relaunchMarginMinutes": 1,
+    "_whyRelaunchMarginMinutes": "How long after the reset the new session is started, so the limit has really lifted. The user's choice (2026-10-25): one minute, as for every relaunch and every wake-up after a reset (a wake after a server error waits usageAndContextWatch.retryMinutes, D-0006).",
+    "ignoreAgentTypes": ["code-searcher", "Explore", "Plan", "claude-code-guide", "statusline-setup"],
+    "_whyIgnoreAgentTypes": "Short-lived helpers that are never resumed after a limit, so their cache does not decide between resuming and handing over. Workflow agents are ignored too (they cannot be resumed across a limit by message)."
+  },
+
+  "relaunch": {
+    "focusWaitSeconds": 5,
+    "_whyFocusWaitSeconds": "Time for VS Code to bring the project's window to the front after 'code <folder>'.",
+    "panelLoadSeconds": 20,
+    "_whyPanelLoadSeconds": "Time for the Claude Code panel to open and fill in the prompt before Enter is pressed.",
+    "taskNamePrefix": "ClaudeRelaunch",
+    "_whyTaskNamePrefix": "Windows scheduled tasks created by schedule-relaunch.ps1 start with this, so they can be listed and removed.",
+    "expireAfterHours": 12,
+    "_whyExpireAfterHours": "How long after its start time the scheduled task stays registered before it expires and deletes itself: long enough for a machine that was asleep at the start time to still run it when it wakes.",
+    "afterCapMinutes": 1,
+    "_whyAfterCapMinutes": "How long after schedule-relaunch.ps1 -ContextCap (the main session has written its hand-over at its context cap, SESSION NEAR CAP) the new chat starts. No limit has to lift; the wait only lets the old session end its turn first. The user's choice (2026-10-25): one minute, as for every relaunch and every wake-up after a reset (a wake after a server error waits usageAndContextWatch.retryMinutes, D-0006).",
+    "maxPastHours": 24,
+    "_whyMaxPastHours": "How far in the past schedule-relaunch.ps1 accepts -At (plan 8.3: more than a day back is refused). Further back, the caller passed a stale time.",
+    "notifySeconds": 15,
+    "_whyNotifySeconds": "How long the relaunch's notification stays in the tray, so the message can be read before it goes.",
+    "logFile": "%USERPROFILE%\\.claude\\state\\relaunch.log",
+    "_whyLogFile": "Where start-session-in-vscode.ps1 logs each step with the time (plan 8.4). %NAME% is an environment variable."
+  },
+
+  "usageAndContextWatch": {
+    "_about": "watch-usage-and-context.ps1, the Usage and context watch. Its warning size is contextCaps.main.warn. Each of these can be passed to the script as a parameter of the same name (EverySeconds, ...), which then wins.",
+    "everySeconds": 60,
+    "_whyEverySeconds": "How often the watch looks. Each look reads the end of one transcript; a minute is soon enough for every line it ends with.",
+    "tailMegabytes": 4,
+    "_whyTailMegabytes": "How much of the end of each transcript the watch reads. The records that matter are always the last few.",
+    "wakeOnErrors": ["rate_limit", "server_error"],
+    "_whyWakeOnErrors": "The kinds of API error that stop a session for a while, so waking it later helps. Others, such as an expired sign-in (authentication_failed), need the user.",
+    "resetMarginMinutes": 1,
+    "_whyResetMarginMinutes": "How long after the reset time a usage-limit message names the watch wakes the session, so the limit has really lifted. The user's choice (2026-10-25): one minute, as for every relaunch and every wake-up after a reset (a wake after a server error waits retryMinutes, D-0006).",
+    "retryMinutes": 10,
+    "_whyRetryMinutes": "How long after any other such error (a server error), or a limit message with no readable reset time, the watch wakes the session; such a limit stop waits instead for a later reset on record, when there is one. The user's choice (2026-10-25, D-0006): ten minutes, so an API that is still overloaded has time to recover; a session woken into the same error stops again, and no watch is left to wake it until the user writes.",
+    "cacheLookbackReplies": 20,
+    "_whyCacheLookbackReplies": "How many of an agent's newest replies are searched for a write to the 1-hour cache (plan 8.2). One API reply is written as several records, so 20 records are the last few requests."
+  },
+
+  "decisionAnswersWatch": {
+    "_about": "watch-decision-answers.ps1, the Decision answers watch: for the chat's own repo it runs register.mjs handover at once and then every everyMinutes from its start; in between, every lookSeconds, it runs register.mjs handover --when-all-answered whenever the register's open file or answers log changed, so the answers come at once when no open entry waits for the user any more. It ends when a hand-over prints answers given in the Decisions pane, printing them. Each of these can be passed to the script as a parameter of the same name (EveryMinutes, LookSeconds, FailuresBeforeStop), which then wins.",
+    "everyMinutes": 30,
+    "_whyEveryMinutes": "How often the watch hands over every waiting answer, counted from its start. The user's choice of 2026-10-26 19:02, replacing the 15 minutes of D-13: \"lets keep that but increase the default period to every 30mins\". Answers also come at once when every open entry is answered (lookSeconds), and at the user's next message through the prompt hook, whichever comes first.",
+    "lookSeconds": 5,
+    "_whyLookSeconds": "How often the watch checks whether the register changed, so that every open entry being answered is noticed within seconds (the user, 2026-10-26 19:02: if all open decisions get answered, they all get sent to the main chat when answered). A check reads only the size and write time of the open file and of the answers log, and runs register.mjs only when one of them changed, so checking costs next to nothing while nobody answers.",
+    "failuresBeforeStop": 3,
+    "_whyFailuresBeforeStop": "How many looks in a row may find the register busy (its lock held longer than register.lockWaitSeconds) or its answers log unreadable before the watch ends with DECISION ANSWERS WATCH FAILED. A write holds the lock for milliseconds, so one busy look is chance; three in a row mean something is stuck and the main session should look. A failed look of either kind is tried again at the next look, lookSeconds later; a good look starts the count again."
+  },
+
+  "runHeavy": {
+    "_about": "run-heavy.ps1. Each of these can be passed to the script as a parameter of the same name (MinFreeMB, ...), which then wins.",
+    "slots": 1,
+    "_whySlots": "How many heavy commands (builds, test runs, type-checks) may run at once on this machine. One, because two agents' test runs at once crashed the editor twice on this 7.8 GB machine (references/lessons.md).",
+    "minFreeMB": 600,
+    "_whyMinFreeMB": "The free memory, in MB, a heavy command waits for before it starts. This machine has 700-1000 MB free while VS Code and a few agents run (measured 2026-10-25), so the old 1500 was never reached and every heavy command waited out its time and gave up. A test suite here peaks at about 250 MB.",
+    "waitMinutes": 60,
+    "_whyWaitMinutes": "How long a heavy command waits for a slot and then for memory before it gives up with HEAVY COMMAND NOT RUN."
+  },
+
+  "limitStop": {
+    "_about": "scripts/limit-stop-server.mjs, which the Usage and context watch starts at LIMIT NEAR | HAND OVER, and the Usage and context watch or the context guard at the main session's warning size (contextCaps.main.warn); the context guard asks it after every tool call of an agent and of the main session, and tells each agent once. It has no end time: it lives until the main session stops it after the hand-over, or until the session's Claude Code process is gone. The user chose a named pipe (a private in-memory channel between two programs) over a flag file on 2026-10-25: nothing is written to disk, so nothing is left behind to delete; a failure of the server reaches the main session through its log instead.",
+    "pipePrefix": "claude-limit-stop",
+    "_whyPipePrefix": "The pipe is \\\\.\\pipe\\<pipePrefix>-<session id>: one per session, so an agent of another session never hears this session's stop. Tests set their own prefix, so no test can reach a real session's server.",
+    "connectTimeoutMs": 300,
+    "_whyConnectTimeoutMs": "How long the guard, the Usage and context watch's check and the stop command wait for the server's answer, and the server for a client's request. With no server (the normal case) the connect fails at once (ENOENT in under 1 ms, measured 2026-10-25) and this wait never starts; a live server answers in a few ms. The bound only keeps a hung server from slowing every tool call; a query that runs out is a failure of the server, which the agent and the main session are told of.",
+    "processCheckSeconds": 60,
+    "_whyProcessCheckSeconds": "How often the server checks that the session's Claude Code process (--claude-pid) still runs; it exits once the process is gone (the user's choice, 2026-10-25), so a server whose main session never ran stop does not stay idle for days. A check is one cheap system call; a minute matches the Usage and context watch's own look. Windows may give a gone process's id to a new one; the server then lives until that process ends too, or until stop.",
+    "startCheckSeconds": 10,
+    "_whyStartCheckSeconds": "How long 'start' waits for the new server's pipe to answer before it says NOT STARTED and stops it, and 'stop' for the pipe to be gone. Node starts in well under a second; this machine under load has been seen several times slower.",
+    "leadAgentTypes": ["task-lead"],
+    "_whyLeadAgentTypes": "The agent types that get the lead's stop text. The helper types of usageLimits.ignoreAgentTypes get the helper's text (return what you found); every other type, workflow agents and unknown types included, gets the worker's.",
+    "logFile": "%USERPROFILE%\\.claude\\state\\limit-stop.log",
+    "_whyLogFile": "Where the server logs, one line each, when it listened, which agent it told and when it ended (like relaunch.log); the context guard and the Usage and context watch's check add a line for each query of theirs that failed, and one when they told the main session that the server failed. The main session's hook and the check read it to find a failure, since nothing else is left on disk. It never logs what an agent said. %NAME% is an environment variable.",
+    "logTailKB": 256,
+    "_whyLogTailKB": "How much of the end of the log the main session's hook (after every tool call) and the Usage and context watch's check read for the session's lines. A line is about 110 to 200 bytes and a hand-over writes one per agent told plus a few, so 256 KB holds the whole of the current hand-over and many before it, of every session; reading it takes about 1.4 ms (median of 20, 6 ms at most, measured 2026-10-25 on a 1 MB log)."
+  },
+
+  "contextGuard": {
+    "transcriptTailKB": 512,
+    "_whyTranscriptTailKB": "How much of the end of an agent's transcript the guard reads to find its newest usage record; 0 differences against whole-file reads on 149 real transcripts up to 3.3 MB (2026-10-25).",
+    "markerFolder": "claude-context-guard",
+    "_whyMarkerFolder": "Folder under %TEMP% that holds one marker per agent (the last level sent) and its lock.",
+    "markerLockStaleSeconds": 60,
+    "_whyMarkerLockStaleSeconds": "A guard run's marker lock older than this belongs to a crashed run and is broken. A live run holds it for milliseconds."
+  },
+
+  "register": {
+    "folder": "decisions",
+    "openFile": "OPEN_DECISIONS_CLAUDE.md",
+    "answeredFile": "ANSWERED_DECISIONS_CLAUDE.md",
+    "resolvedFile": "RESOLVED_DECISIONS_CLAUDE.md",
+    "answersLogFile": "ANSWERS_LOG_CLAUDE.jsonl",
+    "_whyNames": "The user's choice (2026-10-25): folder 'decisions' at the repo root. An entry stays in the open file until it is closed; once the user answers, its Status becomes waiting-for-agent and the answer goes to the answers log. The user's choice (2026-10-26): an answers log, so answers do not fill up the entries, in a format an agent can search easily (JSON Lines, not Markdown: one record per answer with the user's words exactly as given, register.mjs answers searches it). An agent then closes the entry (to the resolved file, with a summary that holds the final answer) or follows it up (a Follow up line, back to waiting-for-user). Nothing writes answeredFile any more: it names an older register's answered file, which every write folds into the log and then deletes.",
+    "lockWaitSeconds": 10,
+    "lockStaleSeconds": 60,
+    "_whyLock": "A writer waits this long for the register's lock; a lock older than lockStaleSeconds belongs to a crashed writer and is broken (plan 6.2). A write holds the lock for milliseconds.",
+    "hookLockWaitSeconds": 2,
+    "_whyHookLockWait": "The prompt hook hands the user's answers over under the register's lock, but a prompt must not hang lockWaitSeconds on a busy register (R2 task, 2026-10-26). It waits this long; a lock still held leaves the answers for the decision answers watch or the next prompt.",
+    "commitInRepos": ["C:\\Repos\\My projects\\*"],
+    "_whyCommitInRepos": "The user's own repos commit the register. In every other repo (client repos) the register's own files are added to .git/info/exclude on every add, which only this machine sees (user, 2026-10-25).",
+    "_whyOwnRepoOnly": "Every reader of the register (the prompt reminder, the Decisions pane) reads only the register of the chat's own repo. No decision leaks between repos (the user, 2026-10-26, D-14: definitive). The earlier showInEveryChat setting (D-8) is gone."
+  }
+}
