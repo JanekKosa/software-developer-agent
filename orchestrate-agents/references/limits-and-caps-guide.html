@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Limits and Caps Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #f2f3f6;
+  --surface: #ffffff;
+  --ink: #171b24;
+  --muted: #59606f;
+  --line: #cbd0da;
+  --accent: #27508f;
+  --good: #1f6b52;
+  --good-soft: #dcede5;
+  --bad: #a85a0c;
+  --bad-soft: #fbead6;
+  --code-bg: #e7e9ef;
+
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Consolas", "Courier New", monospace;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.5rem;
+  --step-3: 2.1rem;
+  --step-4: 2.9rem;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10131a;
+    --surface: #181c26;
+    --ink: #e5e8ef;
+    --muted: #9aa1b0;
+    --line: #2e3443;
+    --accent: #86a8e6;
+    --good: #6cc29b;
+    --good-soft: #173027;
+    --bad: #f0a253;
+    --bad-soft: #3a2914;
+    --code-bg: #212635;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10131a;
+  --surface: #181c26;
+  --ink: #e5e8ef;
+  --muted: #9aa1b0;
+  --line: #2e3443;
+  --accent: #86a8e6;
+  --good: #6cc29b;
+  --good-soft: #173027;
+  --bad: #f0a253;
+  --bad-soft: #3a2914;
+  --code-bg: #212635;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 46rem; margin: 0 auto; padding-block: 3rem 4rem; display: grid; gap: 3.25rem; }
+section, header { display: grid; gap: 1rem; min-width: 0; }
+
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.12; text-wrap: balance; margin: 0; }
+h1 { font-size: var(--step-4); font-weight: 700; }
+h2 { font-size: var(--step-3); font-weight: 600; }
+h3 { font-size: var(--step-2); font-weight: 600; }
+p, ul, ol, dl, table, figure { margin: 0; }
+p { max-width: 65ch; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+.eyebrow { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: var(--step-1); max-width: 60ch; }
+.muted { color: var(--muted); }
+code, .id { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.05em 0.35em; border-radius: 3px; white-space: nowrap; }
+.val-good { color: var(--good); font-weight: 600; }
+.val-bad { color: var(--bad); font-weight: 600; }
+
+.glance { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem 1.4rem; display: grid; gap: 0.75rem; }
+.glance ul { padding-left: 1.2rem; display: grid; gap: 0.4rem; }
+
+.toc { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; list-style: none; }
+.toc a { display: inline-block; text-decoration: none; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 0.2rem 0.75rem; font-size: var(--step--1); background: var(--surface); }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+.terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.75rem; }
+.term { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; display: grid; gap: 0.35rem; align-content: start; min-width: 0; }
+.term dt { font-family: var(--font-display); font-weight: 600; font-size: var(--step-1); }
+.term dd { margin: 0; }
+.term .ex { color: var(--muted); font-size: var(--step--1); }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+caption { caption-side: top; text-align: left; padding: 0.7rem 0.8rem 0; font-size: var(--step--1); color: var(--muted); }
+th, td { text-align: left; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-weight: 500; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+
+figure { display: grid; gap: 0.6rem; min-width: 0; }
+.diagram { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; color: var(--ink); }
+.diagram svg { display: block; width: 100%; height: auto; min-width: 640px; }
+figcaption { color: var(--muted); font-size: var(--step--1); max-width: 65ch; }
+.d-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.d-box-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.5; }
+.d-box-bad { fill: var(--bad-soft); stroke: var(--bad); stroke-width: 1.5; }
+.d-box-later { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.d-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; fill: currentColor; }
+.d-text { font-family: var(--font-body); font-size: 12.5px; fill: currentColor; }
+.d-mono { font-family: var(--font-mono); font-size: 12px; fill: currentColor; }
+.d-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; fill: var(--muted); }
+.d-note { font-family: var(--font-body); font-size: 12px; font-style: italic; fill: var(--muted); }
+.d-bad-text { font-family: var(--font-body); font-size: 12.5px; font-weight: 600; fill: var(--bad); }
+.d-good-text { font-family: var(--font-body); font-size: 12.5px; font-weight: 600; fill: var(--good); }
+.d-arrow { stroke: currentColor; stroke-width: 1.6; fill: none; }
+.d-arrow-bad { stroke: var(--bad); stroke-width: 2.2; fill: none; }
+.d-arrow-good { stroke: var(--good); stroke-width: 2.2; fill: none; }
+.d-arrow-dash { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.d-head { fill: currentColor; }
+.d-head-bad { fill: var(--bad); }
+.d-head-good { fill: var(--good); }
+.d-head-muted { fill: var(--muted); }
+
+.steps { list-style: none; padding: 0; display: grid; gap: 1.75rem; }
+.step { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 0 1rem; }
+.step-num { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1; color: var(--accent); border-top: 3px solid var(--accent); padding-top: 0.45rem; }
+.step-body { display: grid; gap: 0.7rem; min-width: 0; }
+.step-body ul, .step-body ol { padding-left: 1.2rem; display: grid; gap: 0.35rem; }
+.why { border-left: 3px solid var(--line); padding: 0.1rem 0 0.1rem 0.9rem; color: var(--muted); }
+.why strong { color: var(--ink); font-weight: 600; }
+.example { background: var(--bad-soft); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.example-good { background: var(--good-soft); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.purpose strong { color: var(--accent); font-weight: 600; }
+.substep { display: grid; gap: 0.6rem; min-width: 0; padding-top: 0.4rem; }
+h4 { font-family: var(--font-display); font-size: var(--step-1); font-weight: 600; line-height: 1.2; margin: 0; text-wrap: balance; }
+.sub-num { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 0.3rem; margin-right: 0.35rem; vertical-align: 0.15em; }
+.note { background: var(--surface); border: 1px dashed var(--muted); border-radius: var(--radius); padding: 0.75rem 1rem; }
+
+.cases { display: grid; gap: 0.6rem; padding: 0; list-style: none; }
+.case { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 0.25rem 1.25rem; padding: 0.8rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.case b { font-weight: 600; }
+@media (max-width: 40rem) { .case { grid-template-columns: minmax(0, 1fr); } }
+.open { padding-left: 1.2rem; display: grid; gap: 0.5rem; }
+.flag { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bad); border: 1px solid var(--bad); border-radius: 3px; padding: 0 0.35rem; margin-right: 0.35rem; white-space: nowrap; }
+.state-done { color: var(--good); font-weight: 600; white-space: nowrap; }
+.state-todo { color: var(--bad); font-weight: 600; white-space: nowrap; }
+
+details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1rem; }
+details[open] { display: grid; gap: 0.8rem; }
+summary { cursor: pointer; font-weight: 600; }
+
+footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid var(--line); padding-top: 1rem; }
+
+@media (max-width: 30rem) {
+  h1 { font-size: 2.3rem; }
+  h2 { font-size: 1.8rem; }
+  .step { grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0 0.75rem; }
+}
+@media (prefers-reduced-motion: no-preference) { .toc a { transition: border-color 120ms, color 120ms; } }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <span class="eyebrow">Agent team · stage 1 · Claude Code</span>
+    <h1>What happens when a chat or an agent nears its limit</h1>
+    <p class="lead">Two kinds of limit can stop work: an agent's own size cap, and your account's 5-hour and weekly
+      usage limits. In every case the agents stop at a safe point, write down where they are, and the work carries
+      on in a fresh agent or a new chat, mostly without you.</p>
+    <div class="glance">
+      <span class="eyebrow">At a glance</span>
+      <ul>
+        <li>A <b>size cap</b> belongs to one agent. A <b>usage limit</b> belongs to your account, so every agent
+          reaches it at the same moment.</li>
+        <li>Agents are told while they work, at their next tool call, by the hook.</li>
+        <li>The Usage and context watch reads the limits and wakes the main chat when nobody is working.</li>
+        <li>Every stopped agent writes a hand-off. Hand-offs go up: worker, lead, main chat.</li>
+        <li>A new chat starts by itself one minute after the hand-over or the limit's reset.</li>
+      </ul>
+    </div>
+    <nav aria-label="Contents">
+      <ul class="toc">
+        <li><a href="#words">The words you need</a></li>
+        <li><a href="#example">The example team</a></li>
+        <li><a href="#who">Who tells whom</a></li>
+        <li><a href="#handoffs">Hand-offs</a></li>
+        <li><a href="#steps">The four cases</a></li>
+        <li><a href="#wrong">When something fails</a></li>
+        <li><a href="#open">Still open</a></li>
+        <li><a href="#objects">For developers</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="words" aria-labelledby="words-h">
+    <span class="eyebrow">Background</span>
+    <h2 id="words-h">The words you need</h2>
+    <p>The rest of the page leans on these, each with a small example.</p>
+    <dl class="terms">
+      <div class="term">
+        <dt>Main chat (orchestrator)</dt>
+        <dd>The chat you talk to. It starts leads and passes your answers to them. It does no building itself.</dd>
+        <dd class="ex">Example: you ask for the invoice import; the main chat starts a lead for it.</dd>
+      </div>
+      <div class="term">
+        <dt>Lead</dt>
+        <dd>An agent that runs one task. It plans the task, starts workers and checks what they build.</dd>
+        <dd class="ex">Example: lead <span class="id">invoice-import</span> splits the task into runs W1 to W4.</dd>
+      </div>
+      <div class="term">
+        <dt>Worker</dt>
+        <dd>An agent that builds and tests one piece, then reports to its lead.</dd>
+        <dd class="ex">Example: worker <span class="id">W3</span> writes the duplicate check and its tests.</dd>
+      </div>
+      <div class="term">
+        <dt>Helper agent</dt>
+        <dd>A short-lived search agent. It finds and quotes, and never builds.</dd>
+        <dd class="ex">Example: a code-searcher lists every file that mentions a field name.</dd>
+      </div>
+      <div class="term">
+        <dt>Context and its cap</dt>
+        <dd>Context is everything an agent has read and written so far, counted in tokens (word pieces). The cap
+          is the size it must stay under.</dd>
+        <dd class="ex">Example: caps are 400k for a worker, 500k for a lead and 500k for the main chat.</dd>
+      </div>
+      <div class="term">
+        <dt>Usage limit</dt>
+        <dd>How much your account may use in 5 hours and in a week. When it is used up, every chat and agent stops
+          until it resets.</dd>
+        <dd class="ex">Example: the 5-hour limit is at 95% and resets at 17:00.</dd>
+      </div>
+      <div class="term">
+        <dt>Cache</dt>
+        <dd>A saved copy of an agent's context. It makes the agent's next step cheap. It lasts one hour after the
+          agent's last step.</dd>
+        <dd class="ex">Example: a lead last worked at 14:10, so its cache lasts until 15:10.</dd>
+      </div>
+      <div class="term">
+        <dt>Tool call</dt>
+        <dd>One action an agent takes: reading a file, running a command, starting a worker.</dd>
+        <dd class="ex">Example: <span class="id">W3</span> runs the test suite. That is one tool call.</dd>
+      </div>
+      <div class="term">
+        <dt>Hook</dt>
+        <dd>A small script Claude Code runs after every tool call of every agent, the main chat included. It can
+          add a message to what the agent reads next.</dd>
+        <dd class="ex">Example: after a read, <span class="id">W3</span> finds "you are at 322k of your 400k cap".</dd>
+      </div>
+      <div class="term">
+        <dt>Usage and context watch</dt>
+        <dd>A script that runs in the background beside the main chat; your task list shows it by this name. Once a
+          minute it reads the chat's log file, and it asks Haiku (a small, cheap model) for the usage limits. When
+          something needs doing, it ends, and its ending gives the main chat a turn. On this page, "the watch"
+          means this one.</dd>
+        <dd class="ex">Example: the chat sits idle at 452k; the watch ends with <span class="id">SESSION NEAR CAP</span>.</dd>
+      </div>
+      <div class="term">
+        <dt>Decision answers watch</dt>
+        <dd>A second script beside the main chat, also named so in your task list. It hands your answers from the
+          Decisions pane to the main chat. It plays no part in the limits, but every hand-over stops it too.</dd>
+        <dd class="ex">Example: at 14:25 the main chat hands over and stops both watches before it ends.</dd>
+      </div>
+      <div class="term">
+        <dt>Helper service and pipe</dt>
+        <dd>A tiny program the watch or the hook starts only when a stop is needed. It answers the hook's question
+          "should I stop?" over a named pipe (a private channel between two programs that lives only in memory). It
+          tells each agent once, and lives until the main chat stops it after the hand-over, or the chat closes.</dd>
+        <dd class="ex">Example: the hook asks for <span class="id">W3</span>; the answer is "STOP FOR LIMIT".</dd>
+      </div>
+      <div class="term">
+        <dt>Hand-off and hand-over</dt>
+        <dd>A hand-off is one agent's note: what is done, how it was checked, what is left, the next step. The
+          hand-over is the main chat's note for the next chat, listing every hand-off.</dd>
+        <dd class="ex">Example: <span class="id">W3</span> adds "## Hand-off" at the end of its progress file.</dd>
+      </div>
+      <div class="term">
+        <dt>Relaunch</dt>
+        <dd>A Windows scheduled task opens a new Claude chat in this project's VS Code window, fills in "Read the
+          hand-over and carry on" and presses Enter.</dd>
+        <dd class="ex">Example: the limit resets at 17:00; the new chat starts at 17:01.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section id="example" aria-labelledby="example-h">
+    <span class="eyebrow">The running example</span>
+    <h2 id="example-h">One team, followed through every case</h2>
+    <p>The same small team runs through every case below. The names, sizes and times are made up for
+      illustration.</p>
+    <div class="table-wrap">
+      <table>
+        <caption>The team at 14:00. The 5-hour usage limit is at 60%.</caption>
+        <thead><tr><th>Agent</th><th>Doing</th><th class="num">Size</th><th class="num">Cap</th><th class="num">Told to close at</th></tr></thead>
+        <tbody>
+          <tr><td>Main chat</td><td>Waiting for the lead</td><td class="num">380k</td><td class="num">500k</td><td class="num">450k</td></tr>
+          <tr><td>Lead <span class="id">invoice-import</span></td><td>Waiting for its worker</td><td class="num">300k</td><td class="num">500k</td><td class="num">430k</td></tr>
+          <tr><td>Worker <span class="id">W3</span></td><td>Running the tests</td><td class="num">250k</td><td class="num">400k</td><td class="num">320k</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="who" aria-labelledby="who-h">
+    <span class="eyebrow">The big picture</span>
+    <h2 id="who-h">Who tells whom</h2>
+    <p>The hook reaches agents while they work. The watch covers the times when nobody is working.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 900 310" role="img" aria-label="The Usage and context watch reads the limits and starts the helper service. The hook asks the helper after every tool call and adds the stop or the size warning to the main chat, the lead and the worker. The watch also wakes the main chat when it is idle.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head"/></marker>
+            <marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-bad"/></marker>
+            <marker id="ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-muted"/></marker>
+          </defs>
+          <text x="20" y="16" class="d-label">IN THE BACKGROUND</text>
+          <text x="690" y="16" class="d-label">ON EVERY TOOL CALL</text>
+
+          <rect x="20" y="26" width="220" height="104" rx="6" class="d-box"/>
+          <text x="34" y="52" class="d-title">Usage and context watch</text>
+          <text x="34" y="76" class="d-text">reads the chat's log</text>
+          <text x="34" y="94" class="d-text">once a minute</text>
+          <text x="34" y="114" class="d-text">asks Haiku for the limits</text>
+
+          <rect x="345" y="26" width="220" height="104" rx="6" class="d-box-bad"/>
+          <text x="359" y="52" class="d-title">Helper service</text>
+          <text x="359" y="76" class="d-text">runs only when a stop</text>
+          <text x="359" y="94" class="d-text">is needed</text>
+          <text x="359" y="114" class="d-text">answers over the pipe</text>
+
+          <rect x="670" y="26" width="210" height="104" rx="6" class="d-box"/>
+          <text x="684" y="52" class="d-title">Hook</text>
+          <text x="684" y="76" class="d-text">checks the agent's size</text>
+          <text x="684" y="94" class="d-text">asks the helper</text>
+          <text x="684" y="114" class="d-text">"should I stop?"</text>
+
+          <line x1="240" y1="78" x2="341" y2="78" class="d-arrow" marker-end="url(#ah)"/>
+          <text x="290" y="70" text-anchor="middle" class="d-note">starts it</text>
+          <line x1="670" y1="78" x2="569" y2="78" class="d-arrow-dash" marker-end="url(#ah-muted)"/>
+          <text x="618" y="70" text-anchor="middle" class="d-note">asks</text>
+
+          <path d="M775,130 L775,170 L230,170" class="d-arrow-bad"/>
+          <line x1="230" y1="170" x2="230" y2="216" class="d-arrow-bad" marker-end="url(#ah-bad)"/>
+          <line x1="480" y1="170" x2="480" y2="216" class="d-arrow-bad" marker-end="url(#ah-bad)"/>
+          <line x1="730" y1="170" x2="730" y2="216" class="d-arrow-bad" marker-end="url(#ah-bad)"/>
+          <text x="500" y="160" class="d-bad-text">adds the stop or the size warning</text>
+
+          <rect x="140" y="220" width="180" height="70" rx="6" class="d-box"/>
+          <text x="154" y="248" class="d-title">Main chat</text>
+          <text x="154" y="270" class="d-text">380k of 500k</text>
+          <rect x="390" y="220" width="180" height="70" rx="6" class="d-box"/>
+          <text x="404" y="248" class="d-title">Lead</text>
+          <text x="404" y="270" class="d-mono">invoice-import</text>
+          <rect x="640" y="220" width="180" height="70" rx="6" class="d-box"/>
+          <text x="654" y="248" class="d-title">Worker</text>
+          <text x="654" y="270" class="d-mono">W3</text>
+
+          <path d="M60,130 L60,255 L136,255" class="d-arrow" marker-end="url(#ah)"/>
+          <text x="70" y="200" class="d-note">wakes it</text>
+          <text x="70" y="216" class="d-note">when idle</text>
+        </svg>
+      </div>
+      <figcaption>The hook runs only when someone takes a step. So the watch is still needed for an idle chat and
+        for the time after a limit, when nothing runs. Haiku is called only by the watch: at most every 15 minutes,
+        every 3 minutes near a limit, and not at all while nothing is spent.</figcaption>
+    </figure>
+  </section>
+
+  <section id="handoffs" aria-labelledby="handoffs-h">
+    <span class="eyebrow">Where the state goes</span>
+    <h2 id="handoffs-h">Hand-offs go up, and come back down</h2>
+    <p>Each agent writes its hand-off in its own file. The main chat's hand-over lists them all. The next chat
+      hands each one back to the agent that continues the work.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 900 250" role="img" aria-label="The worker's hand-off goes to the lead, the lead's to the main chat, which writes the hand-over. One minute later a new chat reads the hand-over, starts a new lead from the lead's hand-off, and the new lead starts a new worker from the worker's hand-off.">
+          <defs>
+            <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head"/></marker>
+            <marker id="ah3-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-good"/></marker>
+          </defs>
+          <text x="20" y="16" class="d-label">THE OLD CHAT STOPS</text>
+          <text x="20" y="146" class="d-label">THE NEW CHAT CARRIES ON</text>
+
+          <rect x="20" y="26" width="240" height="88" rx="6" class="d-box-bad"/>
+          <text x="34" y="52" class="d-title">Worker W3</text>
+          <text x="34" y="74" class="d-text">"## Hand-off" in its</text>
+          <text x="34" y="92" class="d-text">progress file</text>
+
+          <rect x="330" y="26" width="240" height="88" rx="6" class="d-box-bad"/>
+          <text x="344" y="52" class="d-title">Lead invoice-import</text>
+          <text x="344" y="74" class="d-text">"## Hand-off" in its lead</text>
+          <text x="344" y="92" class="d-text">file, naming W3's</text>
+
+          <rect x="640" y="26" width="240" height="88" rx="6" class="d-box-bad"/>
+          <text x="654" y="52" class="d-title">Main chat</text>
+          <text x="654" y="74" class="d-text">the hand-over file,</text>
+          <text x="654" y="92" class="d-text">naming the lead's</text>
+
+          <line x1="260" y1="70" x2="326" y2="70" class="d-arrow" marker-end="url(#ah3)"/>
+          <line x1="570" y1="70" x2="636" y2="70" class="d-arrow" marker-end="url(#ah3)"/>
+
+          <rect x="640" y="156" width="240" height="80" rx="6" class="d-box-good"/>
+          <text x="654" y="182" class="d-title">New chat</text>
+          <text x="654" y="204" class="d-text">reads the hand-over</text>
+          <rect x="330" y="156" width="240" height="80" rx="6" class="d-box-good"/>
+          <text x="344" y="182" class="d-title">New lead</text>
+          <text x="344" y="204" class="d-text">reads the lead's hand-off</text>
+          <rect x="20" y="156" width="240" height="80" rx="6" class="d-box-good"/>
+          <text x="34" y="182" class="d-title">New worker</text>
+          <text x="34" y="204" class="d-text">reads W3's hand-off</text>
+
+          <line x1="760" y1="114" x2="760" y2="152" class="d-arrow-good" marker-end="url(#ah3-good)"/>
+          <text x="770" y="138" class="d-good-text">relaunch, 1 min</text>
+          <line x1="640" y1="196" x2="574" y2="196" class="d-arrow" marker-end="url(#ah3)"/>
+          <line x1="330" y1="196" x2="264" y2="196" class="d-arrow" marker-end="url(#ah3)"/>
+        </svg>
+      </div>
+      <figcaption>The new agents read only the hand-offs, not everything the old ones read. That keeps them small
+        and cheap from their first step.</figcaption>
+    </figure>
+  </section>
+
+  <section id="steps" aria-labelledby="steps-h">
+    <span class="eyebrow">The four cases</span>
+    <h2 id="steps-h">What happens in each case</h2>
+    <p>Numbered as in your question. Cases 2 and 4 are one case: the usage limit is your account's, so the main
+      chat, the lead and the worker reach it together.</p>
+    <ol class="steps">
+
+      <li class="step">
+        <span class="step-num" aria-hidden="true">1</span>
+        <div class="step-body">
+          <h3>The main chat nears its 500k cap</h3>
+          <p class="purpose"><strong>Purpose:</strong> hand the whole team over to a new chat before the main chat
+            grows too big to think clearly.</p>
+          <ol>
+            <li>At 15:00 the main chat passes 450k. It hears <code>SESSION NEAR CAP</code> from the hook at its next
+              tool call, or from the watch within a minute if it is idle.</li>
+            <li>It finishes the edit it is in and starts nothing new.</li>
+            <li>The helper service starts. <span class="id">W3</span> and the lead hear "this session is at its
+              context cap and hands over" at their next tool call.</li>
+            <li><span class="id">W3</span> writes its hand-off and ends with <code>WORKER STOPPED</code>. The lead
+              writes its own and ends with <code>LEAD STOPPED</code>.</li>
+            <li>The main chat waits for every lead, with no time limit. At 15:12 it writes the hand-over, schedules the
+              relaunch, and stops the helper service and both watches.</li>
+            <li>At 15:13 a new chat opens by itself, reads the hand-over and starts the new lead.</li>
+          </ol>
+          <p class="why"><strong>Why the stop goes to everyone:</strong> the old chat cannot talk to its agents
+            once the new chat takes over. Left running, they would work on beside their successors.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="step-num" aria-hidden="true">2+4</span>
+        <div class="step-body">
+          <h3>The 5-hour limit reaches 95% (weekly: 98%)</h3>
+          <p class="purpose"><strong>Purpose:</strong> stop in the cheapest way. Resuming an agent whose cache is
+            gone costs as much as rereading everything it read.</p>
+          <p>The watch asks one question: will every agent's cache still be there 10 minutes after the reset?</p>
+          <figure>
+            <div class="diagram">
+              <svg viewBox="0 0 900 230" role="img" aria-label="At 95 percent the watch checks whether every cache lasts until the reset. If yes, everyone keeps working, is cut off at 100 percent, and the main chat is woken one minute after the reset. If no, everyone stops now, writes hand-offs, and a new chat starts one minute after the reset.">
+                <defs>
+                  <marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head"/></marker>
+                  <marker id="ah4-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-good"/></marker>
+                  <marker id="ah4-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-bad"/></marker>
+                </defs>
+                <rect x="20" y="70" width="230" height="90" rx="6" class="d-box"/>
+                <text x="34" y="96" class="d-title">Limit at 95%</text>
+                <text x="34" y="118" class="d-text">Does every cache last</text>
+                <text x="34" y="136" class="d-text">until the reset?</text>
+
+                <rect x="340" y="10" width="540" height="90" rx="6" class="d-box-good"/>
+                <text x="354" y="36" class="d-title">Yes: keep working</text>
+                <text x="354" y="58" class="d-text">Cut off at 100%. The watch wakes the main chat 1 minute</text>
+                <text x="354" y="76" class="d-text">after the reset. Everyone carries on in the same chat.</text>
+
+                <rect x="340" y="130" width="540" height="90" rx="6" class="d-box-bad"/>
+                <text x="354" y="156" class="d-title">No: stop and hand over now</text>
+                <text x="354" y="178" class="d-text">Every agent writes its hand-off. A new chat starts by</text>
+                <text x="354" y="196" class="d-text">itself 1 minute after the reset.</text>
+
+                <path d="M250,100 L300,55 L336,55" class="d-arrow-good" marker-end="url(#ah4-good)"/>
+                <path d="M250,130 L300,175 L336,175" class="d-arrow-bad" marker-end="url(#ah4-bad)"/>
+              </svg>
+            </div>
+            <figcaption>A cache lasts one hour after an agent's last step. So the answer is mostly "yes" when the
+              reset is less than an hour away.</figcaption>
+          </figure>
+          <div class="substep">
+            <h4><span class="sub-num">2a</span> Every cache would survive</h4>
+            <p class="example-good">The limit reaches 95% at 16:30 and resets at 17:00. Every agent's cache lasts
+              past 17:10.</p>
+            <ul>
+              <li>Nothing is done early. Everyone keeps working.</li>
+              <li>At 16:48 the limit is used up. The main chat, the lead and <span class="id">W3</span> are cut
+                off.</li>
+              <li>At 17:01 the watch wakes the main chat. It tells the lead to carry on where it stopped, and the
+                lead tells <span class="id">W3</span> the same.</li>
+            </ul>
+          </div>
+          <div class="substep">
+            <h4><span class="sub-num">2b</span> Some cache would run out</h4>
+            <p class="example">The limit reaches 95% at 14:10 and resets at 17:00. The lead's cache would end at
+              15:10, long before the reset.</p>
+            <ul>
+              <li>The watch starts the helper service, then ends. Its ending notifies the main chat, which starts a
+                fresh watch to guard the hand-over.</li>
+              <li><span class="id">W3</span> hears "STOP FOR LIMIT" at its next tool call. It writes its hand-off and
+                ends with <code>WORKER STOPPED</code>.</li>
+              <li>The lead hears the same at its next tool call. It waits for <span class="id">W3</span>, writes its
+                hand-off and ends with <code>LEAD STOPPED</code>.</li>
+              <li>The main chat waits for every lead, with no time limit. At 14:25 it writes the hand-over, schedules
+                the relaunch for 17:01, and stops the helper service and both watches: the Usage and context watch
+                and the Decision answers watch.</li>
+              <li>At 17:01 a new chat opens by itself and carries on from the hand-offs.</li>
+            </ul>
+          </div>
+          <p class="why"><strong>Why 95% and 98%:</strong> the stop itself costs a few steps per agent. The last 5%
+            of the 5-hour limit and 2% of the weekly one leave room to write the hand-offs.</p>
+        </div>
+      </li>
+
+      <li class="step">
+        <span class="step-num" aria-hidden="true">3</span>
+        <div class="step-body">
+          <h3>A worker nears its 400k cap, or a lead its 500k</h3>
+          <p class="purpose"><strong>Purpose:</strong> replace one agent with a fresh one. The rest of the team
+            keeps working, and the main chat is not involved.</p>
+          <div class="substep">
+            <h4><span class="sub-num">3a</span> A worker</h4>
+            <ul>
+              <li>At 14:20 <span class="id">W3</span> passes 320k. The hook says "stop building and start
+                closing".</li>
+              <li>It finishes the edit, runs the tests, writes its report saying what is left, and returns.</li>
+              <li>The lead checks the report and starts a fresh worker <span class="id">W4</span> for the rest.</li>
+              <li>At 370k the hook says "STOP NOW": one progress-file edit, one report, done.</li>
+            </ul>
+          </div>
+          <div class="substep">
+            <h4><span class="sub-num">3b</span> A lead</h4>
+            <ul>
+              <li>At 430k the lead writes its lead file and the next task file. It returns
+                <code>LEAD HANDS OVER</code>.</li>
+              <li>The main chat starts a new lead from those two files.</li>
+              <li>At 470k the hook says "STOP NOW".</li>
+            </ul>
+          </div>
+          <p class="why"><strong>Why it stops so early:</strong> closing well takes about 25 tool calls, 60 to 80
+            thousand tokens. The warning leaves that room below the cap.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="wrong" aria-labelledby="wrong-h">
+    <span class="eyebrow">Failure handling</span>
+    <h2 id="wrong-h">When something fails</h2>
+    <ul class="cases">
+      <li class="case"><b>The helper service fails</b><span>It did not start, it died, it stopped answering, or it
+        gave an agent an error. The main chat is told first: <code>LIMIT STOP SERVER FAILED</code>, with what failed
+        and when, from its hook if busy or from the watch if idle. Only then does it send "STOP FOR LIMIT" by message
+        to each lead that has not stopped, and it tells you in its final message. A lead waiting on its worker reads
+        the message only once the worker returns, so it arrives later.</span></li>
+      <li class="case"><b>A worker is inside one long command</b><span>It hears the stop only when the command ends,
+        for example a test run. Nobody cuts it short: the lead and the main chat wait.</span></li>
+      <li class="case"><b>The usage limit runs out before the leads stop</b><span>Everyone is cut off. One minute
+        after the reset the fresh watch notifies the main chat, which writes the hand-over from the files on disk and
+        schedules the new chat.</span></li>
+      <li class="case"><b>Another VS Code window is in front at relaunch</b><span>No chat is opened in the wrong
+        project. A Windows notification asks you to open a chat and names the prompt to send.</span></li>
+      <li class="case"><b>A server error, or a limit message with no readable reset time</b><span>The watch
+        notifies the main chat after ten minutes, so a short outage is over by then.</span></li>
+      <li class="case"><b>Your sign-in expired</b><span>Waiting does not help, so nothing wakes the chat. You sign in
+        and continue.</span></li>
+      <li class="case"><b>You close the chat</b><span>The helper service quits with it.</span></li>
+      <li class="case"><b>You answer a decision after a hand-over</b><span>The old chat stopped its Decision answers
+        watch. The answer waits in the register until the new chat's own Decision answers watch hands it over when
+        it starts, or the new chat's hook does at your next message there.</span></li>
+    </ul>
+  </section>
+
+  <section id="open" aria-labelledby="open-h">
+    <span class="eyebrow">Not settled yet</span>
+    <h2 id="open-h">What is built, and what is still open</h2>
+    <div class="table-wrap">
+      <table>
+        <caption>State at 02:20 on 2026-10-26. Nothing is committed yet.</caption>
+        <thead><tr><th>Part</th><th>State</th></tr></thead>
+        <tbody>
+          <tr><td>Size warnings for leads and workers (case 3)</td><td class="state-done">built, proven live</td></tr>
+          <tr><td>The stop for a usage limit through the helper service (2b)</td><td class="state-done">built, tested with made-up chats</td></tr>
+          <tr><td>The new chat after a limit hand-over (2b)</td><td class="state-done">built, proven live</td></tr>
+          <tr><td>The main chat hearing the hook; the stop at its cap; the helper quitting with the chat</td><td class="state-done">built, tested with made-up chats (run H)</td></tr>
+          <tr><td>The new chat after a cap hand-over (case 1)</td><td class="state-done">built, tested without a real relaunch (run I)</td></tr>
+          <tr><td>Every wake-up and relaunch after a reset or a hand-over waits one minute; after a server error ten; all set in the config</td><td class="state-done">built, tested (runs I and J)</td></tr>
+          <tr><td>The main chat told of every helper failure before any fallback; told once; no deadline</td><td class="state-done">built, tested with made-up chats (runs K to K4)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="open">
+      <li><span class="flag">note</span>No real usage-limit stop has happened yet. The stop and the hand-offs are
+        tested only with made-up chats.</li>
+      <li><span class="flag">note</span>The weekly limit's message has never been seen, so the way its reset time is
+        read is a guess until the first real one.</li>
+      <li><span class="flag">note</span><b>D-9</b> (you accepted it on 2026-10-26): the main chat also learns of a
+        helper failure by reading the helper's own log file, besides the pipe.</li>
+    </ul>
+  </section>
+
+  <section id="objects" aria-labelledby="objects-h">
+    <span class="eyebrow">Reference</span>
+    <h2 id="objects-h">For developers: where it lives</h2>
+    <details>
+      <summary>The files, in <code>software-developer-agent\orchestrate-agents</code></summary>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>File</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>scripts\watch-usage-and-context.ps1</code></td><td>The Usage and context watch: reads the log, decides resume or hand over, starts the helper, wakes the main chat.</td></tr>
+            <tr><td><code>scripts\watch-decision-answers.ps1</code></td><td>The Decision answers watch: hands your answers to the main chat; stopped at every hand-over.</td></tr>
+            <tr><td><code>scripts\watch-agent-size-and-stall.ps1</code></td><td>The Agent size and stall watch: a lead's fallback for one worker's size, when the hook does not reach it.</td></tr>
+            <tr><td><code>scripts\usage-probe.ps1</code></td><td>The Haiku call that reads the 5-hour and weekly percentages.</td></tr>
+            <tr><td><code>scripts\limit-stop-server.mjs</code></td><td>The helper service behind the named pipe.</td></tr>
+            <tr><td><code>hooks\context-guard.mjs</code></td><td>The hook: size warnings, and asking the helper.</td></tr>
+            <tr><td><code>scripts\schedule-relaunch.ps1</code></td><td>Registers the Windows scheduled task for the new chat.</td></tr>
+            <tr><td><code>scripts\start-session-in-vscode.ps1</code></td><td>What that task runs: opens the chat and presses Enter.</td></tr>
+            <tr><td><code>orchestration.config.json</code></td><td>Every cap, threshold and wait named on this page.</td></tr>
+            <tr><td><code>references\usage-limits.md</code></td><td>The main chat's steps for each line the watch ends with.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    Written 2026-10-25 from <code>orchestration.config.json</code>, <code>references\usage-limits.md</code>,
+    <code>limit-stop-server.mjs</code> and the reports of runs F to I. The watches' names, and the hand-over
+    stopping the Decision answers watch, brought up to date on 2026-10-26. The team, sizes and times in the example
+    are made up. The caps, thresholds, waits and the one-hour cache are the real settings.
+  </footer>
+
+</main>
+</body>
+</html>

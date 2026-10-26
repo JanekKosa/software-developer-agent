@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent Team Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #f2f3f6;
+  --surface: #ffffff;
+  --ink: #171b24;
+  --muted: #59606f;
+  --line: #cbd0da;
+  --accent: #27508f;
+  --good: #1f6b52;
+  --good-soft: #dcede5;
+  --bad: #a85a0c;
+  --bad-soft: #fbead6;
+  --code-bg: #e7e9ef;
+
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Consolas", "Courier New", monospace;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.5rem;
+  --step-3: 2.1rem;
+  --step-4: 2.9rem;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10131a;
+    --surface: #181c26;
+    --ink: #e5e8ef;
+    --muted: #9aa1b0;
+    --line: #2e3443;
+    --accent: #86a8e6;
+    --good: #6cc29b;
+    --good-soft: #173027;
+    --bad: #f0a253;
+    --bad-soft: #3a2914;
+    --code-bg: #212635;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10131a;
+  --surface: #181c26;
+  --ink: #e5e8ef;
+  --muted: #9aa1b0;
+  --line: #2e3443;
+  --accent: #86a8e6;
+  --good: #6cc29b;
+  --good-soft: #173027;
+  --bad: #f0a253;
+  --bad-soft: #3a2914;
+  --code-bg: #212635;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 46rem; margin: 0 auto; padding-block: 3rem 4rem; display: grid; gap: 3.25rem; }
+section, header { display: grid; gap: 1rem; min-width: 0; }
+
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.12; text-wrap: balance; margin: 0; }
+h1 { font-size: var(--step-4); font-weight: 700; }
+h2 { font-size: var(--step-3); font-weight: 600; }
+h3 { font-size: var(--step-2); font-weight: 600; }
+p, ul, ol, dl, table, figure { margin: 0; }
+p { max-width: 65ch; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+.eyebrow { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: var(--step-1); max-width: 60ch; }
+.muted { color: var(--muted); }
+code, .id { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.05em 0.35em; border-radius: 3px; white-space: nowrap; }
+.val-good { color: var(--good); font-weight: 600; }
+.val-bad { color: var(--bad); font-weight: 600; }
+
+.glance { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem 1.4rem; display: grid; gap: 0.75rem; }
+.glance ul { padding-left: 1.2rem; display: grid; gap: 0.4rem; }
+
+.toc { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; list-style: none; }
+.toc a { display: inline-block; text-decoration: none; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 0.2rem 0.75rem; font-size: var(--step--1); background: var(--surface); }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+.terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.75rem; }
+.term { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; display: grid; gap: 0.35rem; align-content: start; min-width: 0; }
+.term dt { font-family: var(--font-display); font-weight: 600; font-size: var(--step-1); }
+.term dd { margin: 0; }
+.term .ex { color: var(--muted); font-size: var(--step--1); }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+caption { caption-side: top; text-align: left; padding: 0.7rem 0.8rem 0; font-size: var(--step--1); color: var(--muted); }
+th, td { text-align: left; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-weight: 500; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+
+figure { display: grid; gap: 0.6rem; min-width: 0; }
+.diagram { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; color: var(--ink); }
+.diagram svg { display: block; width: 100%; height: auto; min-width: 640px; }
+figcaption { color: var(--muted); font-size: var(--step--1); max-width: 65ch; }
+.d-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.d-box-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.5; }
+.d-box-bad { fill: var(--bad-soft); stroke: var(--bad); stroke-width: 1.5; }
+.d-box-later { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.d-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; fill: currentColor; }
+.d-text { font-family: var(--font-body); font-size: 12.5px; fill: currentColor; }
+.d-mono { font-family: var(--font-mono); font-size: 12px; fill: currentColor; }
+.d-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; fill: var(--muted); }
+.d-note { font-family: var(--font-body); font-size: 12px; font-style: italic; fill: var(--muted); }
+.d-bad-text { font-family: var(--font-body); font-size: 12.5px; font-weight: 600; fill: var(--bad); }
+.d-good-text { font-family: var(--font-body); font-size: 12.5px; font-weight: 600; fill: var(--good); }
+.d-arrow { stroke: currentColor; stroke-width: 1.6; fill: none; }
+.d-arrow-bad { stroke: var(--bad); stroke-width: 2.2; fill: none; }
+.d-arrow-good { stroke: var(--good); stroke-width: 2.2; fill: none; }
+.d-arrow-dash { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.d-head { fill: currentColor; }
+.d-head-bad { fill: var(--bad); }
+.d-head-good { fill: var(--good); }
+.d-head-muted { fill: var(--muted); }
+
+.steps { list-style: none; padding: 0; display: grid; gap: 1.75rem; }
+.step { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 0 1rem; }
+.step-num { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1; color: var(--accent); border-top: 3px solid var(--accent); padding-top: 0.45rem; }
+.step-body { display: grid; gap: 0.7rem; min-width: 0; }
+.step-body ul, .step-body ol { padding-left: 1.2rem; display: grid; gap: 0.35rem; }
+.why { border-left: 3px solid var(--line); padding: 0.1rem 0 0.1rem 0.9rem; color: var(--muted); }
+.why strong { color: var(--ink); font-weight: 600; }
+.example { background: var(--bad-soft); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.example-good { background: var(--good-soft); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.purpose strong { color: var(--accent); font-weight: 600; }
+.substep { display: grid; gap: 0.6rem; min-width: 0; padding-top: 0.4rem; }
+h4 { font-family: var(--font-display); font-size: var(--step-1); font-weight: 600; line-height: 1.2; margin: 0; text-wrap: balance; }
+.sub-num { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 0.3rem; margin-right: 0.35rem; vertical-align: 0.15em; }
+.note { background: var(--surface); border: 1px dashed var(--muted); border-radius: var(--radius); padding: 0.75rem 1rem; }
+
+.cases { display: grid; gap: 0.6rem; padding: 0; list-style: none; }
+.case { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 0.25rem 1.25rem; padding: 0.8rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.case b { font-weight: 600; }
+@media (max-width: 40rem) { .case { grid-template-columns: minmax(0, 1fr); } }
+.open { padding-left: 1.2rem; display: grid; gap: 0.5rem; }
+.flag { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bad); border: 1px solid var(--bad); border-radius: 3px; padding: 0 0.35rem; margin-right: 0.35rem; white-space: nowrap; }
+.state-done { color: var(--good); font-weight: 600; white-space: nowrap; }
+.state-todo { color: var(--bad); font-weight: 600; white-space: nowrap; }
+
+details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1rem; }
+details[open] { display: grid; gap: 0.8rem; }
+summary { cursor: pointer; font-weight: 600; }
+
+footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid var(--line); padding-top: 1rem; }
+
+@media (max-width: 30rem) {
+  h1 { font-size: 2.3rem; }
+  h2 { font-size: 1.8rem; }
+  .step { grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0 0.75rem; }
+}
+@media (prefers-reduced-motion: no-preference) { .toc a { transition: border-color 120ms, color 120ms; } }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <span class="eyebrow">Agent team · software-developer-agent · Claude Code</span>
+    <h1>How the agent team works</h1>
+    <p class="lead">You talk to one chat. It hands each task to a lead, the lead hands each piece to a worker, and
+      every result is checked by someone who did not build it. Everything that needs your say waits for you in the
+      Decisions pane, out of the chat; you answer there or in the chat. Sizes and usage limits are handled without
+      you.</p>
+    <div class="glance">
+      <span class="eyebrow">At a glance</span>
+      <ul>
+        <li>Four roles: the main chat, leads, workers, searchers. Only the main chat talks to you.</li>
+        <li>Work is cut into runs. Each run is one worker, one task file, one progress file, one report.</li>
+        <li>Every result is checked twice: by the lead, then by the main chat.</li>
+        <li>Every question, choice and problem goes into the decision register. You answer it in the Decisions pane or in the chat, and each answer reaches the main chat once. The chat names only a blocking one you have not answered yet.</li>
+        <li>An agent near its size cap, or the account near its usage limit, hands off and the work carries on.</li>
+      </ul>
+    </div>
+    <nav aria-label="Contents">
+      <ul class="toc">
+        <li><a href="#words">The words you need</a></li>
+        <li><a href="#example">The example task</a></li>
+        <li><a href="#who">Who talks to whom</a></li>
+        <li><a href="#run">One run</a></li>
+        <li><a href="#steps">Step by step</a></li>
+        <li><a href="#wrong">When something fails</a></li>
+        <li><a href="#open">Still open</a></li>
+        <li><a href="#objects">For developers</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="words" aria-labelledby="words-h">
+    <span class="eyebrow">Background</span>
+    <h2 id="words-h">The words you need</h2>
+    <p>The rest of the page leans on these, each with a small example.</p>
+    <dl class="terms">
+      <div class="term">
+        <dt>Main chat (orchestrator)</dt>
+        <dd>The chat you talk to. It starts leads, passes your answers on, re-checks finished work, and commits only
+          when you say so. It never builds and never starts workers itself.</dd>
+        <dd class="ex">Example: you ask for the invoice import; the main chat starts lead <span class="id">invoice-import</span>.</dd>
+      </div>
+      <div class="term">
+        <dt>Lead</dt>
+        <dd>An agent that owns one task. It plans the task, writes each worker's task file, starts the worker,
+          answers it, and checks what it built.</dd>
+        <dd class="ex">Example: the lead splits the import into runs W1, W2 and W3.</dd>
+      </div>
+      <div class="term">
+        <dt>Worker</dt>
+        <dd>An agent that builds and tests one piece, then reports to its lead only. It writes tests first and proves
+          its work before it reports.</dd>
+        <dd class="ex">Example: worker <span class="id">W2</span> builds the duplicate check and its 12 tests.</dd>
+      </div>
+      <div class="term">
+        <dt>Searcher</dt>
+        <dd>A cheap, fast agent that finds and quotes: file paths, line numbers, exact lines, counts. It never judges
+          or recommends.</dd>
+        <dd class="ex">Example: "list every file that mentions InvoiceId" comes back as 14 paths with lines.</dd>
+      </div>
+      <div class="term">
+        <dt>Run</dt>
+        <dd>One worker doing one piece, from its task file to its report.</dd>
+        <dd class="ex">Example: run W2, "the duplicate check", about 60 tool calls.</dd>
+      </div>
+      <div class="term">
+        <dt>Task, progress and report files</dt>
+        <dd>The task file says what the run must do. The progress file is the worker's diary, kept from its first
+          step. The report says what it built and what it checked.</dd>
+        <dd class="ex">Example: <span class="id">W2_TASK</span>, <span class="id">W2_PROGRESS</span>, <span class="id">W2_REPORT</span>.</dd>
+      </div>
+      <div class="term">
+        <dt>The four-line block</dt>
+        <dd>Every report ends with four lines: decisions taken, initiatives (things the agent did unasked), issues
+          found, questions. The lead reads them to decide what must reach you.</dd>
+        <dd class="ex">Example: "INITIATIVES: added a test for an empty file".</dd>
+      </div>
+      <div class="term">
+        <dt>Decision register</dt>
+        <dd>Two files of entries and one log: the open entries (each waiting for you or for an agent), the closed
+          entries, and the answers log, which keeps every answer you ever gave. Each entry has an id, an urgency, a
+          tiny example, the options, a recommendation, and what happens meanwhile. Only a script writes them.</dd>
+        <dd class="ex">Example: <span class="id">D-12</span> "Round VAT per line or per invoice?"; once closed, it
+          ends with your final answer and a summary.</dd>
+      </div>
+      <div class="term">
+        <dt>Context and its cap</dt>
+        <dd>Everything an agent has read and written so far, counted in tokens (word pieces). The cap is the size it
+          must stay under: 400k for a worker, 500k for a lead and for the main chat.</dd>
+        <dd class="ex">Example: a worker is warned at 320k and closes with a report.</dd>
+      </div>
+      <div class="term">
+        <dt>Hook</dt>
+        <dd>A small script Claude Code runs on its own at fixed moments. Two matter here: after every tool call
+          (sizes and stops), and on every prompt you send (the register's reminder of blocking entries, which also
+          hands the main chat any answer from the pane it has not had yet).</dd>
+        <dd class="ex">Example: after a read, a worker finds "you are at 322k of your 400k cap".</dd>
+      </div>
+      <div class="term">
+        <dt>The three watches</dt>
+        <dd>Scripts running in the background, each shown in your task list by a name that says what it does. The
+          <b>Usage and context watch</b> reads the main chat's log once a minute and your usage limits with a tiny
+          Haiku call. The <b>Decision answers watch</b> hands your new answers to the main chat. The <b>Agent size
+          and stall watch</b> follows one agent's size and whether it has gone quiet; a lead starts it only as a
+          fallback. When the chat must act, a watch ends, and its ending notifies the chat.</dd>
+        <dd class="ex">Example: the chat sits idle at 452k; the Usage and context watch ends with <span class="id">SESSION NEAR CAP</span>.</dd>
+      </div>
+      <div class="term">
+        <dt>Hand-off and hand-over</dt>
+        <dd>A hand-off is one agent's note for its successor: done, checked, left, next step. The hand-over is the main
+          chat's note for the next chat, naming every hand-off.</dd>
+        <dd class="ex">Example: a stopped worker adds "## Hand-off" at the end of its progress file.</dd>
+      </div>
+      <div class="term">
+        <dt>Heavy command</dt>
+        <dd>A build, test run or type-check. On this 7.8 GB machine they take turns through one script, so two test
+          runs never fill the memory at once.</dd>
+        <dd class="ex">Example: W2's test run waits 40 seconds for W1's to finish.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section id="example" aria-labelledby="example-h">
+    <span class="eyebrow">The running example</span>
+    <h2 id="example-h">One task, followed through the page</h2>
+    <p>You ask: "build the invoice import". The lead cuts it into three runs. The names, sizes and times are made up
+      for illustration.</p>
+    <div class="table-wrap">
+      <table>
+        <caption>Lead <span class="id">invoice-import</span>'s plan</caption>
+        <thead><tr><th>Run</th><th>Piece</th><th class="num">Tool calls</th><th>What reaches you</th></tr></thead>
+        <tbody>
+          <tr><td><span class="id">W1</span></td><td>Read the invoice file into lines</td><td class="num">55</td><td>Nothing: built and checked</td></tr>
+          <tr><td><span class="id">W2</span></td><td>The duplicate check</td><td class="num">70</td><td class="val-bad">One question: VAT rounding</td></tr>
+          <tr><td><span class="id">W3</span></td><td>Run on 200 real invoices</td><td class="num">40</td><td>One initiative: skips empty files</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="who" aria-labelledby="who-h">
+    <span class="eyebrow">The big picture</span>
+    <h2 id="who-h">Who talks to whom</h2>
+    <p>Each agent talks only to the one above it and the ones below it. The register is the one path to you.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 900 260" role="img" aria-label="You talk to the main chat. The main chat starts leads; each lead starts workers; workers may start searchers. Questions and choices go into the decision register, which you answer in the Decisions pane or in the chat.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head"/></marker>
+            <marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-bad"/></marker>
+          </defs>
+          <rect x="10" y="30" width="140" height="80" rx="6" class="d-box-good"/>
+          <text x="24" y="58" class="d-title">You</text>
+          <text x="24" y="80" class="d-text">answer, approve,</text>
+          <text x="24" y="98" class="d-text">allow commits</text>
+
+          <rect x="200" y="30" width="160" height="80" rx="6" class="d-box"/>
+          <text x="214" y="58" class="d-title">Main chat</text>
+          <text x="214" y="80" class="d-text">starts leads,</text>
+          <text x="214" y="98" class="d-text">re-checks, relays</text>
+
+          <rect x="410" y="30" width="150" height="80" rx="6" class="d-box"/>
+          <text x="424" y="58" class="d-title">Lead</text>
+          <text x="424" y="80" class="d-text">plans, starts and</text>
+          <text x="424" y="98" class="d-text">checks workers</text>
+
+          <rect x="610" y="30" width="130" height="80" rx="6" class="d-box"/>
+          <text x="624" y="58" class="d-title">Worker</text>
+          <text x="624" y="80" class="d-text">builds, tests,</text>
+          <text x="624" y="98" class="d-text">reports</text>
+
+          <rect x="780" y="30" width="110" height="80" rx="6" class="d-box-later"/>
+          <text x="794" y="58" class="d-title">Searcher</text>
+          <text x="794" y="80" class="d-text">finds and</text>
+          <text x="794" y="98" class="d-text">quotes</text>
+
+          <line x1="150" y1="70" x2="196" y2="70" class="d-arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+          <line x1="360" y1="70" x2="406" y2="70" class="d-arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+          <line x1="560" y1="70" x2="606" y2="70" class="d-arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+          <line x1="740" y1="70" x2="776" y2="70" class="d-arrow" marker-start="url(#ah)" marker-end="url(#ah)"/>
+
+          <rect x="330" y="170" width="260" height="70" rx="6" class="d-box-bad"/>
+          <text x="344" y="196" class="d-title">Decision register</text>
+          <text x="344" y="218" class="d-text">questions, initiatives, issues</text>
+
+          <path d="M485,110 L485,166" class="d-arrow-bad" marker-end="url(#ah-bad)"/>
+          <text x="495" y="146" class="d-bad-text">lead adds</text>
+          <path d="M330,205 L280,205 L280,114" class="d-arrow-bad" marker-end="url(#ah-bad)"/>
+          <text x="150" y="160" class="d-bad-text">you answer in the</text>
+          <text x="150" y="176" class="d-bad-text">pane or the chat</text>
+        </svg>
+      </div>
+      <figcaption>The main chat starts only leads, never workers: otherwise its own context would fill up with every
+        worker's report. A worker never talks to you or to the main chat.</figcaption>
+    </figure>
+  </section>
+
+  <section id="run" aria-labelledby="run-h">
+    <span class="eyebrow">The unit of work</span>
+    <h2 id="run-h">One run, from task file to your answer</h2>
+    <p>Run W2 of the example, the one that raises a question.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 900 220" role="img" aria-label="The lead writes W2's task file. The worker builds and tests, keeping a progress file, and reports with the four-line block. The lead re-checks and registers the question. You answer it in the Decisions pane or in the chat. Your answer goes into the answers log, reaches the main chat once, and goes back to the lead and on to W2 in your words.">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head"/></marker>
+            <marker id="ah2-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-muted"/></marker>
+          </defs>
+          <text x="10" y="16" class="d-label">1 · LEAD</text>
+          <text x="235" y="16" class="d-label">2 · WORKER</text>
+          <text x="460" y="16" class="d-label">3 · LEAD</text>
+          <text x="685" y="16" class="d-label">4 · YOU, PANE OR CHAT</text>
+
+          <rect x="10" y="26" width="195" height="104" rx="6" class="d-box"/>
+          <text x="24" y="52" class="d-title">Task file</text>
+          <text x="24" y="74" class="d-text">what W2 must build,</text>
+          <text x="24" y="92" class="d-text">what to read, the</text>
+          <text x="24" y="110" class="d-text">checks it must run</text>
+
+          <rect x="235" y="26" width="195" height="104" rx="6" class="d-box"/>
+          <text x="249" y="52" class="d-title">Build and test</text>
+          <text x="249" y="74" class="d-text">tests first, progress</text>
+          <text x="249" y="92" class="d-text">file, report with the</text>
+          <text x="249" y="110" class="d-text">four-line block</text>
+
+          <rect x="460" y="26" width="195" height="104" rx="6" class="d-box"/>
+          <text x="474" y="52" class="d-title">Check and register</text>
+          <text x="474" y="74" class="d-text">re-runs the tests,</text>
+          <text x="474" y="92" class="d-text">adds D-12 to</text>
+          <text x="474" y="110" class="d-text">the register</text>
+
+          <rect x="685" y="26" width="205" height="104" rx="6" class="d-box-bad"/>
+          <text x="699" y="52" class="d-title">In the pane for you</text>
+          <text x="699" y="74" class="d-text">"Round VAT per line</text>
+          <text x="699" y="92" class="d-text">or per invoice?"</text>
+          <text x="699" y="110" class="d-text">Submit, or answer in chat</text>
+
+          <line x1="205" y1="78" x2="231" y2="78" class="d-arrow" marker-end="url(#ah2)"/>
+          <line x1="430" y1="78" x2="456" y2="78" class="d-arrow" marker-end="url(#ah2)"/>
+          <line x1="655" y1="78" x2="681" y2="78" class="d-arrow" marker-end="url(#ah2)"/>
+          <path d="M787,130 L787,180 L557,180 L557,134" class="d-arrow-dash" marker-end="url(#ah2-muted)"/>
+          <text x="650" y="202" text-anchor="middle" class="d-note">your answer: answers log, main chat once, then lead and W2, in your words</text>
+        </svg>
+      </div>
+      <figcaption>A worker never checks its own work alone: the lead re-runs the checks, and at the end of the task
+        the main chat re-runs the full suite before anything is committed.</figcaption>
+    </figure>
+  </section>
+
+  <section id="steps" aria-labelledby="steps-h">
+    <span class="eyebrow">Step by step</span>
+    <h2 id="steps-h">What happens, and why</h2>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num" aria-hidden="true">0</span>
+        <div class="step-body">
+          <h3>Already set up, in every chat</h3>
+          <ul>
+            <li>The agent types and this skill are linked into Claude Code, so every project has them.</li>
+            <li>The hooks are in your Claude Code settings: sizes and stops after every tool call, the register's
+              reminder on every prompt.</li>
+            <li>Every chat's first action is to start the Usage and context watch (your global instructions). The main
+              chat also starts the Decision answers watch at its start, from its own repo: the watch reads only that
+              repo's register.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> nothing has to be switched on per project, and nothing depends on an
+            agent remembering to check itself.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">1</span>
+        <div class="step-body">
+          <h3>You ask for the work</h3>
+          <ul>
+            <li>Say you want the team: "orchestrate this with leads: build the invoice import", or type
+              <code>/orchestrate-agents</code>.</li>
+            <li>The main chat fills in a short brief for the project: its rules, its checks, what is off limits.</li>
+            <li>It starts one lead per task. Several leads at once only when their files do not overlap and memory
+              allows.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> two agents on the same file overwrite each other's work; that rule has
+            no exceptions.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">2</span>
+        <div class="step-body">
+          <h3>The lead plans and starts workers</h3>
+          <ul>
+            <li>It writes its plan in its own lead file: the runs in order, two lines each.</li>
+            <li>For each run it writes a task file and starts a worker on it. At most two workers at once.</li>
+            <li>While a worker runs, the lead ends its turn with <code>WAITING FOR WORKER | W2</code> and costs
+              nothing.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> a run sized to about 75 tool calls fits under a worker's 400k cap with
+            room to close properly.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">3</span>
+        <div class="step-body">
+          <h3>The worker builds and tests</h3>
+          <ul>
+            <li>It reads only what its task file names, writes the failing test first, then the code.</li>
+            <li>It keeps its progress file from its first step, so nothing is lost if it is cut off.</li>
+            <li>Builds and test runs go through the heavy-command script and take turns.</li>
+            <li>It never commits, never touches live systems, and never retries a command that timed out.</li>
+            <li>It ends with <code>WORKER DONE | W2 | report: ...</code> and the four-line block.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> the four-line block is how its own choices and problems reach you, even
+            the ones it thinks are small.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">4</span>
+        <div class="step-body">
+          <h3>The lead checks and registers</h3>
+          <ul>
+            <li>It re-runs the worker's checks itself and reads the changed files.</li>
+            <li>Anything you must see becomes a register entry: <span class="id">D-12</span>, with an example and
+              a recommendation.</li>
+            <li>A blocking question ends the lead's turn with <code>QUESTION FOR THE USER | D-12</code>. A non-blocking
+              one is sent as a note, and work goes on with the recommended choice.</li>
+          </ul>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">5</span>
+        <div class="step-body">
+          <h3>You answer in the Decisions pane or in the chat</h3>
+          <ul>
+            <li>The pane above the prompt shows every entry waiting for you: a tiny example, the options with what
+              each costs, the recommendation, and what waits on it. An entry that came back to you shows its history
+              above its choices: your earlier answers and each follow-up, oldest first.</li>
+            <li>The chat does not repeat it. Only while a blocking entry still waits for you does the chat name it in one line and ask you to answer it soon.</li>
+            <li>You pick an option and press Submit, or you answer in the chat; both count the same. Every answer
+              goes into the answers log and stays there.</li>
+          </ul>
+          <p class="example">"D-12: round VAT per line or per invoice? A 3-line invoice at 0.333 € VAT each gives
+            1.00 € per line and 0.99 € per invoice. Recommended: per invoice, as the tax office does."</p>
+          <div class="substep">
+            <h4><span class="sub-num">5a</span> Your answer reaches the main chat once</h4>
+            <ul>
+              <li>An answer in the chat: the main chat records it at once and acts on it.</li>
+              <li>An answer in the pane: whichever comes first hands it over, the Decision answers watch or the hook
+                at your next message. The watch hands answers over every 30 minutes, and at once when no entry is
+                left waiting for you.</li>
+            </ul>
+            <p class="example-good">Five entries wait at 10:00. You answer all five in the pane by 10:03. The main
+              chat gets all five right after the fifth, not at the watch's next 30-minute turn.</p>
+          </div>
+          <div class="substep">
+            <h4><span class="sub-num">5b</span> The entry is closed, or followed up</h4>
+            <ul>
+              <li>The main chat passes your words unchanged to the lead, and the lead on to the worker.</li>
+              <li>Settled: the entry is closed. It keeps your last answer as its final answer, and a summary of the
+                decision.</li>
+              <li>Not settled: the main chat adds a follow-up (a note that explains, elaborates or talks about the
+                decision further), and the entry comes back to you. A follow-up never changes the options; new
+                options become a child entry, <span class="id">D-12-1</span> (your rule, D-15).</li>
+            </ul>
+          </div>
+          <p class="why"><strong>Why the pane:</strong> your rule of 2026-10-26: the pane exists to keep the main
+            chat clear, so decisions live there. You may still answer in the chat (D-18). <strong>Why a separate
+            answers log:</strong> your answers do not fill up the entries, and the log keeps every one of them.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">6</span>
+        <div class="step-body">
+          <h3>The task ends</h3>
+          <ul>
+            <li>The lead ends with <code>TASK DONE</code> and a summary.</li>
+            <li>The main chat re-runs the full checks itself, and may run independent reviewers on the change.</li>
+            <li>It commits only with your go, only what was checked, and never pushes.</li>
+          </ul>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">7</span>
+        <div class="step-body">
+          <h3>Sizes and usage limits, without you</h3>
+          <ul>
+            <li>A worker near 400k writes its report and returns; the lead starts a fresh one for the rest.</li>
+            <li>A lead near 500k writes its lead file and the next task file; the main chat starts a successor.</li>
+            <li>The main chat near 500k, or your 5-hour or weekly limit near 95% or 98%: every agent writes a
+              hand-off, the main chat writes the hand-over, and a new chat opens by itself one minute after the
+              hand-over or the reset.</li>
+          </ul>
+          <p class="note"><strong>The whole story:</strong> <code>limits-and-caps-guide.html</code> beside this page
+            walks through each of these cases step by step.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="wrong" aria-labelledby="wrong-h">
+    <span class="eyebrow">Failure handling</span>
+    <h2 id="wrong-h">When something fails</h2>
+    <ul class="cases">
+      <li class="case"><b>An agent is cut off</b><span>By the usage limit, an expired sign-in or a server error. Its
+        work is fine. It is resumed while its cache is warm, otherwise a fresh agent carries on from its files.</span></li>
+      <li class="case"><b>An agent goes quiet</b><span>Its log file's last change is the sign of life. 40 minutes of
+        nothing, with no long command running, means stuck; it is stopped and replaced from its files.</span></li>
+      <li class="case"><b>Claude Code restarts</b><span>The watches and every running agent stop; their files
+        survive. The main chat starts its watches again and resumes warm agents.</span></li>
+      <li class="case"><b>The Decision answers watch fails</b><span>After 3 failed looks in a row it ends with
+        <code>DECISION ANSWERS WATCH FAILED</code> and the reason, and the main chat starts it again. When it fails
+        twice in a row for the same reason, the main chat stops restarting it and tells you that line once. Your
+        pane answers still reach the chat through the hook at your next message.</span></li>
+      <li class="case"><b>Memory runs low</b><span>Heavy commands wait for a free slot and 600 MB of free memory. A
+        command that waits an hour gives up and says so.</span></li>
+      <li class="case"><b>A run's work is broken</b><span>The lead re-runs the checks itself before the next run
+        starts, and checks that nothing off limits changed, so a broken run is caught there, not at the end.</span></li>
+    </ul>
+  </section>
+
+  <section id="open" aria-labelledby="open-h">
+    <span class="eyebrow">Not settled yet</span>
+    <h2 id="open-h">Still open</h2>
+    <ul class="open">
+      <li><span class="flag">note</span>The team has not yet run a real task end to end. Every part is tested, and the
+        size stops are proven on its own build runs; the first real task is its real test.</li>
+      <li><span class="flag">note</span>No real usage-limit stop has happened yet.</li>
+      <li><span class="flag">note</span>Nothing in the agent repo is committed yet.</li>
+    </ul>
+  </section>
+
+  <section id="objects" aria-labelledby="objects-h">
+    <span class="eyebrow">Reference</span>
+    <h2 id="objects-h">For developers: where it lives</h2>
+    <details>
+      <summary>The files, in <code>C:\Repos\My projects\software-developer-agent</code></summary>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>File</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>agents\task-lead.md</code></td><td>The lead's whole protocol (steps 2 and 4).</td></tr>
+            <tr><td><code>agents\software-developer.md</code></td><td>The worker (step 3).</td></tr>
+            <tr><td><code>agents\code-searcher.md</code></td><td>The searcher.</td></tr>
+            <tr><td><code>team-rules\SKILL.md</code></td><td>The rules leads and workers share, and the four-line block.</td></tr>
+            <tr><td><code>orchestrate-agents\SKILL.md</code></td><td>The main chat's rules (steps 1, 5 and 6).</td></tr>
+            <tr><td><code>orchestrate-agents\scripts\register.mjs</code></td><td>The only writer of the decision register and its answers log (step 5): adds, records answers, hands them over, closes, follows up, lists, searches answers, and converts an older register (<code>migrate</code>).</td></tr>
+            <tr><td><code>orchestrate-agents\hooks\context-guard.mjs</code></td><td>Sizes and stops after every tool call (step 7).</td></tr>
+            <tr><td><code>orchestrate-agents\hooks\decision-reminder.mjs</code></td><td>The reminder on every prompt; hands over a pane answer the watch has not (step 5a).</td></tr>
+            <tr><td><code>orchestrate-agents\scripts\watch-usage-and-context.ps1</code></td><td>The Usage and context watch.</td></tr>
+            <tr><td><code>orchestrate-agents\scripts\watch-decision-answers.ps1</code></td><td>The Decision answers watch (step 5a).</td></tr>
+            <tr><td><code>orchestrate-agents\scripts\watch-agent-size-and-stall.ps1</code></td><td>The Agent size and stall watch, a lead's fallback.</td></tr>
+            <tr><td><code>orchestrate-agents\scripts\run-heavy.ps1</code></td><td>Heavy commands taking turns.</td></tr>
+            <tr><td><code>orchestrate-agents\orchestration.config.json</code></td><td>Every cap, threshold and wait.</td></tr>
+            <tr><td><code>decisions\</code></td><td>The agent team's own register: <code>OPEN_DECISIONS_CLAUDE.md</code>, <code>RESOLVED_DECISIONS_CLAUDE.md</code> and the answers log <code>ANSWERS_LOG_CLAUDE.jsonl</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    Written 2026-10-26 from <code>orchestrate-agents\SKILL.md</code>, the agent files and
+    <code>orchestration.config.json</code>; the decision register and the watches brought up to date the same
+    evening from the register's command line (<code>register.mjs</code>) and the task's own notes. The task, its
+    runs, the VAT example and the times in step 5a are made up. The roles, caps and
+    rules are the real ones.
+  </footer>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "kind": "initiative",
+  "blocking": false,
+  "urgency": "low",
+  "raisedBy": "lead answers log (planning run 4c, the pane)",
+  "task": "Answers log and decision answers watch (D-13), 2026-10-26",
+  "what": "Two additions to your D-23 answer (retry after a failed read). First, a failed check of the decisions file's size and time is now retried too, instead of making the pane look empty for 2 seconds. Second, if the file still cannot be read after 30 seconds of retries, the pane says so in one orange line, so you know the list you see may be out of date. The line goes away at the first good read.",
+  "example": "At 10:00:05 another program holds the decisions file locked for a minute. The pane keeps showing your 3 decisions; at 10:00:35 it adds: 'The decisions file could not be read since 10:00:05; the pane shows what it held before and keeps trying.' At 10:01:05 the file reads again and the line disappears.",
+  "options": [
+    "A: both additions (a small pane run beside run 3b, no other cost)",
+    "B: only the retry of the size check, no line about it"
+  ],
+  "recommendation": "A, because a list that silently stops updating is the very thing D-23 was about.",
+  "meanwhile": "Run 4c builds A.",
+  "evidence": [
+    "C:\\Repos\\My projects\\software-developer-agent\\misc\\implementation\\agent-team\\stage-2\\R4B_REPORT_CLAUDE.md (ISSUES FOUND)",
+    "C:\\Repos\\My projects\\software-developer-agent\\misc\\implementation\\agent-team\\stage-2\\R4C_TASK_CLAUDE.md"
+  ]
+}

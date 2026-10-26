@@ -1,0 +1,2 @@
+# The leads' file-hash lists: checksums taken before each build step, worthless once the step is checked (D-30).
+*_HASHES_BEFORE.csv
