@@ -1,0 +1,17 @@
+time: 2026-10-27 13:51:07
+real root exists: False
+  state: limit-stop.log | 11409 | 11:06:50 | 61544C7214A6
+  state: mcp-discover-verdicts.json | 750 | 10:08:41 | C93B37E0A26C
+  state: relaunch.log | 1782 | 09:36:11 | B1F21F66160F
+  state: usage-limits.json | 172 | 13:48:11 | E52D00CA036E
+temp (C:\Users\user\AppData\Local\Temp): slot files:
+  xpp-agent-heavy-command-slot-1.txt | 13:44:23 | process 14868 since 13:44:23 in C:\Repos\My projects\software-developer-agent: & 'C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\s3a-suites.ps1'
+temp: limit-scripts-tests-* folders: 0
+  live changed: SKILL.md
+  live changed: lib\decision-register.mjs
+  live changed: scripts\register.mjs
+  live changed: tests\hooks\decision-reminder.test.mjs
+  live extra: tests\lib\decision-register-points.test.mjs
+  live changed: tests\lib\decision-register.test.mjs
+  live changed: tests\scripts\register.test.mjs
+live vs base: 7 differences of 45

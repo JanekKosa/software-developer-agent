@@ -22,7 +22,6 @@ const REGISTER = {
     answeredFile: 'ANSWERED_DECISIONS_CLAUDE.md',
     resolvedFile: 'RESOLVED_DECISIONS_CLAUDE.md',
     answersLogFile: 'ANSWERS_LOG_CLAUDE.jsonl',
-    commitInRepos: [],
     lockWaitSeconds: 10,
     lockStaleSeconds: 60,
 };
@@ -77,7 +76,8 @@ function heading(id, kind = 'question') {
 function scratchLocation(t) {
     const dir = makeScratchDir('mig');
     t.after(() => removeScratchDir(dir));
-    return registerLocation(dir, { register: REGISTER });
+    // The scratch folder also stands for teamState.folder, where this PC's settings file is looked for.
+    return registerLocation(dir, { teamState: { folder: dir }, pcSettings: { file: 'pc-settings.json' }, register: REGISTER });
 }
 
 /**

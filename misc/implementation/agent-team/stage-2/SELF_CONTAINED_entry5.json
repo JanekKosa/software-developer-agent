@@ -1,0 +1,20 @@
+{
+  "kind": "question",
+  "blocking": false,
+  "urgency": "low",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "The Agents pane, which lists every agent of a chat while it runs, is the other mod switched on on this PC. It works in any chat, not only in the team's, and the team runs without it.",
+  "example": "On a new laptop with A, the team and the Decisions pane work, but there is no live list of running agents unless claude-code-extensions is installed there as well.",
+  "options": [
+    "A: leave it in claude-code-extensions (no cost).",
+    "B: move it here too (part of the pane run; claude-code-extensions loses a mod that is not about the team).",
+    "C: copy it here (part of the pane run; two copies that drift)."
+  ],
+  "recommendation": "A, because it is a general mod and the team does not need it to work.",
+  "meanwhile": "Work goes on assuming A; nothing changes.",
+  "evidence": [
+    "C:\\Repos\\My projects\\claude-code-extensions\\agents-pane\\.claude-plugin\\plugin.json",
+    "C:\\Repos\\My projects\\claude-code-extensions\\.claude-plugin\\marketplace.json"
+  ]
+}

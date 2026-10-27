@@ -438,17 +438,27 @@ footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid v
       <li class="step">
         <span class="step-num" aria-hidden="true">0</span>
         <div class="step-body">
-          <h3>Already set up, in every chat</h3>
+          <h3>You switch the team on for one chat</h3>
           <ul>
-            <li>The agent types and this skill are linked into Claude Code, so every project has them.</li>
-            <li>The hooks are in your Claude Code settings: sizes and stops after every tool call, the register's
-              reminder on every prompt.</li>
-            <li>Every chat's first action is to start the Usage and context watch (your global instructions). The main
-              chat also starts the Decision answers watch at its start, from its own repo: the watch reads only that
-              repo's register.</li>
+            <li>The agent types and the team's skills are linked into Claude Code, so every project has them. An
+              ordinary chat uses none of them.</li>
+            <li>Type <code>/software-developer-agent</code> at the start of a chat. It marks that chat as a team chat,
+              starts its Usage and context watch and its Decision answers watch, and loads the team's rules.</li>
+            <li>The hooks in your Claude Code settings (sizes and stops after every tool call, the register's reminder
+              on every prompt) speak only in a marked chat and its agents. In any other chat they do nothing.</li>
           </ul>
-          <p class="why"><strong>Why:</strong> nothing has to be switched on per project, and nothing depends on an
-            agent remembering to check itself.</p>
+          <p class="example">Two chats open side by side: the one you started with <code>/software-developer-agent</code>
+            shows both watches in its task list; the other shows none and behaves like plain Claude Code.</p>
+          <p class="note"><strong>After <code>/clear</code>, type <code>/software-developer-agent</code> again</strong>
+            (your answer to D-35). Claude Code gives each chat an id, its session id, and the switch is kept per id. In
+            the command's own words: "<code>/clear</code> switches the team off in a chat: it gives the chat a new
+            session id, and the switch belongs to the old one. The Decisions tab closes and the hooks fall silent until
+            the user types <code>/software-developer-agent</code> again (D-35). Reopening a chat from the history keeps
+            its id, so the team stays on there." Example: your team chat shows Decisions (2); you type
+            <code>/clear</code>, and within 2 seconds the tab is gone. You type <code>/software-developer-agent</code>,
+            and the tab is back at the pane's next look.</p>
+          <p class="why"><strong>Why:</strong> your rule of 2026-10-26: "If i dont run the team agent, an oridnary chat
+            is an ordinary chat with no processes etc".</p>
         </div>
       </li>
       <li class="step">
@@ -456,8 +466,7 @@ footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid v
         <div class="step-body">
           <h3>You ask for the work</h3>
           <ul>
-            <li>Say you want the team: "orchestrate this with leads: build the invoice import", or type
-              <code>/orchestrate-agents</code>.</li>
+            <li>In the switched-on chat, say what you want built: "build the invoice import".</li>
             <li>The main chat fills in a short brief for the project: its rules, its checks, what is off limits.</li>
             <li>It starts one lead per task. Several leads at once only when their files do not overlap and memory
               allows.</li>
@@ -513,6 +522,8 @@ footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid v
         <div class="step-body">
           <h3>You answer in the Decisions pane or in the chat</h3>
           <ul>
+            <li>The pane appears only in a chat switched on with <code>/software-developer-agent</code> (step 0): it
+              checks the same mark as the hooks. An ordinary chat shows no pane, even when entries wait in its repo.</li>
             <li>The pane above the prompt shows every entry waiting for you: a tiny example, the options with what
               each costs, the recommendation, and what waits on it. An entry that came back to you shows its history
               above its choices: your earlier answers and each follow-up, oldest first.</li>
@@ -607,6 +618,8 @@ footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid v
         size stops are proven on its own build runs; the first real task is its real test.</li>
       <li><span class="flag">note</span>No real usage-limit stop has happened yet.</li>
       <li><span class="flag">note</span>Nothing in the agent repo is committed yet.</li>
+      <li><span class="flag">note</span>That a chat reopened from the history stays on was measured outside VS Code (a
+        headless run, 2026-10-27). It has not been tried in a VS Code chat yet.</li>
     </ul>
   </section>
 
@@ -637,6 +650,26 @@ footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid v
         </table>
       </div>
     </details>
+    <details>
+      <summary>The team's own records on this machine, in <code>~\.claude\state\software-developer-agent</code></summary>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Folder</th><th>What it holds</th></tr></thead>
+          <tbody>
+            <tr><td><code>team-on\</code></td><td>One mark per chat switched on with <code>/software-developer-agent</code> (step 0), named by the chat's session id.</td></tr>
+            <tr><td><code>context-guard\</code></td><td>The size warnings already sent to each agent, and their locks (step 7).</td></tr>
+            <tr><td><code>usage-reading\</code></td><td>The last usage reading, <code>usage-limits.json</code>.</td></tr>
+            <tr><td><code>usage-probe\</code></td><td>The empty folder the usage probe's call runs in.</td></tr>
+            <tr><td><code>usage-watch\</code></td><td>The Usage and context watch's own records: <code>&lt;session id&gt;.txt</code> while it runs, and <code>&lt;session id&gt;.decision.json</code>.</td></tr>
+            <tr><td><code>heavy-commands\</code></td><td>Who holds a slot for a heavy command, <code>slot-&lt;n&gt;.txt</code>.</td></tr>
+            <tr><td><code>logs\</code></td><td><code>relaunch.log</code> and <code>limit-stop.log</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>All of it is in one folder under your home folder, not in the temp folder, so no disk cleanup switches a chat
+        off (your answer to D-36). One setting, <code>teamState.folder</code> in
+        <code>orchestration.config.json</code>, moves it all.</p>
+    </details>
   </section>
 
   <footer>
@@ -644,7 +677,8 @@ footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid v
     <code>orchestration.config.json</code>; the decision register and the watches brought up to date the same
     evening from the register's command line (<code>register.mjs</code>) and the task's own notes. The task, its
     runs, the VAT example and the times in step 5a are made up. The roles, caps and
-    rules are the real ones.
+    rules are the real ones. Updated 2026-10-27 at 11:50: the note on <code>/clear</code> (D-35), quoting
+    <code>team-switch\SKILL.md</code>, and the team's state folder (D-36, D-39).
   </footer>
 
 </main>

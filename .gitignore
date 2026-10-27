@@ -1,2 +1,5 @@
 # The leads' file-hash lists: checksums taken before each build step, worthless once the step is checked (D-30).
 *_HASHES_BEFORE.csv
+
+# Type files a Claude Code session writes into a mod it loads, rebuilt at every load (decisions-pane\.claude-plugin\types\)
+**/.claude-plugin/types/

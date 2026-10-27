@@ -1,0 +1,11 @@
+M0 none (the copy as is) | clean | pass 150 fail 0 | failing: 
+M1 TEMP not read | caught | pass 148 fail 2 | failing: S6g
+M2 TMP not read | caught | pass 149 fail 1 | failing: S6g
+M3 LOCALAPPDATA not read | caught | pass 149 fail 1 | failing: S6g
+M4 APPDATA not read | caught | pass 149 fail 1 | failing: S6g
+M5 names matched case-sensitively | caught | pass 146 fail 4 | failing: O13 S6g
+M6 unset variable let through | caught | pass 146 fail 4 | failing: O2 S6d
+M7 Unicode case folding (toUpperCase) | caught | pass 148 fail 2 | failing: O13 S6d
+M8 keys of the map not folded | caught | pass 149 fail 1 | failing: O13
+M9 empty variable let through | caught | pass 148 fail 2 | failing: O2 S6d
+M10 TMP read from TEMP | caught | pass 148 fail 2 | failing: S6d S6g

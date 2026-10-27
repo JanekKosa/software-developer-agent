@@ -1,0 +1,19 @@
+{
+  "kind": "question",
+  "blocking": false,
+  "urgency": "medium",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "The Decisions pane, where you read and answer these entries, lives in the claude-code-extensions repo, and this PC installs it from that folder. Only the team uses it. For the agent repo to be complete the pane must be in it, moved or copied, and this repo becomes the place Claude Code installs it from.",
+  "example": "On a new laptop you clone only software-developer-agent and run install: the Decisions pane appears in the chat, with no claude-code-extensions on that laptop.",
+  "options": [
+    "A: move it here: one copy, its tests run here, and claude-code-extensions no longer lists it (one run here; then the main session switches this PC to install it from this repo and removes the old copy).",
+    "B: copy it here and keep the one in claude-code-extensions (the same run; two copies that drift, and each PC must switch on only one of them)."
+  ],
+  "recommendation": "A, because only the team uses it, so this repo is its natural single home.",
+  "meanwhile": "Work goes on assuming A. Bringing it in is the same for both options; this PC keeps the current pane until the main session switches it.",
+  "evidence": [
+    "C:\\Repos\\My projects\\claude-code-extensions\\decisions-pane\\README.md",
+    "C:\\Repos\\My projects\\claude-code-extensions\\.claude-plugin\\marketplace.json"
+  ]
+}

@@ -1,0 +1,1464 @@
+✔ the main session (no agent_id) below its warn size: nothing, silently, and no marker (520.8595ms)
+✔ below warn nothing is sent (648.3508ms)
+✔ a session the team is not switched on for: nothing for its agents or its main session past every size, and nothing written (D-32) (408.3165ms)
+✖ a session switched on later is guarded from then on (1099.6581ms)
+✖ warn is sent once, then stop once, then nothing (585.964ms)
+✖ jumping straight past stop sends only stop, and warn never follows (493.8855ms)
+✖ the newest non-zero record counts: a usage-limit turn with zeros does not reset the size (446.6369ms)
+✖ six hooks firing at once for one agent send the warning once (1098.3498ms)
+✖ an unknown, missing or odd agent type gets the default caps (304.9002ms)
+✖ a known type uses its own caps, not the default ones, sizes rounded to thousands (331.3748ms)
+✖ while another run holds the agent marker lock, nothing is sent; after it, the warning is (787.9285ms)
+✖ a workflow agent is found under subagents\workflows\<run> (255.9491ms)
+✔ a missing transcript, bad input or an unsafe id: nothing on stdout, exit 0 (1819.2009ms)
+✔ run time of a typical call (a 2 MB transcript, below warn) (2586.7258ms)
+ℹ context-guard wall time over 10 runs: median 173 ms, max 1054 ms
+✖ the marker and its lock lie in <teamState.folder>\context-guard, and nothing in the temp folder (114.5049ms)
+✖ the marker folder comes from the settings, as a path under the root (122.5363ms)
+✖ a refused marker folder or a root that is not absolute: nothing on stdout, exit 0, stderr names the setting, nothing written (149.0261ms)
+✖ only the configured tail of the transcript is read (254.2676ms)
+✖ a marker lock older than the configured stale age is broken (142.4225ms)
+✖ a missing contextGuard setting: nothing on stdout, exit 0, and stderr names the setting (114.7152ms)
+✖ no limit-stop server: the size message alone, and nothing on stderr (153.144ms)
+✖ a server that answers: its stop text comes first, then the size message; below warn the stop text alone (137.5264ms)
+✖ an empty stop answer adds nothing; the main session asks as main; another session's pipe is never asked (246.8931ms)
+✖ a broken, oversized, cut or late answer: the agent is told in one line, then the size message; the error is logged (121.9846ms)
+✖ an agent with no type whose query fails is logged as no type (137.521ms)
+✖ an agent id the server would refuse is never sent: no query, no FAILED line, no log line, one stderr line (118.9049ms)
+✖ a log that cannot be written: the agent hears that the main session may not hear of it, and stderr says why (137.9628ms)
+✖ a stop answer split across chunks, with a character cut in two, arrives whole (215.8497ms)
+✖ the stop text still reaches an agent whose transcript is missing (179.5653ms)
+✖ a missing or wrong limitStop setting: the size message still comes, and stderr names the setting (165.1959ms)
+✔ an unsafe session id counts as not switched on: no query, no marker path built from it, nothing said (112.9381ms)
+✖ end to end with the real server: a worker gets its text; an agent of another session gets nothing (579.6502ms)
+✖ an answer whose server keeps the connection open is taken at its line end, at once (234.2818ms)
+✖ the main session past its warn size: the server is started, then its stop text and SESSION NEAR CAP, once (307.4308ms)
+✖ three main-session hooks at once past warn: SESSION NEAR CAP once, one server, the main text once (712.4792ms)
+✖ the main session past warn when the server cannot start: SESSION NEAR CAP names the failure with the time, then the fallback (322.636ms)
+✖ the main session hears at its next tool call that the server is gone, with the time, once (591.9101ms)
+✖ a failure line in <teamState.folder>\logs\limit-stop.log, written by hand, reaches the main session (138.6849ms)
+✖ an agent's logged error reaches the main session at its next tool call, once (142.9483ms)
+✖ the main session's own failed query: told at once with the error logged, then told no more (159.1649ms)
+✖ a log that cannot be read: the main session's own failure still reaches it, and stderr says why (350.8466ms)
+✖ after stop, or once the session's Claude Code process is gone, the main session hears nothing (2204.0136ms)
+✔ another session's lines tell the main session nothing, even when its id holds this one (134.8928ms)
+✖ the main session past warn whose own query fails: the FAILED line first, then SESSION NEAR CAP (100.2262ms)
+✖ a missing limitStop setting in the main session: stderr names it, and the size part still speaks (116.5362ms)
+✖ a running usage-limit server: the main session gets its own text once, below warn too; past warn the server runs already (323.5605ms)
+✔ the main session's size passes over side-chain records, as the Usage and context watch does (306.8671ms)
+✖ the hook passes CLAUDE_PID on to the server it starts, and starts none for a pid that is not a number (574.4837ms)
+✔ an unsafe session id from the main session counts as not switched on: nothing said, no marker, exit 0 (666.1274ms)
+✖ the blocking line and its instruction first, then the answers handed over now, then those handed over earlier (920.3681ms)
+✖ each answer is handed over once: its words in the first prompt, then named as handed earlier until it is closed or followed up (517.0175ms)
+✖ a busy register: no answer is handed over or named, one stderr line, the short wait only; the next prompt hands them over (659.728ms)
+✔ an entry waiting for an agent with no unprocessed answer (an answer cut short by a crash) is not named as handed over (299.011ms)
+✖ a broken answers log leaves the answers out and writes one stderr line naming it; the blocking line still shows (436.9082ms)
+✔ entries that wait for the user and block nothing are not mentioned (the user answers them in a tab of their own) (315.2349ms)
+✖ only answers waiting: the handed-now line, the answers and the instruction alone (342.1797ms)
+✖ an entry of an older register, without a Status line or an Urgency line, still shows as blocking (209.0573ms)
+✖ another repo's register never shows, blocking and answered entries alike (D-14) (1335.5276ms)
+✔ a session the team is not switched on for hears nothing and hands nothing over, whatever waits (D-32) (700.3374ms)
+✔ with nothing open it prints nothing and creates nothing (173.6284ms)
+✖ without cwd in the input it uses its own working folder (263.4694ms)
+✔ the shipped settings name no other repo's register, with a why (0.6279ms)
+✔ the shipped settings give the hook a lock wait of 2 s, shorter than the register's, with a why (0.3042ms)
+✖ broken input or broken settings: nothing on stdout, exit 0, one line on stderr (567.6039ms)
+✖ a register that cannot be read prints nothing and writes one stderr line naming its file (173.2513ms)
+✔ it finishes well under one second (1514.7452ms)
+ℹ decision-reminder wall time over 10 runs: median 78 ms, max 295 ms
+✖ the marker is one file per session in the configured folder under the state root (3.777ms)
+✖ a session is on only once its marker exists; switching on twice is safe (2.29ms)
+✔ a missing or unsafe session id counts as off and builds no path (1.5954ms)
+✖ a missing or refused setting, or a root that is not absolute, is an error naming it (1.3337ms)
+✖ the shipped settings name the folder under the root, with a why (1.7738ms)
+✖ team-on.mjs: the session from CLAUDE_CODE_SESSION_ID or --session, its marker under the root; anything else refused with exit 2 (87.0192ms)
+✖ team-on.mjs writes the marker isTeamOn finds, with the same shipped settings and USERPROFILE (94.2711ms)
+✖ team-on.mjs: a refused folder or a root that is not absolute is AGENT TEAM NOT ON naming the setting (393.2013ms)
+file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/state-path.test.mjs:9
+import { requireStatePath } from '../../lib/config.mjs';
+         ^^^^^^^^^^^^^^^^
+SyntaxError: The requested module '../../lib/config.mjs' does not provide an export named 'requireStatePath'
+    at #asyncInstantiate (node:internal/modules/esm/module_job:302:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:405:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.13.0
+✖ tests\lib\state-path.test.mjs (70.4147ms)
+✔ a worker is told once and never again, however many calls it makes (594.688ms)
+✔ each agent is told once on its own; a lead, a helper and an unknown or missing type get their own texts (1168.6951ms)
+✔ a reset on another day is shown with its date (324.0511ms)
+✔ a broken request gets no answer and counts for nothing (178.9028ms)
+✔ a check request is answered with nothing and counts for no one (288.6904ms)
+✖ a second server for the same session exits at once with code 3; the first keeps its memory (401.4786ms)
+✔ the server for one session does not answer for another (549.1165ms)
+✖ the server has no end time: a reset long past and a cap server seconds old both still answer (3616.8774ms)
+✔ bad arguments or settings: serve exits 2 and says why (1843.1005ms)
+✔ the settings runs before K needed are not needed any more (197.8778ms)
+✖ the log names the session, each agent told and the process watched, and nothing of what the agents said (180.3402ms)
+✖ the log lies at limitStop.logFile under teamState.folder, its folders made on the first line (118.4043ms)
+✖ a refused limitStop.logFile or a root that is not absolute: serve, start and check exit 2 naming the setting (20035.6859ms)
+✖ a log that cannot be written: serve exits 4 without listening, and start says NOT STARTED, naming the log (20028.5287ms)
+✔ start launches a detached server and says STARTED with its process id; a second start says RUNNING ALREADY (515.7009ms)
+✔ start with bad arguments, or without the Claude Code process, says NOT STARTED and exits 1 (156.317ms)
+✖ the main session is told once, with no deadline and with the stop command, and never again (616.4089ms)
+✖ at the main session's context cap every role gets its text, worded for the cap, once (806.4441ms)
+✖ a Claude Code process that does not exist: start refuses, and serve ends right after it listens (263.8399ms)
+✖ the server ends within processCheckSeconds after the Claude Code process exits; start passes the pid on (3317.1372ms)
+✔ a process the server may not open counts as running (pid 4, the System process) (1777.7923ms)
+✖ stop ends the server: STOPPED, the pipe is gone and the log says so; a second stop says NOT RUNNING (300.7646ms)
+✔ stop against a pipe that never answers says NOT STOPPED and exits 1; bad arguments exit 2 (640.5347ms)
+✖ check: FINE while the server answers, and while no server has listened for the session (83.4858ms)
+✖ check: a server killed during a hand-over is FAILED once, with the time and the fallback; after that FINE (119.6004ms)
+✔ check: after stop it is FINE, and errors logged after the stop do not count (383.5938ms)
+✖ check: an agent's hook error in the log is FAILED, naming the agent and the error's time (208.3174ms)
+✖ check: a pipe that answers garbage is FAILED, and the error is logged for the session (101.8237ms)
+✖ check: a pipe failure the server logged is FAILED with that line's time (92.9913ms)
+✔ check with bad arguments says NOT CHECKED and exits 2 (224.7407ms)
+✔ a valid request longer than the line limit gets no answer and counts for nothing (170.9663ms)
+✔ start stops a server whose pipe did not answer within startCheckSeconds (2624.6116ms)
+ℹ tests 107
+ℹ suites 0
+ℹ pass 33
+ℹ fail 74
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 93562.2889
+
+✖ failing tests:
+
+test at tests\hooks\context-guard.test.mjs:157:1
+✖ a session switched on later is guarded from then on (1099.6581ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:166:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:173:1
+✖ warn is sent once, then stop once, then nothing (585.964ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:179:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:190:1
+✖ jumping straight past stop sends only stop, and warn never follows (493.8855ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | STOP NOW | 85k of 100k. One progress-file edit, one report write, then your final report line. Nothing else.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:195:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | STOP NOW | 85k of 100k. One progress-file edit, one report write, then your final report line. Nothing else.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:200:1
+✖ the newest non-zero record counts: a usage-limit turn with zeros does not reset the size (446.6369ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:206:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:209:1
+✖ six hooks firing at once for one agent send the warning once (1098.3498ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  - ]
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:214:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:221:1
+✖ an unknown, missing or odd agent type gets the default caps (304.9002ms)
+  AssertionError [ERR_ASSERTION]: {"agent_type":"some-new-type"}
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 130k of your 200k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:228:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 130k of your 200k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:232:1
+✖ a known type uses its own caps, not the default ones, sizes rounded to thousands (331.3748ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^CONTEXT GUARD \| you are at 242k of your 300k cap\./. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:236:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^CONTEXT GUARD \| you are at 242k of your 300k cap\./,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:239:1
+✖ while another run holds the agent marker lock, nothing is sent; after it, the warning is (787.9285ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:248:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:251:1
+✖ a workflow agent is found under subagents\workflows\<run> (255.9491ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:255:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:304:1
+✖ the marker and its lock lie in <teamState.folder>\context-guard, and nothing in the temp folder (114.5049ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:308:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:314:1
+✖ the marker folder comes from the settings, as a path under the root (122.5363ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:318:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:323:1
+✖ a refused marker folder or a root that is not absolute: nothing on stdout, exit 0, stderr names the setting, nothing written (149.0261ms)
+  AssertionError [ERR_ASSERTION]: contextGuard.markerFolder
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:336:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /'contextGuard\.markerFolder'/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:342:1
+✖ only the configured tail of the transcript is read (254.2676ms)
+  AssertionError [ERR_ASSERTION]: within the last 8 KB
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:354:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:357:1
+✖ a marker lock older than the configured stale age is broken (142.4225ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:366:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:369:1
+✖ a missing contextGuard setting: nothing on stdout, exit 0, and stderr names the setting (114.7152ms)
+  AssertionError [ERR_ASSERTION]: transcriptTailKB
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:376:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /contextGuard\.transcriptTailKB/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:418:1
+✖ no limit-stop server: the size message alone, and nothing on stderr (153.144ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:423:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:431:1
+✖ a server that answers: its stop text comes first, then the size message; below warn the stop text alone (137.5264ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'STOP FOR LIMIT | test text\n' +
+  -   '\n' +
+  -   'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:438:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'STOP FOR LIMIT | test text\n\nCONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:448:1
+✖ an empty stop answer adds nothing; the main session asks as main; another session's pipe is never asked (246.8931ms)
+  AssertionError [ERR_ASSERTION]: the agent, then the main session
+  + actual - expected
+  
+  + []
+  - [
+  -   {
+  -     agentId: 'ae3e3e3e3e3e3e3e3',
+  -     agentType: 'probe-type'
+  -   },
+  -   {
+  -     role: 'main'
+  -   }
+  - ]
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:457:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ { agentId: 'ae3e3e3e3e3e3e3e3', agentType: 'probe-type' }, { role: 'main' } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:503:1
+✖ a broken, oversized, cut or late answer: the agent is told in one line, then the size message; the error is logged (121.9846ms)
+  AssertionError [ERR_ASSERTION]: not JSON
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:518:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| this hook got an error from it: the answer is not JSON; the main session hears of it\. Carry on with what the last STOP FOR LIMIT text said, if you got one\.\n\nCONTEXT GUARD \| you are at 60k of your 100k cap\. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says\. Start no new point\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:525:1
+✖ an agent with no type whose query fails is logged as no type (137.521ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| this hook got an error from it: the answer is not JSON; the main session hears of it\. Carry on with what the last STOP FOR LIMIT text said, if you got one\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:531:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| this hook got an error from it: the answer is not JSON; the main session hears of it\. Carry on with what the last STOP FOR LIMIT text said, if you got one\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:535:1
+✖ an agent id the server would refuse is never sent: no query, no FAILED line, no log line, one stderr line (118.9049ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^context-guard: limit stop: agent id "a1\.b2" is not a plain id\n/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:540:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^context-guard: limit stop: agent id "a1\.b2" is not a plain id\n/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:543:1
+✖ a log that cannot be written: the agent hears that the main session may not hear of it, and stderr says why (137.9628ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| this hook got an error from it: the answer is not JSON; the error could not be written to its log, so the main session may not hear of it: say so in your final message\. Carry on with what the last STOP FOR LIMIT text said, if you got one\.\n\nCONTEXT GUARD \| you are at 60k of your 100k cap\. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says\. Start no new point\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:550:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| this hook got an error from it: the answer is not JSON; the error could not be written to its log, so the main session may not hear of it: say so in your final message\. Carry on with what the last STOP FOR LIMIT text said, if you got one\.\n\nCONTEXT GUARD \| you are at 60k of your 100k cap\. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says\. Start no new point\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:557:1
+✖ a stop answer split across chunks, with a character cut in two, arrives whole (215.8497ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'STOP FOR LIMIT | Grüße'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:573:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'STOP FOR LIMIT | Grüße',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:576:1
+✖ the stop text still reaches an agent whose transcript is missing (179.5653ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'STOP FOR LIMIT | test text'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:580:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'STOP FOR LIMIT | test text',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:584:1
+✖ a missing or wrong limitStop setting: the size message still comes, and stderr names the setting (165.1959ms)
+  AssertionError [ERR_ASSERTION]: /limitStop\.pipePrefix/
+  + actual - expected
+  
+  + ''
+  - 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:596:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'CONTEXT GUARD | you are at 60k of your 100k cap. Stop building and start closing: finish the edit you are in; write your progress file; run the type-check and the suite; write your report; report as your task says. Start no new point.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:607:1
+✖ end to end with the real server: a worker gets its text; an agent of another session gets nothing (579.6502ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^STOP FOR LIMIT \| the weekly usage limit is at 98% and resets at .* Stop building: .*WORKER STOPPED \| <run> \| hand-off: <progress file>\. Your lead starts your successor from it\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:619:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^STOP FOR LIMIT \| the weekly usage limit is at 98% and resets at .* Stop building: .*WORKER STOPPED \| <run> \| hand-off: <progress file>\. Your lead starts your successor from it\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:630:1
+✖ an answer whose server keeps the connection open is taken at its line end, at once (234.2818ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  -   'STOP FOR LIMIT | test text',
+      '',
+  +   ''
+    ]
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:643:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ '', '' ],
+    expected: [ 'STOP FOR LIMIT | test text', '' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:741:1
+✖ the main session past its warn size: the server is started, then its stop text and SESSION NEAR CAP, once (307.4308ms)
+  AssertionError [ERR_ASSERTION]
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:748:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:763:1
+✖ three main-session hooks at once past warn: SESSION NEAR CAP once, one server, the main text once (712.4792ms)
+  AssertionError [ERR_ASSERTION]: 
+  
+  
+  
+  
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:769:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:774:1
+✖ the main session past warn when the server cannot start: SESSION NEAR CAP names the failure with the time, then the fallback (322.636ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^SESSION NEAR CAP \| the context is at 60k tokens at \d\d:\d\d \(warning size 50k\)\. Finish the edit in progress, write the hand-over, schedule the next chat and end the session\. LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| it did not start: CLAUDE_PID, the id of the session's Claude Code process, is not set, and the server needs it to end with the session\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\. After the hand-over, run & 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-guard-eYmLQf\\orchestrate-agents\\scripts\\schedule-relaunch\.ps1' -ProjectDir <project folder> -HandoverPath <hand-over file> -ContextCap, which starts a new chat with Read <hand-over> and carry on, and in the same step stop the limit-stop server: node 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-guard-eYmLQf\\orchestrate-agents\\scripts\\limit-stop-server\.mjs' stop --session 7b3870e5-e7c1-4f3a-9961-398d55920189\. The Usage and context watch ends with SESSION NEAR CAP too; both mean the same\. Start it again then: it stays quiet, and wakes you if the limit-stop server fails\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:787:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^SESSION NEAR CAP \| the context is at 60k tokens at \d\d:\d\d \(warning size 50k\)\. Finish the edit in progress, write the hand-over, schedule the next chat and end the session\. LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| it did not start: CLAUDE_PID, the id of the session's Claude Code process, is not set, and the server needs it to end with the session\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\. After the hand-over, run & 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-guard-eYmLQf\\orchestrate-agents\\scripts\\schedule-relaunch\.ps1' -ProjectDir <project folder> -HandoverPath <hand-over file> -ContextCap, which starts a new chat with Read <hand-over> and carry on, and in the same step stop the limit-stop server: node 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-guard-eYmLQf\\orchestrate-agents\\scripts\\limit-stop-server\.mjs' stop --session 7b3870e5-e7c1-4f3a-9961-398d55920189\. The Usage and context watch ends with SESSION NEAR CAP too; both mean the same\. Start it again then: it stays quiet, and wakes you if the limit-stop server fails\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:795:1
+✖ the main session hears at its next tool call that the server is gone, with the time, once (591.9101ms)
+  AssertionError [ERR_ASSERTION]: told its text while the server runs
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:799:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^STOP FOR LIMIT \| the weekly usage limit/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:809:1
+✖ a failure line in <teamState.folder>\logs\limit-stop.log, written by hand, reaches the main session (138.6849ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^LIMIT STOP SERVER FAILED \| (?:\d{4}-\d\d-\d\d )?\d\d:\d\d:\d\d \| agent a9 \(task-lead\) got an error from it: the answer is not JSON\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:814:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^LIMIT STOP SERVER FAILED \| (?:\d{4}-\d\d-\d\d )?\d\d:\d\d:\d\d \| agent a9 \(task-lead\) got an error from it: the answer is not JSON\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:818:1
+✖ an agent's logged error reaches the main session at its next tool call, once (142.9483ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| this hook got an error from it: the answer is not JSON; the main session hears of it\. Carry on with what the last STOP FOR LIMIT text said, if you got one\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:823:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^LIMIT STOP SERVER FAILED \| \d\d:\d\d:\d\d \| this hook got an error from it: the answer is not JSON; the main session hears of it\. Carry on with what the last STOP FOR LIMIT text said, if you got one\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:831:1
+✖ the main session's own failed query: told at once with the error logged, then told no more (159.1649ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^LIMIT STOP SERVER FAILED \| (?:\d{4}-\d\d-\d\d )?\d\d:\d\d:\d\d \| the main session got an error from it: the answer is not JSON\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:836:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^LIMIT STOP SERVER FAILED \| (?:\d{4}-\d\d-\d\d )?\d\d:\d\d:\d\d \| the main session got an error from it: the answer is not JSON\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:842:1
+✖ a log that cannot be read: the main session's own failure still reaches it, and stderr says why (350.8466ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^LIMIT STOP SERVER FAILED \| (?:\d{4}-\d\d-\d\d )?\d\d:\d\d:\d\d \| the main session got an error from it: the answer is not JSON\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:855:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^LIMIT STOP SERVER FAILED \| (?:\d{4}-\d\d-\d\d )?\d\d:\d\d:\d\d \| the main session got an error from it: the answer is not JSON\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:862:1
+✖ after stop, or once the session's Claude Code process is gone, the main session hears nothing (2204.0136ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "the session's Claude Code process 3424 is gone; exiting"
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:875:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "the session's Claude Code process 3424 is gone; exiting",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:893:1
+✖ the main session past warn whose own query fails: the FAILED line first, then SESSION NEAR CAP (100.2262ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^LIMIT STOP SERVER FAILED \| (?:\d{4}-\d\d-\d\d )?\d\d:\d\d:\d\d \| the main session got an error from it: the answer is not JSON\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:900:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^LIMIT STOP SERVER FAILED \| (?:\d{4}-\d\d-\d\d )?\d\d:\d\d:\d\d \| the main session got an error from it: the answer is not JSON\. Only now the fallback: send STOP FOR LIMIT by message \(start-messages\.md\) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline\. Tell the user in your final message that the limit-stop server failed, and what failed\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:904:1
+✖ a missing limitStop setting in the main session: stderr names it, and the size part still speaks (116.5362ms)
+  SyntaxError: Unexpected end of JSON input
+      at JSON.parse (<anonymous>)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:911:27)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at tests\hooks\context-guard.test.mjs:916:1
+✖ a running usage-limit server: the main session gets its own text once, below warn too; past warn the server runs already (323.5605ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^STOP FOR LIMIT \| the weekly usage limit is at 98% and resets at .*This is the main session's part; the Usage and context watch's LIMIT NEAR \| HAND OVER lines mean the same\. .*schedule-relaunch\.ps1, as the watch printed it, and in the same step stop this server: node 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-guard-8oQ7f7\\orchestrate-agents\\scripts\\limit-stop-server\.mjs' stop --session 7b3870e5-e7c1-4f3a-9961-398d55920189\.$/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:927:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^STOP FOR LIMIT \| the weekly usage limit is at 98% and resets at .*This is the main session's part; the Usage and context watch's LIMIT NEAR \| HAND OVER lines mean the same\. .*schedule-relaunch\.ps1, as the watch printed it, and in the same step stop this server: node 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-guard-8oQ7f7\\orchestrate-agents\\scripts\\limit-stop-server\.mjs' stop --session 7b3870e5-e7c1-4f3a-9961-398d55920189\.$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\context-guard.test.mjs:944:1
+✖ the hook passes CLAUDE_PID on to the server it starts, and starts none for a pid that is not a number (574.4837ms)
+  AssertionError [ERR_ASSERTION]: 13180: 
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/context-guard.test.mjs:953:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:211:1
+✖ the blocking line and its instruction first, then the answers handed over now, then those handed over earlier (920.3681ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-CuqMSZ\\Demo): blocking and waiting for the user: D-1 "x" (urgency high), D-3 "x" (urgency medium).',
+  -   'Each blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.',
+  -   "Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-CuqMSZ\\Demo): the user's answers, handed to you now:",
+  -   'D-2 "x", answered 2026-10-27 11:05:',
+  -   'yes',
+  -   '',
+  -   'D-4 "x", answered 2026-10-27 11:05:',
+  -   'yes',
+  -   "For each answer: pass it, in the user's words, to the lead it concerns; then close the entry with a summary that includes the final answer (register.mjs close --id <id> --outcome <outcome> --summary $summary), or follow it up (register.mjs follow-up --id <id> --text $text); set $summary and $text in a single-quoted here-string, never in double quotes."
+  - ]
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:223:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-CuqMSZ\\Demo): blocking and waiting for the user: D-1 "x" (urgency high), D-3 "x" (urgency medium).', 'Each blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.', "Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-CuqMSZ\\Demo): the user's answers, handed to you now:", 'D-2 "x", answered 2026-10-27 11:05:', 'yes', '', 'D-4 "x", answered 2026-10-27 11:05:', 'yes', "For each answer: pass it, in the user's words, to the lead it concerns; then close the entry with a summary that includes the final answer (register.mjs close --id <id> --outcome <outcome> --summary $summary), or follow it up (register.mjs follow-up --id <id> --text $text); set $summary and $text in a single-quoted here-string, never in double quotes." ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:241:1
+✖ each answer is handed over once: its words in the first prompt, then named as handed earlier until it is closed or followed up (517.0175ms)
+  AssertionError [ERR_ASSERTION]: the hook marks what it handed over
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:251:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: /^\d{4}-\d\d-\d\d \d\d:\d\d$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:273:1
+✖ a busy register: no answer is handed over or named, one stderr line, the short wait only; the next prompt hands them over (659.728ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /handed to you now:\nD-2 "x", answered .*:\nfirst words\n/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:279:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /handed to you now:\nD-2 "x", answered .*:\nfirst words\n/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:316:1
+✖ a broken answers log leaves the answers out and writes one stderr line naming it; the blocking line still shows (436.9082ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-broken-log-WwOZma\\Demo): blocking and waiting for the user: D-1 "x" (urgency high).\n' +
+  -   'Each blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:324:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-broken-log-WwOZma\\Demo): blocking and waiting for the user: D-1 "x" (urgency high).\nEach blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:338:1
+✖ only answers waiting: the handed-now line, the answers and the instruction alone (342.1797ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   "Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-answered-Lcpd5v\\Demo): the user's answers, handed to you now:",
+  -   'D-1 "x", answered 2026-10-27 11:05:',
+  -   'yes',
+  -   "For each answer: pass it, in the user's words, to the lead it concerns; then close the entry with a summary that includes the final answer (register.mjs close --id <id> --outcome <outcome> --summary $summary), or follow it up (register.mjs follow-up --id <id> --text $text); set $summary and $text in a single-quoted here-string, never in double quotes."
+  - ]
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:345:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ "Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-answered-Lcpd5v\\Demo): the user's answers, handed to you now:", 'D-1 "x", answered 2026-10-27 11:05:', 'yes', "For each answer: pass it, in the user's words, to the lead it concerns; then close the entry with a summary that includes the final answer (register.mjs close --id <id> --outcome <outcome> --summary $summary), or follow it up (register.mjs follow-up --id <id> --text $text); set $summary and $text in a single-quoted here-string, never in double quotes." ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:348:1
+✖ an entry of an older register, without a Status line or an Urgency line, still shows as blocking (209.0573ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-old-DWrJaE\\Demo): blocking and waiting for the user: D-6 "old one".',
+  -   'Each blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.'
+  - ]
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:355:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'Decision register of Demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-old-DWrJaE\\Demo): blocking and waiting for the user: D-6 "old one".', 'Each blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:358:1
+✖ another repo's register never shows, blocking and answered entries alike (D-14) (1335.5276ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'Decision register of xpp-demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-other-K6cJtq\\xpp-demo): blocking and waiting for the user: D-1 "x" (urgency low).',
+  -   'Each blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.'
+  - ]
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:370:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'Decision register of xpp-demo (C:\\Users\\user\\AppData\\Local\\Temp\\oa-remind-other-K6cJtq\\xpp-demo): blocking and waiting for the user: D-1 "x" (urgency low).', 'Each blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:398:1
+✖ without cwd in the input it uses its own working folder (263.4694ms)
+  SyntaxError: Unexpected end of JSON input
+      at JSON.parse (<anonymous>)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:404:24)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at tests\hooks\decision-reminder.test.mjs:425:1
+✖ broken input or broken settings: nothing on stdout, exit 0, one line on stderr (567.6039ms)
+  AssertionError [ERR_ASSERTION]: {"session_id":"7b3870e5-e7c1-4f3a-9961-398d55920189","transcript_path":"C:\\Users\\someone\\.claude\\projects\\c--x\\7b3870e5-e7c1-4f3a-9961-398d55920189.jsonl","cwd":"C:\\Users\\user\\AppData\\Local\\Temp\\oa-broken-GThmxu","permission_mode":"default","hook_event_name":"UserPromptSubmit","prompt":"carry on ‘please’ & thanks"}
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:440:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /register\.answeredFile/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\hooks\decision-reminder.test.mjs:445:1
+✖ a register that cannot be read prints nothing and writes one stderr line naming its file (173.2513ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^decision-reminder: .*OPEN_DECISIONS_CLAUDE\.md/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/hooks/decision-reminder.test.mjs:454:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /^decision-reminder: .*OPEN_DECISIONS_CLAUDE\.md/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\lib\agent-team.test.mjs:31:1
+✖ the marker is one file per session in the configured folder under the state root (3.777ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'C:\\Users\\user\\AppData\\Local\\Temp\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189'
+  - 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-team-on-KOj1JT\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/agent-team.test.mjs:33:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'C:\\Users\\user\\AppData\\Local\\Temp\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189',
+    expected: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-team-on-KOj1JT\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\lib\agent-team.test.mjs:38:1
+✖ a session is on only once its marker exists; switching on twice is safe (2.29ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'C:\\Users\\user\\AppData\\Local\\Temp\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189'
+  - 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-team-on-Luwctb\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/agent-team.test.mjs:42:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'C:\\Users\\user\\AppData\\Local\\Temp\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189',
+    expected: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-team-on-Luwctb\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\lib\agent-team.test.mjs:59:1
+✖ a missing or refused setting, or a root that is not absolute, is an error naming it (1.3337ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception: relative
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/agent-team.test.mjs:66:16)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /'teamState\.folder'/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests\lib\agent-team.test.mjs:72:1
+✖ the shipped settings name the folder under the root, with a why (1.7738ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'claude-agent-team-on'
+  - 'team-on'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/agent-team.test.mjs:74:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'claude-agent-team-on',
+    expected: 'team-on',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\lib\agent-team.test.mjs:78:1
+✖ team-on.mjs: the session from CLAUDE_CODE_SESSION_ID or --session, its marker under the root; anything else refused with exit 2 (87.0192ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      0,
+  +   'AGENT TEAM ON | session 7b3870e5-e7c1-4f3a-9961-398d55920189 | C:\\Users\\user\\AppData\\Local\\Temp\\oa-team-on-temp-gf9jfk\\claude-agent-team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189\n'
+  -   'AGENT TEAM ON | session 7b3870e5-e7c1-4f3a-9961-398d55920189 | C:\\Users\\user\\AppData\\Local\\Temp\\oa-team-on-home-IRzGAl\\.claude\\state\\software-developer-agent\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189\n'
+    ]
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/agent-team.test.mjs:85:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 0, 'AGENT TEAM ON | session 7b3870e5-e7c1-4f3a-9961-398d55920189 | C:\\Users\\user\\AppData\\Local\\Temp\\oa-team-on-temp-gf9jfk\\claude-agent-team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189\n' ],
+    expected: [ 0, 'AGENT TEAM ON | session 7b3870e5-e7c1-4f3a-9961-398d55920189 | C:\\Users\\user\\AppData\\Local\\Temp\\oa-team-on-home-IRzGAl\\.claude\\state\\software-developer-agent\\team-on\\7b3870e5-e7c1-4f3a-9961-398d55920189\n' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\lib\agent-team.test.mjs:105:1
+✖ team-on.mjs writes the marker isTeamOn finds, with the same shipped settings and USERPROFILE (94.2711ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/agent-team.test.mjs:115:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\lib\agent-team.test.mjs:122:1
+✖ team-on.mjs: a refused folder or a root that is not absolute is AGENT TEAM NOT ON naming the setting (393.2013ms)
+  TypeError: Cannot set properties of undefined (setting 'folder')
+      at config.teamState.folder (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/agent-team.test.mjs:132:48)
+      at makeSkillCopy (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/helpers/scratch.mjs:84:9)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/lib/agent-team.test.mjs:136:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+
+test at tests\lib\state-path.test.mjs:1:1
+✖ tests\lib\state-path.test.mjs (70.4147ms)
+  'test failed'
+
+test at tests\scripts\limit-stop-server.test.mjs:392:1
+✖ a second server for the same session exits at once with code 3; the first keeps its memory (401.4786ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-mSy0Y0\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:400:21)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-mSy0Y0\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:409:1
+✖ the server has no end time: a reset long past and a cap server seconds old both still answer (3616.8774ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-5nQcTY\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:421:20)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-5nQcTY\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:469:1
+✖ the log names the session, each agent told and the process watched, and nothing of what the agents said (180.3402ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-xg8A7z\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:473:20)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-xg8A7z\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:479:1
+✖ the log lies at limitStop.logFile under teamState.folder, its folders made on the first line (118.4043ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-ty9HJx\state\deep\er\server.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:483:21)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-ty9HJx\\state\\deep\\er\\server.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:487:1
+✖ a refused limitStop.logFile or a root that is not absolute: serve, start and check exit 2 naming the setting (20035.6859ms)
+  AssertionError [ERR_ASSERTION]: limitStop.logFile serve
+  
+  null !== 2
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:498:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:510:1
+✖ a log that cannot be written: serve exits 4 without listening, and start says NOT STARTED, naming the log (20028.5287ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  null !== 4
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:514:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:553:1
+✖ the main session is told once, with no deadline and with the stop command, and never again (616.4089ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-8mp0Ow\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:565:21)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-8mp0Ow\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:568:1
+✖ at the main session's context cap every role gets its text, worded for the cap, once (806.4441ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-XKMvPO\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:579:21)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-XKMvPO\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:586:1
+✖ a Claude Code process that does not exist: start refuses, and serve ends right after it listens (263.8399ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-R9evcf\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:595:21)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-R9evcf\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:598:1
+✖ the server ends within processCheckSeconds after the Claude Code process exits; start passes the pid on (3317.1372ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-ob2aMd\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:609:20)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-ob2aMd\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:627:1
+✖ stop ends the server: STOPPED, the pipe is gone and the log says so; a second stop says NOT RUNNING (300.7646ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-qukp6Q\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:635:21)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-qukp6Q\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:661:1
+✖ check: FINE while the server answers, and while no server has listened for the session (83.4858ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'LIMIT STOP SERVER FINE | it ended: stopped by the main session; exiting\n'
+  - 'LIMIT STOP SERVER FINE | no server has listened for this session\n'
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:665:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'LIMIT STOP SERVER FINE | it ended: stopped by the main session; exiting\n',
+    expected: 'LIMIT STOP SERVER FINE | no server has listened for this session\n',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:671:1
+✖ check: a server killed during a hand-over is FAILED once, with the time and the fallback; after that FINE (119.6004ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-6QiHdl\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:674:27)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-6QiHdl\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:696:1
+✖ check: an agent's hook error in the log is FAILED, naming the agent and the error's time (208.3174ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'LIMIT STOP SERVER FINE | it answers\n'
+  - "LIMIT STOP SERVER FAILED | 11:05:45 | agent a2222222222222222 (task-lead) got an error from it: no answer within 300 ms. Only now the fallback: send STOP FOR LIMIT by message (start-messages.md) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline. Tell the user in your final message that the limit-stop server failed, and what failed.\n"
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:703:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'LIMIT STOP SERVER FINE | it answers\n',
+    expected: "LIMIT STOP SERVER FAILED | 11:05:45 | agent a2222222222222222 (task-lead) got an error from it: no answer within 300 ms. Only now the fallback: send STOP FOR LIMIT by message (start-messages.md) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline. Tell the user in your final message that the limit-stop server failed, and what failed.\n",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:706:1
+✖ check: a pipe that answers garbage is FAILED, and the error is logged for the session (101.8237ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\user\AppData\Local\Temp\oa-stop-0eW3vM\state\logs\limit-stop.log'
+      at Object.readFileSync (node:fs:439:20)
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:715:20)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\user\\AppData\\Local\\Temp\\oa-stop-0eW3vM\\state\\logs\\limit-stop.log'
+  }
+
+test at tests\scripts\limit-stop-server.test.mjs:720:1
+✖ check: a pipe failure the server logged is FAILED with that line's time (92.9913ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'LIMIT STOP SERVER FINE | the main session was told of its failure already\n'
+  - "LIMIT STOP SERVER FAILED | 11:04:45 | its pipe failed (EPIPE) and it exited. Only now the fallback: send STOP FOR LIMIT by message (start-messages.md) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline. Tell the user in your final message that the limit-stop server failed, and what failed.\n"
+  
+      at TestContext.<anonymous> (file:///C:/Repos/My%20projects/software-developer-agent/misc/implementation/agent-team/stage-2/STATE_FOLDER_STAGING/orchestrate-agents/tests/scripts/limit-stop-server.test.mjs:726:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'LIMIT STOP SERVER FINE | the main session was told of its failure already\n',
+    expected: "LIMIT STOP SERVER FAILED | 11:04:45 | its pipe failed (EPIPE) and it exited. Only now the fallback: send STOP FOR LIMIT by message (start-messages.md) to every lead that has not ended with LEAD STOPPED, and wait for each one's LEAD STOPPED, with no deadline. Tell the user in your final message that the limit-stop server failed, and what failed.\n",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

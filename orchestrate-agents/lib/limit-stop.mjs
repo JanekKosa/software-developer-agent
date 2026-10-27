@@ -11,7 +11,7 @@
 import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
-import { requireNumberSetting, requirePathSetting, requireSetting } from './config.mjs';
+import { requireNumberSetting, requireSetting, requireStatePath } from './config.mjs';
 import { formatLocalMinute } from './local-time.mjs';
 import { readFileTail } from './transcript.mjs';
 
@@ -170,14 +170,15 @@ const NORMAL_END = /^(stopped by the main session; exiting|the session's Claude 
 export const SERVER_FALLBACK = 'Only now the fallback: send STOP FOR LIMIT by message (start-messages.md) to every lead that has not ended with LEAD STOPPED, and wait for each one\'s LEAD STOPPED, with no deadline. Tell the user in your final message that the limit-stop server failed, and what failed.';
 
 /**
- * Reads where the log is and how much of its end is read (limitStop.logFile and limitStop.logTailKB).
+ * Reads where the log is (limitStop.logFile, a path under the team's state folder teamState.folder) and how much of
+ * its end is read (limitStop.logTailKB).
  * @param {object} config settings from loadConfig
- * @returns {{logFile: string, tailBytes: number}} the log's path and the window read from its end
+ * @returns {{logFile: string, tailBytes: number}} the log's absolute path and the window read from its end
  * @throws {Error} naming a missing or wrong setting
  */
 export function logSettings(config) {
     return {
-        logFile: requirePathSetting(config, 'limitStop.logFile'),
+        logFile: requireStatePath(config, 'limitStop.logFile'),
         tailBytes: Math.round(requireNumberSetting(config, 'limitStop.logTailKB') * 1024),
     };
 }

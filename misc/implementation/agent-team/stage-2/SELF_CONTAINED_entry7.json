@@ -1,0 +1,19 @@
+{
+  "kind": "question",
+  "blocking": false,
+  "urgency": "medium",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "About 160 lines in 26 files of the repo name this PC's folders, mostly C:\\Repos\\My projects\\software-developer-agent: the lead's and the worker's files, the team's skill, the tests and the two guide pages. One setting also says your own repos are the ones under C:\\Repos\\My projects (those commit the register; other repos keep it out of git). Cloned anywhere else, those lines point at nothing.",
+  "example": "You clone it to D:\\code\\software-developer-agent on a laptop. With A the team works. With B the lead's instructions still send it to C:\\Repos\\My projects\\software-developer-agent\\orchestrate-agents, which is not there.",
+  "options": [
+    "A: it works from any folder: files reach the scripts through the links install.ps1 makes, which are the same on every PC (such as ~\\.claude\\skills\\orchestrate-agents), and each PC's own values, such as where your own repos are, go into one settings file per PC that install.ps1 creates and git ignores (one run over about 26 files).",
+    "B: it must be cloned at C:\\Repos\\My projects\\software-developer-agent on every PC, and the README says so (no cost; fails on a PC where that folder cannot be used)."
+  ],
+  "recommendation": "A, because the agent will run on different PCs, and the links make the paths the same on all of them.",
+  "meanwhile": "Work goes on assuming A.",
+  "evidence": [
+    "C:\\Repos\\My projects\\software-developer-agent\\orchestrate-agents\\orchestration.config.json",
+    "C:\\Repos\\My projects\\software-developer-agent\\agents\\task-lead.md"
+  ]
+}

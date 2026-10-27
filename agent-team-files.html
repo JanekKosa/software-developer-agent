@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent Team Files</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Same palette as agent-team-guide.html. Green (--good) = kept in a repo. Amber (--bad) = only on this machine.
+   Blue (--accent) = structure, links and what is new. */
+:root {
+  --bg: #f2f3f6;
+  --surface: #ffffff;
+  --ink: #171b24;
+  --muted: #59606f;
+  --line: #cbd0da;
+  --accent: #27508f;
+  --good: #1f6b52;
+  --good-soft: #dcede5;
+  --bad: #a85a0c;
+  --bad-soft: #fbead6;
+  --code-bg: #e7e9ef;
+
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Consolas", "Courier New", monospace;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.5rem;
+  --step-3: 2.1rem;
+  --step-4: 2.9rem;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10131a;
+    --surface: #181c26;
+    --ink: #e5e8ef;
+    --muted: #9aa1b0;
+    --line: #2e3443;
+    --accent: #86a8e6;
+    --good: #6cc29b;
+    --good-soft: #173027;
+    --bad: #f0a253;
+    --bad-soft: #3a2914;
+    --code-bg: #212635;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10131a;
+  --surface: #181c26;
+  --ink: #e5e8ef;
+  --muted: #9aa1b0;
+  --line: #2e3443;
+  --accent: #86a8e6;
+  --good: #6cc29b;
+  --good-soft: #173027;
+  --bad: #f0a253;
+  --bad-soft: #3a2914;
+  --code-bg: #212635;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 46rem; margin: 0 auto; padding-block: 3rem 4rem; display: grid; gap: 3.25rem; }
+section, header { display: grid; gap: 1rem; min-width: 0; }
+
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.12; text-wrap: balance; margin: 0; }
+h1 { font-size: var(--step-4); font-weight: 700; }
+h2 { font-size: var(--step-3); font-weight: 600; }
+h3 { font-size: var(--step-2); font-weight: 600; }
+p, ul, ol, dl, table, figure { margin: 0; }
+p { max-width: 65ch; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+.eyebrow { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: var(--step-1); max-width: 60ch; }
+.muted { color: var(--muted); }
+code, .id { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.05em 0.35em; border-radius: 3px; white-space: nowrap; }
+td code, .wrap code { white-space: normal; overflow-wrap: anywhere; }
+.val-good { color: var(--good); font-weight: 600; }
+.val-bad { color: var(--bad); font-weight: 600; }
+.new { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 0.3rem; margin-left: 0.3rem; white-space: nowrap; vertical-align: 0.1em; }
+
+.glance { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem 1.4rem; display: grid; gap: 0.75rem; }
+.glance ul { padding-left: 1.2rem; display: grid; gap: 0.4rem; }
+
+.toc { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; list-style: none; }
+.toc a { display: inline-block; text-decoration: none; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 0.2rem 0.75rem; font-size: var(--step--1); background: var(--surface); }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+.terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.75rem; }
+.term { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; display: grid; gap: 0.35rem; align-content: start; min-width: 0; }
+.term dt { font-family: var(--font-display); font-weight: 600; font-size: var(--step-1); }
+.term dd { margin: 0; }
+.term .ex { color: var(--muted); font-size: var(--step--1); }
+.term code { white-space: normal; overflow-wrap: anywhere; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+caption { caption-side: top; text-align: left; padding: 0.7rem 0.8rem 0; font-size: var(--step--1); color: var(--muted); }
+th, td { text-align: left; padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-weight: 500; font-size: 0.76rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+tr.group th { background: var(--code-bg); color: var(--ink); text-transform: none; letter-spacing: 0; font-family: var(--font-body); font-weight: 600; font-size: 0.85rem; }
+td.local { border-left: 3px solid var(--bad); }
+td.kept { border-left: 3px solid var(--good); }
+
+figure { display: grid; gap: 0.6rem; min-width: 0; }
+.diagram { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; color: var(--ink); }
+.diagram svg { display: block; width: 100%; height: auto; min-width: 640px; }
+.diagram.wide svg { min-width: 720px; }
+figcaption { color: var(--muted); font-size: var(--step--1); max-width: 65ch; }
+.d-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.d-box-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.5; }
+.d-box-bad { fill: var(--bad-soft); stroke: var(--bad); stroke-width: 1.5; }
+.d-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; fill: currentColor; }
+.d-text { font-family: var(--font-body); font-size: 12.5px; fill: currentColor; }
+.d-mono { font-family: var(--font-mono); font-size: 12px; fill: currentColor; }
+.d-mono-b { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; fill: currentColor; }
+.d-mono-s { font-family: var(--font-mono); font-size: 11px; fill: currentColor; }
+.d-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; fill: var(--muted); }
+.d-note { font-family: var(--font-body); font-size: 12px; font-style: italic; fill: var(--muted); }
+.d-note-s { font-family: var(--font-body); font-size: 11px; font-style: italic; fill: var(--muted); }
+.d-acc-text { font-family: var(--font-body); font-size: 12.5px; font-weight: 600; fill: var(--accent); }
+.d-acc-s { font-family: var(--font-body); font-size: 11px; font-weight: 600; fill: var(--accent); }
+.d-muted { fill: var(--muted); }
+.d-arrow-acc { stroke: var(--accent); stroke-width: 2.4; fill: none; }
+.d-arrow-dash { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.d-grid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 3; }
+.d-head-acc { fill: var(--accent); }
+.d-head-muted { fill: var(--muted); }
+.d-tag-acc { fill: var(--surface); stroke: var(--accent); stroke-width: 1.2; }
+.d-tag-mut { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 2; }
+.d-tag-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.2; }
+.d-tagt-acc { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; fill: var(--accent); }
+.d-tagt-mut { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; fill: var(--muted); }
+.d-tagt-good { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; fill: var(--good); }
+
+.steps { list-style: none; padding: 0; display: grid; gap: 1.75rem; }
+.step { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 0 1rem; }
+.step-num { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1; color: var(--accent); border-top: 3px solid var(--accent); padding-top: 0.45rem; }
+.step-body { display: grid; gap: 0.7rem; min-width: 0; }
+.step-body ul { padding-left: 1.2rem; display: grid; gap: 0.35rem; }
+.why { border-left: 3px solid var(--line); padding: 0.1rem 0 0.1rem 0.9rem; color: var(--muted); }
+.why strong { color: var(--ink); font-weight: 600; }
+.example { background: var(--bad-soft); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.example-good { background: var(--good-soft); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.purpose strong { color: var(--accent); font-weight: 600; }
+.note { background: var(--surface); border: 1px dashed var(--muted); border-radius: var(--radius); padding: 0.75rem 1rem; }
+
+.cases { display: grid; gap: 0.6rem; padding: 0; list-style: none; }
+.case { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 0.25rem 1.25rem; padding: 0.8rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.case b { font-weight: 600; }
+@media (max-width: 40rem) { .case { grid-template-columns: minmax(0, 1fr); } }
+.open { padding-left: 1.2rem; display: grid; gap: 0.5rem; }
+.flag { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bad); border: 1px solid var(--bad); border-radius: 3px; padding: 0 0.35rem; margin-right: 0.35rem; white-space: nowrap; }
+.flag-new { color: var(--accent); border-color: var(--accent); }
+
+details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1rem; }
+details[open] { display: grid; gap: 0.8rem; }
+summary { cursor: pointer; font-weight: 600; }
+
+footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid var(--line); padding-top: 1rem; }
+
+@media (max-width: 30rem) {
+  h1 { font-size: 2.3rem; }
+  h2 { font-size: 1.8rem; }
+  .step { grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0 0.75rem; }
+}
+@media (prefers-reduced-motion: no-preference) { .toc a { transition: border-color 120ms, color 120ms; } }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <span class="eyebrow">Agent team · software-developer-agent · Claude Code</span>
+    <h1>Every file the agent team uses</h1>
+    <p class="lead">The team's files sit in three places. This repo holds what the team is; each project's repo holds
+      what a task wrote; your home folder holds the links, and one state folder in it the logs and markers that make
+      it run. This page draws each place and follows one task through them, file by file.</p>
+    <div class="glance">
+      <span class="eyebrow">At a glance</span>
+      <ul>
+        <li>This repo defines the team: three agent files, the main chat's skill with its hooks and scripts, the shared
+          team rules, and 17 copied coding skills.</li>
+        <li>Claude Code finds it only through six junctions (folder pointers) in your home folder, and two hook lines in
+          <code>settings.json</code>.</li>
+        <li>A task writes into its project's working folder: a brief, a lead file, a task, progress and report file per
+          run, and a summary.</li>
+        <li>Every question goes into the project's <code>decisions\</code> folder: the open file, the answers log, the
+          resolved file. Only one script writes them.</li>
+        <li><span class="new">new</span> A chat uses the team only after you type <code>/software-developer-agent</code>,
+          which leaves one marker file in the team's state folder. After <code>/clear</code>, type it again.</li>
+        <li class="wrap"><span class="new">new</span> Every file the team writes for itself on this machine sits in one folder,
+          <code>~\.claude\state\software-developer-agent\</code>, which no cleanup touches.</li>
+      </ul>
+    </div>
+    <nav aria-label="Contents">
+      <ul class="toc">
+        <li><a href="#words">The words you need</a></li>
+        <li><a href="#example">The example task</a></li>
+        <li><a href="#map">Three places</a></li>
+        <li><a href="#tree">Inside this repo</a></li>
+        <li><a href="#timeline">File by file</a></li>
+        <li><a href="#steps">Step by step</a></li>
+        <li><a href="#every">Every file</a></li>
+        <li><a href="#wrong">When something fails</a></li>
+        <li><a href="#open">Still open</a></li>
+        <li><a href="#objects">For developers</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="words" aria-labelledby="words-h">
+    <span class="eyebrow">Background</span>
+    <h2 id="words-h">The words you need</h2>
+    <p>The rest of the page leans on these, each with a small example.</p>
+    <dl class="terms">
+      <div class="term">
+        <dt>Repo</dt>
+        <dd>A project folder whose history git keeps. Its files can be committed and shared.</dd>
+        <dd class="ex">Example: <code>C:\Repos\My projects\software-developer-agent</code> is the team's repo.</dd>
+      </div>
+      <div class="term">
+        <dt>Home folder and temp folder</dt>
+        <dd>Your home folder (<code>~</code>, here <code>C:\Users\user</code>) keeps settings that last. The temp folder
+          (<code>%TEMP%</code>) is for files a program can afford to lose: a disk cleanup may delete old files there.</dd>
+        <dd class="ex">Example: <code>~\.claude\settings.json</code> lasts; a file left in <code>%TEMP%</code> for a week may be wiped.</dd>
+      </div>
+      <div class="term">
+        <dt>The team's state folder <span class="new">new</span></dt>
+        <dd>One folder in your home folder for every file the team writes for itself on this machine:
+          <code>~\.claude\state\software-developer-agent\</code>, with one child folder per kind of file. It is not in
+          the temp folder, because a cleanup there would switch a chat off without a word (your answer to D-36).</dd>
+        <dd class="ex">Example: <code>team-on\5f3c…</code> says chat <code>5f3c…</code> is switched on;
+          <code>logs\relaunch.log</code> lists each relaunch step.</dd>
+      </div>
+      <div class="term">
+        <dt>Junction</dt>
+        <dd>A folder that only points at another folder. Opening it shows the other folder's files, so an edit through
+          it is an edit in the original.</dd>
+        <dd class="ex">Example: <code>~\.claude\skills\team-rules</code> shows this repo's <code>team-rules\</code>.</dd>
+      </div>
+      <div class="term">
+        <dt>Agent file</dt>
+        <dd>A text file that defines one kind of agent: its model, its tools, the skills it loads, and its rules.</dd>
+        <dd class="ex">Example: <code>agents\task-lead.md</code> makes the <code>task-lead</code> type, on Opus 5.5.</dd>
+      </div>
+      <div class="term">
+        <dt>Skill</dt>
+        <dd>A folder with a <code>SKILL.md</code> of instructions. An agent loads it by name when it needs it.</dd>
+        <dd class="ex">Example: the lead and the worker both load <code>team-rules</code> at their start.</dd>
+      </div>
+      <div class="term">
+        <dt>Hook</dt>
+        <dd>A small script Claude Code runs by itself at fixed moments. The team has two.</dd>
+        <dd class="ex">Example: after every tool call, <code>context-guard.mjs</code> checks the agent's size.</dd>
+      </div>
+      <div class="term">
+        <dt>Watch</dt>
+        <dd>A script running in the background of the main chat. It ends when the chat must act, and its ending wakes
+          the chat.</dd>
+        <dd class="ex">Example: the Decision answers watch ends when your answer arrives.</dd>
+      </div>
+      <div class="term">
+        <dt>Transcript and session id</dt>
+        <dd>Claude Code's own record of a chat or an agent, one line per message. Each chat has an id (the session id),
+          and many file names carry it.</dd>
+        <dd class="ex">Example: chat <code>5f3c…</code> is <code>5f3c….jsonl</code>; its agents are in <code>5f3c…\subagents\</code>.</dd>
+      </div>
+      <div class="term">
+        <dt>Working folder</dt>
+        <dd>The folder a task's files go in. The lead brief (the project's one-page rules for leads) names it.</dd>
+        <dd class="ex">Example: this repo's stage 2 used <code>misc\implementation\agent-team\stage-2\</code>.</dd>
+      </div>
+      <div class="term">
+        <dt>Run files</dt>
+        <dd>A run is one worker doing one piece. It has a task file (what to do), a progress file (the worker's diary)
+          and a report (what it built and checked).</dd>
+        <dd class="ex">Example: <code>R1_TASK_CLAUDE.md</code>, <code>R1_PROGRESS_CLAUDE.md</code>, <code>R1_REPORT_CLAUDE.md</code>.</dd>
+      </div>
+      <div class="term">
+        <dt>Decision register</dt>
+        <dd>A repo's <code>decisions\</code> folder: the open entries, every answer you gave, and the closed entries.
+          Only the script <code>register.mjs</code> writes it.</dd>
+        <dd class="ex">Example: D-12 waits in the open file until you answer it.</dd>
+      </div>
+      <div class="term">
+        <dt>Marker file</dt>
+        <dd>A small file whose presence, or one line in it, tells a script something.</dd>
+        <dd class="ex">Example: the context guard's marker remembers that W2 was already warned, so it is warned once.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section id="example" aria-labelledby="example-h">
+    <span class="eyebrow">The running example</span>
+    <h2 id="example-h">One task, followed through the page</h2>
+    <p>You ask for the invoice import in a made-up repo, <code>C:\Repos\Shop</code>. Its lead brief names
+      <code>temp\</code> as the working folder. One lead runs two workers. The names and times are made up; the folders
+      and file patterns are the real ones.</p>
+    <div class="table-wrap">
+      <table>
+        <caption>Who writes what in the example. Files are in <code>C:\Repos\Shop\temp\</code> unless named.</caption>
+        <thead><tr><th>Who</th><th>What it does</th><th>Files it leaves</th></tr></thead>
+        <tbody>
+          <tr><td>Main chat</td><td>Switches the team on, writes the brief, starts the lead, closes D-12</td>
+            <td>the switch-on marker (the team's state folder), <code>SHOP_LEAD_BRIEF.md</code></td></tr>
+          <tr><td>Lead <span class="id">invoice-import</span></td><td>Plans, writes task files, checks each run, registers the question</td>
+            <td><code>IMPORT_LEAD.md</code>, <code>W1_TASK.md</code>, <code>W2_TASK.md</code>, <code>entry.json</code>,
+              <code>STATUS.md</code>, <code>SIZES.md</code>, <code>IMPORT_SUMMARY.md</code></td></tr>
+          <tr><td>Worker <span class="id">W1</span></td><td>Reads the invoice file into lines</td>
+            <td><code>W1_PROGRESS.md</code>, <code>W1_REPORT.md</code></td></tr>
+          <tr><td>Worker <span class="id">W2</span></td><td>Builds the duplicate check, and asks: round VAT per line or per invoice?</td>
+            <td><code>W2_PROGRESS.md</code>, <code>W2_REPORT.md</code>, and <span class="val-bad">D-12</span> in
+              <code>C:\Repos\Shop\decisions\</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="map" aria-labelledby="map-h">
+    <span class="eyebrow">The big picture</span>
+    <h2 id="map-h">Three places, and the links between them</h2>
+    <p>Green is kept in a repo. Amber is only on this machine. The blue arrow is the one that makes it all work.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 900 622" role="img" aria-label="Definitions live in this repo and reach Claude Code only through six junctions and two hook paths in your home folder. A task writes into its own project's repo. What the hooks and watches write stays on this machine, in the team's state folder under your home folder, one child folder per kind, and never goes into git. The temp folder holds none of it.">
+          <defs>
+            <marker id="m-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-acc"/></marker>
+            <marker id="m-mut" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-muted"/></marker>
+          </defs>
+          <text x="10" y="18" class="d-label">IN A REPO (KEPT BY GIT)</text>
+          <text x="510" y="18" class="d-label">ONLY ON THIS MACHINE</text>
+
+          <rect x="10" y="28" width="380" height="222" rx="6" class="d-box-good"/>
+          <text x="24" y="54" class="d-title">This repo: what the team is</text>
+          <text x="24" y="74" class="d-mono">C:\Repos\My projects\software-developer-agent</text>
+          <text x="24" y="100" class="d-text"><tspan class="d-mono">agents\</tspan> the lead, the worker, the searcher</text>
+          <text x="24" y="122" class="d-text"><tspan class="d-mono">orchestrate-agents\</tspan> skill, hooks, scripts</text>
+          <text x="24" y="144" class="d-text"><tspan class="d-mono">team-rules\</tspan> rules lead and worker share</text>
+          <text x="24" y="166" class="d-text"><tspan class="d-mono">skills\</tspan> 17 copied skills, read by path</text>
+          <text x="24" y="188" class="d-text"><tspan class="d-mono">scripts\install.ps1</tspan> makes the junctions</text>
+          <text x="24" y="210" class="d-text"><tspan class="d-mono">decisions\</tspan> this repo's own register</text>
+          <text x="24" y="232" class="d-text"><tspan class="d-mono">misc\</tspan> this repo's own task files</text>
+
+          <rect x="510" y="28" width="380" height="222" rx="6" class="d-box-bad"/>
+          <text x="524" y="54" class="d-title">Home folder  ~</text>
+          <text x="524" y="74" class="d-mono">C:\Users\user</text>
+          <text x="524" y="100" class="d-text"><tspan class="d-mono">~\.claude\agents\</tspan> 1 junction</text>
+          <text x="524" y="122" class="d-text"><tspan class="d-mono">~\.claude\skills\</tspan> 3 junctions</text>
+          <text x="524" y="144" class="d-text"><tspan class="d-mono">~\.copilot\skills\</tspan> 2 junctions</text>
+          <text x="524" y="166" class="d-text"><tspan class="d-mono">~\.claude\settings.json</tspan> 2 hooks</text>
+          <text x="524" y="188" class="d-text"><tspan class="d-mono">~\.claude\CLAUDE.md</tspan> global rules</text>
+          <text x="524" y="210" class="d-text"><tspan class="d-mono">~\.claude\projects\</tspan> transcripts</text>
+          <text x="524" y="232" class="d-text"><tspan class="d-mono">~\.claude\state\</tspan> the team's state (below)</text>
+
+          <line x1="506" y1="133" x2="396" y2="133" class="d-arrow-acc" marker-end="url(#m-acc)"/>
+          <text x="450" y="118" text-anchor="middle" class="d-acc-text">6 junctions</text>
+          <text x="450" y="156" text-anchor="middle" class="d-acc-text">2 hook paths</text>
+
+          <rect x="10" y="298" width="380" height="200" rx="6" class="d-box-good"/>
+          <text x="24" y="324" class="d-title">A project's repo: what a task wrote</text>
+          <text x="24" y="344" class="d-text"><tspan class="d-mono">C:\Repos\Shop</tspan> (the example, made up)</text>
+          <text x="24" y="370" class="d-text"><tspan class="d-mono">temp\</tspan> the working folder the brief names:</text>
+          <text x="40" y="392" class="d-text">brief, lead file, run files, summary</text>
+          <text x="24" y="414" class="d-text"><tspan class="d-mono">decisions\</tspan> the register:</text>
+          <text x="40" y="436" class="d-text">open file, answers log, resolved file</text>
+          <text x="24" y="470" class="d-note">This repo has both as well: misc\ and decisions\.</text>
+
+          <path d="M200,252 L200,294" class="d-arrow-dash" marker-end="url(#m-mut)"/>
+          <text x="212" y="278" class="d-note">agents write task files and the register</text>
+
+          <path d="M700,252 L700,294" class="d-arrow-dash" marker-end="url(#m-mut)"/>
+          <text x="712" y="278" class="d-note">inside your home folder</text>
+
+          <rect x="510" y="298" width="380" height="226" rx="6" class="d-box-bad"/>
+          <text x="524" y="324" class="d-title">The team's state folder</text>
+          <rect x="818" y="312" width="38" height="16" rx="3" class="d-tag-acc"/>
+          <text x="837" y="324" text-anchor="middle" class="d-tagt-acc">NEW</text>
+          <text x="524" y="344" class="d-mono">~\.claude\state\software-developer-agent\</text>
+          <text x="524" y="368" class="d-text"><tspan class="d-mono">team-on\</tspan> switch-on marks</text>
+          <text x="524" y="389" class="d-text"><tspan class="d-mono">context-guard\</tspan> warnings sent</text>
+          <text x="524" y="410" class="d-text"><tspan class="d-mono">usage-reading\</tspan> the usage reading</text>
+          <text x="524" y="431" class="d-text"><tspan class="d-mono">usage-probe\</tspan> the probe's room</text>
+          <text x="524" y="452" class="d-text"><tspan class="d-mono">usage-watch\</tspan> the watch's records</text>
+          <text x="524" y="473" class="d-text"><tspan class="d-mono">heavy-commands\</tspan> who holds a slot</text>
+          <text x="524" y="494" class="d-text"><tspan class="d-mono">logs\</tspan> relaunch.log, limit-stop.log</text>
+          <text x="524" y="514" class="d-note">One setting moves it all: teamState.folder</text>
+
+          <rect x="510" y="546" width="380" height="68" rx="6" class="d-box-bad"/>
+          <text x="524" y="570" class="d-title">Temp folder  %TEMP%</text>
+          <text x="524" y="590" class="d-text"><tspan class="d-mono">claude\…\scratchpad\</tspan> Claude Code's own</text>
+          <text x="524" y="607" class="d-note">the tests' scratch folders; none of the team's state</text>
+        </svg>
+      </div>
+      <figcaption>The definitions live in this repo and reach Claude Code only through six junctions and two hook lines
+        in your home folder. A task writes into its own project's repo. What the hooks and watches write (markers, logs,
+        the usage reading) stays on this machine, in the team's state folder, and never goes into git.</figcaption>
+    </figure>
+  </section>
+
+  <section id="tree" aria-labelledby="tree-h">
+    <span class="eyebrow">The definitions</span>
+    <h2 id="tree-h">Inside this repo</h2>
+    <p>Four folders are linked into Claude Code. The copied skills are read by their path. Two folders hold this
+      repo's own working files.</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 900 458" role="img" aria-label="The folders of this repo. agents, orchestrate-agents, team-rules and team-switch are linked into Claude Code. skills is read by path. decisions and misc hold this repo's own working files.">
+          <text x="16" y="30" class="d-mono-b">software-developer-agent\</text>
+
+          <text x="16" y="56" class="d-mono">├─ agents\</text>
+          <rect x="372" y="43" width="96" height="18" rx="3" class="d-tag-acc"/><text x="420" y="56" text-anchor="middle" class="d-tagt-acc">LINKED</text>
+          <text x="482" y="56" class="d-text">the 3 agent files: lead, worker, searcher</text>
+
+          <text x="16" y="80" class="d-mono">├─ orchestrate-agents\</text>
+          <rect x="372" y="67" width="96" height="18" rx="3" class="d-tag-acc"/><text x="420" y="80" text-anchor="middle" class="d-tagt-acc">LINKED</text>
+          <text x="482" y="80" class="d-text">the main chat's skill, with its hooks and scripts</text>
+
+          <text x="16" y="102" class="d-mono d-muted">│</text><text x="40" y="102" class="d-mono">├─ SKILL.md</text>
+          <text x="482" y="102" class="d-text">the main chat's rules</text>
+          <text x="16" y="124" class="d-mono d-muted">│</text><text x="40" y="124" class="d-mono">├─ orchestration.config.json</text>
+          <text x="482" y="124" class="d-text">every setting, each with its reason</text>
+          <text x="16" y="146" class="d-mono d-muted">│</text><text x="40" y="146" class="d-mono">├─ references\</text>
+          <text x="482" y="146" class="d-text">start messages, brief template, limits, lessons, 2 guides</text>
+          <text x="16" y="168" class="d-mono d-muted">│</text><text x="40" y="168" class="d-mono">├─ hooks\</text>
+          <text x="482" y="168" class="d-text">context-guard.mjs, decision-reminder.mjs</text>
+          <text x="16" y="190" class="d-mono d-muted">│</text><text x="40" y="190" class="d-mono">├─ scripts\</text>
+          <text x="482" y="190" class="d-text">register, 3 watches, probe, relaunch, team-on (new)</text>
+          <text x="16" y="212" class="d-mono d-muted">│</text><text x="40" y="212" class="d-mono">├─ lib\</text>
+          <text x="482" y="212" class="d-text">shared Node helpers</text>
+          <text x="16" y="234" class="d-mono d-muted">│</text><text x="40" y="234" class="d-mono">└─ tests\</text>
+          <text x="482" y="234" class="d-text">Node tests and one PowerShell test script</text>
+
+          <text x="16" y="260" class="d-mono">├─ team-rules\</text>
+          <rect x="372" y="247" width="96" height="18" rx="3" class="d-tag-acc"/><text x="420" y="260" text-anchor="middle" class="d-tagt-acc">LINKED</text>
+          <text x="482" y="260" class="d-text">rules the lead and the worker share</text>
+
+          <text x="16" y="286" class="d-mono">├─ team-switch\</text>
+          <rect x="372" y="273" width="96" height="18" rx="3" class="d-tag-acc"/><text x="420" y="286" text-anchor="middle" class="d-tagt-acc">LINKED</text>
+          <text x="482" y="286" class="d-text">the /software-developer-agent command</text>
+
+          <text x="16" y="312" class="d-mono">├─ skills\</text>
+          <rect x="372" y="299" width="96" height="18" rx="3" class="d-tag-mut"/><text x="420" y="312" text-anchor="middle" class="d-tagt-mut">BY PATH</text>
+          <text x="482" y="312" class="d-text">17 copied coding skills and their manifest</text>
+
+          <text x="16" y="338" class="d-mono">├─ scripts\install.ps1</text>
+          <text x="482" y="338" class="d-text">makes the 6 junctions</text>
+
+          <text x="16" y="364" class="d-mono">├─ decisions\</text>
+          <rect x="372" y="351" width="96" height="18" rx="3" class="d-tag-good"/><text x="420" y="364" text-anchor="middle" class="d-tagt-good">WORKING</text>
+          <text x="482" y="364" class="d-text">this repo's own decision register</text>
+
+          <text x="16" y="390" class="d-mono">├─ misc\implementation\agent-team\</text>
+          <rect x="372" y="377" width="96" height="18" rx="3" class="d-tag-good"/><text x="420" y="390" text-anchor="middle" class="d-tagt-good">WORKING</text>
+          <text x="482" y="390" class="d-text">plans, and stage-&lt;N&gt;\ with the run files</text>
+
+          <text x="16" y="416" class="d-mono">├─ misc\reports\  misc\handovers\</text>
+          <rect x="372" y="403" width="96" height="18" rx="3" class="d-tag-good"/><text x="420" y="416" text-anchor="middle" class="d-tagt-good">WORKING</text>
+          <text x="482" y="416" class="d-text">reports; hand-overs (folder not made yet)</text>
+
+          <text x="16" y="442" class="d-mono">└─ README.md  CLAUDE.md  .gitignore</text>
+          <text x="482" y="442" class="d-text">how it is wired; where working files go</text>
+        </svg>
+      </div>
+      <figcaption>Linked folders reach every chat, so an edit there is live. <code>skills\</code> stays private to the
+        worker, so other chats do not see 17 more skill descriptions (README). <code>decisions\</code> and
+        <code>misc\</code> hold the team's own work on itself: its working files live here, never in the repo a chat
+        happens to run from (this repo's <code>CLAUDE.md</code>).</figcaption>
+    </figure>
+  </section>
+
+  <section id="timeline" aria-labelledby="timeline-h">
+    <span class="eyebrow">The running example</span>
+    <h2 id="timeline-h">One task, file by file</h2>
+    <p>From switching the chat on at 09:00 to the closed decision at 11:10. Each column is a moment; each row is a place.</p>
+    <figure>
+      <div class="diagram wide">
+        <svg viewBox="0 0 960 400" role="img" aria-label="Timeline of the invoice import. 09:00: the switch-on marker and the watch's marker appear in the team's state folder. 09:05: the brief, the lead file and W1's task file appear in the working folder, and the lead's transcript. 09:12: W1's progress file and report, and a heavy-command slot file while tests run. 10:00: W2's files, entry.json, and D-12 in the open decisions file. 10:40: your answer becomes a line in the answers log. 11:05: W2's report, the summary, and D-12 moves to the resolved file.">
+          <defs>
+            <marker id="m-acc3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-acc"/></marker>
+          </defs>
+          <text x="152" y="22" class="d-label">09:00 SWITCH ON</text>
+          <text x="286" y="22" class="d-label">09:05 BRIEF, LEAD</text>
+          <text x="420" y="22" class="d-label">09:12 RUN W1</text>
+          <text x="554" y="22" class="d-label">10:00 RUN W2</text>
+          <text x="688" y="22" class="d-label">10:40 YOU ANSWER</text>
+          <text x="822" y="22" class="d-label">11:05 DONE</text>
+
+          <rect x="8" y="34" width="944" height="80" rx="6" class="d-box-bad"/>
+          <rect x="8" y="120" width="944" height="80" rx="6" class="d-box-bad"/>
+          <rect x="8" y="206" width="944" height="80" rx="6" class="d-box-good"/>
+          <rect x="8" y="292" width="944" height="80" rx="6" class="d-box-good"/>
+
+          <line x1="146" y1="30" x2="146" y2="376" class="d-grid"/>
+          <line x1="280" y1="30" x2="280" y2="376" class="d-grid"/>
+          <line x1="414" y1="30" x2="414" y2="376" class="d-grid"/>
+          <line x1="548" y1="30" x2="548" y2="376" class="d-grid"/>
+          <line x1="682" y1="30" x2="682" y2="376" class="d-grid"/>
+          <line x1="816" y1="30" x2="816" y2="376" class="d-grid"/>
+
+          <text x="18" y="58" class="d-label">TEAM STATE</text>
+          <text x="18" y="76" class="d-mono-s">~\.claude\state\…</text>
+          <text x="18" y="144" class="d-label">TRANSCRIPTS</text>
+          <text x="18" y="162" class="d-mono-s">~\.claude\projects</text>
+          <text x="18" y="230" class="d-label">WORKING FOLDER</text>
+          <text x="18" y="248" class="d-mono-s">Shop\temp\</text>
+          <text x="18" y="316" class="d-label">REGISTER</text>
+          <text x="18" y="334" class="d-mono-s">Shop\decisions\</text>
+
+          <text x="152" y="56" class="d-mono-s">team-on\&lt;id&gt;</text>
+          <text x="152" y="72" class="d-acc-s">new: the switch</text>
+          <text x="152" y="92" class="d-mono-s">usage-watch\&lt;id&gt;</text>
+          <text x="152" y="108" class="d-note-s">the watch's mark</text>
+          <text x="420" y="56" class="d-mono-s">heavy-commands\</text>
+          <text x="420" y="72" class="d-mono-s">slot-1.txt</text>
+          <text x="420" y="92" class="d-note-s">while W1's tests run</text>
+          <text x="554" y="56" class="d-note-s">only if W2 nears</text>
+          <text x="554" y="72" class="d-note-s">its size cap:</text>
+          <text x="554" y="92" class="d-mono-s">context-guard\&lt;id&gt;</text>
+
+          <text x="152" y="142" class="d-mono-s">&lt;session&gt;.jsonl</text>
+          <text x="152" y="158" class="d-note-s">the chat itself</text>
+          <text x="286" y="142" class="d-mono-s">agent-&lt;lead&gt;.jsonl</text>
+          <text x="286" y="158" class="d-mono-s">+ .meta.json</text>
+          <text x="420" y="142" class="d-mono-s">agent-&lt;W1&gt;.jsonl</text>
+          <text x="554" y="142" class="d-mono-s">agent-&lt;W2&gt;.jsonl</text>
+
+          <text x="286" y="228" class="d-mono-s">SHOP_LEAD_BRIEF.md</text>
+          <text x="286" y="244" class="d-mono-s">IMPORT_LEAD.md</text>
+          <text x="286" y="260" class="d-mono-s">W1_TASK.md</text>
+          <text x="420" y="228" class="d-mono-s">W1_PROGRESS.md</text>
+          <text x="420" y="244" class="d-mono-s">W1_REPORT.md</text>
+          <text x="420" y="260" class="d-note-s">+1 row STATUS, SIZES</text>
+          <text x="554" y="228" class="d-mono-s">W2_TASK.md</text>
+          <text x="554" y="244" class="d-mono-s">W2_PROGRESS.md</text>
+          <text x="554" y="260" class="d-mono-s">entry.json</text>
+          <text x="688" y="228" class="d-note-s">the lead file gets</text>
+          <text x="688" y="244" class="d-note-s">your answer</text>
+          <text x="822" y="228" class="d-mono-s">W2_REPORT.md</text>
+          <text x="822" y="244" class="d-mono-s">IMPORT_SUMMARY.md</text>
+
+          <text x="554" y="314" class="d-mono-s">OPEN_DECISIONS</text>
+          <text x="554" y="330" class="d-note-s">+ D-12, waits for you</text>
+          <line x1="650" y1="310" x2="682" y2="310" class="d-arrow-acc" marker-end="url(#m-acc3)"/>
+          <text x="688" y="314" class="d-mono-s">ANSWERS_LOG</text>
+          <text x="688" y="330" class="d-note-s">+1 line: your words</text>
+          <text x="688" y="346" class="d-note-s">D-12 waits for agent</text>
+          <line x1="766" y1="310" x2="816" y2="310" class="d-arrow-acc" marker-end="url(#m-acc3)"/>
+          <text x="822" y="314" class="d-mono-s">RESOLVED_DECISIONS</text>
+          <text x="822" y="330" class="d-note-s">D-12 closed, with</text>
+          <text x="822" y="346" class="d-note-s">final answer, summary</text>
+
+          <text x="480" y="394" text-anchor="middle" class="d-note">Times, ids and the Shop repo are made up. Register names are shortened; each ends in _CLAUDE.</text>
+        </svg>
+      </div>
+      <figcaption>Each step leaves its file before the next one starts, so a cut-off loses nothing: a fresh agent carries
+        on from the files. The working folder and the register are in the project's repo. The team's state folder and
+        the transcripts stay on this machine.</figcaption>
+    </figure>
+  </section>
+
+  <section id="steps" aria-labelledby="steps-h">
+    <span class="eyebrow">Step by step</span>
+    <h2 id="steps-h">What appears where, and why</h2>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num" aria-hidden="true">0</span>
+        <div class="step-body">
+          <h3>Already in place, before any chat</h3>
+          <p class="purpose"><strong>Business purpose:</strong> one copy of the team serves every project, and an edit
+            reaches them all without copying.</p>
+          <ul>
+            <li>This repo holds the team: three agent files, the <code>orchestrate-agents</code> skill, <code>team-rules</code>,
+              and 17 copied coding skills.</li>
+            <li><code>scripts\install.ps1</code> made six junctions in your home folder. Claude Code finds the three
+              agents, both skills and the <code>/software-developer-agent</code> command through them; Copilot finds
+              both skills.</li>
+            <li><code>~\.claude\settings.json</code> runs the two hooks straight from this repo's path, each with a
+              10-second limit. It also keeps <code>autoContinueAtUsageLimit</code> off, and turns the Decisions pane on. The
+              pane shows only in a chat you switch on (step 1).</li>
+            <li>The copied skills are not linked. The worker reads them by their full path.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> a changed agent file reaches every project at the next Claude Code start
+            (README). The skill folder is live: a saved edit reaches running chats at once (stage 2 lead brief).</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">1</span>
+        <div class="step-body">
+          <h3>You switch the chat on <span class="new">new</span></h3>
+          <p class="purpose"><strong>Business purpose:</strong> the team runs only in a chat that asked for it.</p>
+          <ul>
+            <li>You type <code>/software-developer-agent</code> (your answer to D-33).</li>
+            <li class="wrap">It runs <code>scripts\team-on.mjs</code>, which writes
+              <code>~\.claude\state\software-developer-agent\team-on\&lt;session id&gt;</code>.
+              The file holds the time it was switched on.</li>
+            <li>From then on both hooks speak in this chat and in every agent it starts. An agent's hook input carries its
+              main chat's id, so one marker covers them all.</li>
+            <li>In a chat without the marker, both hooks stop at once and say nothing.</li>
+            <li>The Decisions pane checks the same marker (your answer to D-34): when the chat starts, and at every look,
+              every 2 seconds. With it, the pane shows. A chat switched on after it was opened shows the pane from the
+              next look, without a reload. If the marker goes (deleted by hand), the pane closes at the next look.</li>
+            <li>In a chat without the marker the pane shows nothing: no tab, it never opens by itself, and it reads no
+              register file. <code>/decisions-pane</code> there opens no pane and says: "The agent team is not on in this chat. Type /software-developer-agent to switch it on; the Decisions pane then shows here."</li>
+            <li>Right after the marker, the command starts the two watches (next step). Only a switched-on chat starts them.</li>
+            <li>Nothing removes the marker. A new chat has a new id, so it starts switched off.</li>
+          </ul>
+          <p class="example-good">Chat A, switched on at 09:00, gets size warnings, decision reminders and the Decisions
+            tab. Chat B, opened beside it at 09:05 for a quick question, gets none of them: no tab, even when entries wait
+            in its repo.</p>
+          <p class="note"><strong>After <code>/clear</code>, type <code>/software-developer-agent</code> again</strong>
+            (your answer to D-35). In the command's own words: "<code>/clear</code> switches the team off in a chat: it
+            gives the chat a new session id, and the switch belongs to the old one. The Decisions tab closes and the
+            hooks fall silent until the user types <code>/software-developer-agent</code> again (D-35). Reopening a chat
+            from the history keeps its id, so the team stays on there." Example: chat A shows Decisions (2); you type
+            <code>/clear</code>, and within 2 seconds the tab is gone. A comment typed in the pane but not sent is lost.
+            You type <code>/software-developer-agent</code>, and the tab is back at the pane's next look.</p>
+          <p class="why"><strong>Why:</strong> your words of 2026-10-26: "i dont want the agent architecture to run for
+            all main chats".</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">2</span>
+        <div class="step-body">
+          <h3>The main chat starts its two watches</h3>
+          <p class="purpose"><strong>Business purpose:</strong> something keeps an eye on usage limits, size and your
+            answers while the chat sits idle.</p>
+          <ul>
+            <li class="wrap">The Usage and context watch writes
+              <code>~\.claude\state\software-developer-agent\usage-watch\&lt;session id&gt;.txt</code>: its
+              process id and start time. A second copy for the same chat finds it and ends.</li>
+            <li>Every 60 seconds it reads the last 4 MB of the chat's transcript. It also reads the agents' transcripts
+              and meta files, to see when each last wrote and whose cache runs out when.</li>
+            <li class="wrap">It reads the shared usage reading,
+              <code>~\.claude\state\software-developer-agent\usage-reading\usage-limits.json</code>. When the reading is
+              older than 15 minutes and the chat wrote since, it runs <code>usage-probe.ps1</code>. The probe makes one
+              tiny Haiku call in the empty folder <code>~\.claude\state\software-developer-agent\usage-probe\</code> and
+              rewrites the reading.</li>
+            <li>The Decision answers watch writes nothing itself. Every 5 seconds it checks the size and time of the open
+              file and the answers log.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> one reading serves every open chat, so three chats pay for one probe, not three.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">3</span>
+        <div class="step-body">
+          <h3>The brief, then the lead</h3>
+          <p class="purpose"><strong>Business purpose:</strong> the lead learns this project's rules from one short file.</p>
+          <ul>
+            <li>The main chat copies <code>references\lead-brief-template.md</code> to
+              <code>C:\Repos\Shop\temp\SHOP_LEAD_BRIEF.md</code> and fills it in. The brief names the working folder,
+              the status and sizes files, the checks, and the files no worker may touch.</li>
+            <li>It may also write a start file for the task. In this repo's stage 2 that was
+              <code>ANSWERS_LOG_TASK_CLAUDE.md</code>.</li>
+            <li>It starts lead <span class="id">invoice-import</span>. Claude Code writes the lead's transcript,
+              <code>&lt;session id&gt;\subagents\agent-&lt;id&gt;.jsonl</code>, and a <code>.meta.json</code> beside it
+              with the agent's type.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> every lead reads the brief whole, so it holds only what changes from
+            project to project.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">4</span>
+        <div class="step-body">
+          <h3>The lead plans in its lead file</h3>
+          <p class="purpose"><strong>Business purpose:</strong> the plan outlives the lead that wrote it.</p>
+          <ul>
+            <li><code>temp\IMPORT_LEAD.md</code>: the runs in order, each decision with its reason, each run's state,
+              the register ids, and what a successor must read.</li>
+            <li><code>temp\W1_TASK.md</code>, written for a reader who starts cold: what to read, two points, the checks,
+              and where W1's progress file and report go.</li>
+            <li>Before the run it lists the hashes (fingerprints) of the files W1 must not touch. In this repo those lists
+              are <code>&lt;RUN&gt;_HASHES_BEFORE.csv</code>, kept out of git (D-30).</li>
+            <li>It reads <code>SIZES.md</code> at every wake-up, to cut the next run to fit.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> the lead file is all that survives a cut-off. A successor lead carries on from it.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">5</span>
+        <div class="step-body">
+          <h3>A worker builds and reports</h3>
+          <p class="purpose"><strong>Business purpose:</strong> one piece built and proven, with a diary a fresh worker
+            could carry on from.</p>
+          <ul>
+            <li>W1 starts <code>temp\W1_PROGRESS.md</code> at its first step and updates it after every point.</li>
+            <li class="wrap">Its test run goes through <code>run-heavy.ps1</code>. While it runs,
+              <code>~\.claude\state\software-developer-agent\heavy-commands\slot-1.txt</code> says who holds the one slot.</li>
+            <li class="wrap">After every tool call the context guard reads the last 512 KB of W1's transcript. Only when W1 passes its
+              320k warning does it write
+              <code>~\.claude\state\software-developer-agent\context-guard\&lt;W1 id&gt;.json</code>, so the warning
+              comes once.</li>
+            <li>W1 writes <code>temp\W1_REPORT.md</code>, ending with the four-line block (decisions, initiatives,
+              issues, questions).</li>
+            <li>The lead re-runs the checks, then adds one row to <code>STATUS.md</code> and one to <code>SIZES.md</code>.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> nothing important lives only in an agent's memory. If W1 is cut off at its
+            60th tool call, a fresh worker starts from its progress file.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">6</span>
+        <div class="step-body">
+          <h3>A question goes into the register</h3>
+          <p class="purpose"><strong>Business purpose:</strong> your decision waits where you can see it, out of the chat.</p>
+          <ul>
+            <li>W2's report ends with a question: round VAT per line or per invoice?</li>
+            <li>The lead writes it to <code>temp\entry.json</code>: eleven fields, such as what, example, options and
+              recommendation.</li>
+            <li>It runs <code>register.mjs add</code>. The script holds <code>decisions\.lock</code> for milliseconds and
+              adds D-12 to <code>OPEN_DECISIONS_CLAUDE.md</code>, with status <code>waiting-for-user</code>.</li>
+            <li>Each write goes to a temp file beside the target, which then replaces it in one step. A reader never sees
+              half a file.</li>
+            <li>Shop is not under <code>C:\Repos\My projects\</code>, so the register's files are also added to
+              <code>Shop\.git\info\exclude</code>. Git then ignores them on this machine only.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> one script writes the register, so the pane, the hook and the watch always
+            read the same layout.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">7</span>
+        <div class="step-body">
+          <h3>You answer, and it reaches the main chat once</h3>
+          <p class="purpose"><strong>Business purpose:</strong> your words reach the right agent, exactly once, unchanged.</p>
+          <ul>
+            <li>The main chat is switched on, so the Decisions pane shows there. It reads the open file and the answers log
+              every 2 seconds, and shows D-12.</li>
+            <li>You press Submit. The pane runs <code>register.mjs answer</code>. One line is added to
+              <code>ANSWERS_LOG_CLAUDE.jsonl</code>: the id, the time, your words, and two times still empty. D-12 becomes
+              <code>waiting-for-agent</code>.</li>
+            <li>Within 5 seconds the Decision answers watch sees the files change. No entry waits for you any more, so it
+              hands the answer over: the line's <code>handedOverAt</code> gets the time, and the main chat wakes.</li>
+            <li>The main chat passes your words to the lead. The lead writes them into its lead file and passes them to W2.</li>
+          </ul>
+          <p class="example">The log line, made up: <code>{"id":"D-12","answeredAt":"2026-10-27 10:40","answer":"Chose B: per invoice.","handedOverAt":"2026-10-27 10:40","processedAt":null}</code></p>
+          <p class="why"><strong>Why:</strong> the log is never shortened. It keeps every answer you ever gave, so the
+            entries do not fill up with them.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">8</span>
+        <div class="step-body">
+          <h3>The task ends</h3>
+          <p class="purpose"><strong>Business purpose:</strong> a summary for the main chat, and a closed decision that
+            keeps its final answer.</p>
+          <ul>
+            <li>W2 writes <code>temp\W2_REPORT.md</code>. The lead checks it and writes <code>temp\IMPORT_SUMMARY.md</code>:
+              what changed, what was checked, the register ids, each run's tokens and minutes.</li>
+            <li>The lead ends with <code>TASK DONE | temp\IMPORT_SUMMARY.md</code>.</li>
+            <li>The main chat closes D-12 with a summary. The entry moves to <code>RESOLVED_DECISIONS_CLAUDE.md</code> and
+              ends with its Final answer, Summary and Resolved lines. The log line gets its <code>processedAt</code> time.</li>
+            <li>The working files stay. The watch's marker goes when the watch ends. The switch-on marker and the
+              guard's markers stay in the team's state folder: no cleanup touches it, so they stay until you delete them.</li>
+          </ul>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">9</span>
+        <div class="step-body">
+          <h3>Only at a hand-over</h3>
+          <p class="purpose"><strong>Business purpose:</strong> a chat near its size cap or a usage limit hands over to a
+            fresh chat without losing work.</p>
+          <ul>
+            <li class="wrap">The watch writes its decision to
+              <code>~\.claude\state\software-developer-agent\usage-watch\&lt;session id&gt;.decision.json</code>:
+              resume or hand over, the limit, the reset time, and when each agent's cache runs out.</li>
+            <li class="wrap">It starts the limit-stop server. The server listens on a named pipe,
+              <code>\\.\pipe\claude-limit-stop-&lt;session id&gt;</code>: memory only, no file. It logs to
+              <code>~\.claude\state\software-developer-agent\logs\limit-stop.log</code>.</li>
+            <li>Each worker adds a <code>## Hand-off</code> section to its progress file; each lead adds one to its lead file.</li>
+            <li>The main chat writes the hand-over where the project's rules say. In this repo that is <code>misc\handovers\</code>.</li>
+            <li class="wrap"><code>schedule-relaunch.ps1</code> adds a Windows scheduled task, <code>ClaudeRelaunch-Shop-&lt;yyyyMMddHHmm&gt;</code>.
+              It runs <code>start-session-in-vscode.ps1</code>, which logs each step to
+              <code>~\.claude\state\software-developer-agent\logs\relaunch.log</code>.
+              The task deletes itself 12 hours after its start time.</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> the decision file keeps a restarted watch from taking a hand-over back.</p>
+          <p class="note"><strong>The whole story:</strong> <code>orchestrate-agents\references\limits-and-caps-guide.html</code>
+            walks through each hand-over case.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="every" aria-labelledby="every-h">
+    <span class="eyebrow">The catalogue</span>
+    <h2 id="every-h">Every file, by where it lives</h2>
+    <p>The same files as above, plus the ones the example did not need. A green edge means kept in a repo; an amber
+      edge means only on this machine.</p>
+
+    <h3>In this repo: what the team is</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>File</th><th>What it holds</th><th>Used by</th></tr></thead>
+        <tbody>
+          <tr><td class="kept"><code>agents\task-lead.md</code></td><td>The lead's whole protocol. Opus 5.5 at <code>xhigh</code>, 1-hour cache, no <code>CLAUDE.md</code> loaded.</td><td>every lead</td></tr>
+          <tr><td class="kept"><code>agents\software-developer.md</code></td><td>The worker. Names the path of the copied skills.</td><td>every worker</td></tr>
+          <tr><td class="kept"><code>agents\code-searcher.md</code></td><td>The searcher: Haiku 5.5, read-only tools, quotes and never judges.</td><td>anyone searching big files</td></tr>
+          <tr><td class="kept"><code>orchestrate-agents\SKILL.md</code></td><td>The main chat's rules.</td><td>the switched-on main chat</td></tr>
+          <tr><td class="kept"><code>orchestrate-agents\references\</code></td><td><code>start-messages.md</code>, <code>lead-brief-template.md</code>, <code>usage-limits.md</code>, <code>worker-rules.md</code>, <code>lessons.md</code>, and two guides: <code>agent-team-guide.html</code>, <code>limits-and-caps-guide.html</code>.</td><td>main chat, leads, you</td></tr>
+          <tr><td class="kept"><code>orchestrate-agents\orchestration.config.json</code></td><td>Every cap, wait, path and name, each with its reason.</td><td>every hook and script</td></tr>
+          <tr><td class="kept"><code>orchestrate-agents\hooks\</code></td><td><code>context-guard.mjs</code> (after every tool call) and <code>decision-reminder.mjs</code> (on every prompt).</td><td>Claude Code, through <code>settings.json</code></td></tr>
+          <tr><td class="kept"><code>orchestrate-agents\scripts\</code></td><td><code>register.mjs</code>; the watches <code>watch-usage-and-context.ps1</code>, <code>watch-decision-answers.ps1</code>, <code>watch-agent-size-and-stall.ps1</code>; <code>usage-probe.ps1</code>; <code>limit-stop-server.mjs</code>; <code>schedule-relaunch.ps1</code>; <code>start-session-in-vscode.ps1</code>; <code>run-heavy.ps1</code>; <code>team-on.mjs</code><span class="new">new</span>.</td><td>main chat, leads, workers, the pane</td></tr>
+          <tr><td class="kept"><code>orchestrate-agents\lib\</code></td><td>Shared Node helpers: settings, the register, locks, git, hook input, the limit stop, time, text files, transcripts, and <code>agent-team.mjs</code><span class="new">new</span>.</td><td>the hooks and Node scripts</td></tr>
+          <tr><td class="kept"><code>orchestrate-agents\tests\</code></td><td>Node tests (<code>node --test</code>) and <code>limit-scripts.tests.ps1</code>. They use scratch repos, never the real register.</td><td>whoever changes the team</td></tr>
+          <tr><td class="kept"><code>team-rules\SKILL.md</code></td><td>Your guardrails, the clock, the progress file, plain reports, the four-line block, messages.</td><td>loaded by lead and worker</td></tr>
+          <tr><td class="kept"><code>skills\</code></td><td>17 copied coding skills and <code>SKILLS_MANIFEST_CLAUDE.md</code>. Never edited.</td><td>the worker, by full path</td></tr>
+          <tr><td class="kept"><code>scripts\install.ps1</code></td><td>Makes the six junctions. Safe to run twice; stops if a real folder is in the way.</td><td>you, once</td></tr>
+          <tr><td class="kept"><code>README.md</code>, <code>CLAUDE.md</code>, <code>.gitignore</code></td><td>How it is wired; where this repo's working files go; keeps the hash lists out of git.</td><td>you, and every chat here</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>In your home folder: how it reaches Claude Code</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Path</th><th>What it is</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="local"><code>~\.claude\agents\software-developer-agent</code></td><td>Junction to <code>agents\</code></td><td>Claude Code searches <code>~\.claude\agents</code> and its subfolders, so it finds the three agent files.</td></tr>
+          <tr><td class="local"><code>~\.claude\skills\orchestrate-agents</code>, <code>~\.copilot\skills\orchestrate-agents</code></td><td>Junctions to <code>orchestrate-agents\</code></td><td>Claude Code and Copilot load the skill.</td></tr>
+          <tr><td class="local"><code>~\.claude\skills\software-developer-agent</code><span class="new">new</span></td><td>Junction to <code>team-switch\</code></td><td>The <code>/software-developer-agent</code> command (<code>team-switch\SKILL.md</code>): runs <code>team-on.mjs</code>, starts the two watches, loads the team's rules. Claude Code only.</td></tr>
+          <tr><td class="local"><code>~\.claude\skills\team-rules</code>, <code>~\.copilot\skills\team-rules</code></td><td>Junctions to <code>team-rules\</code></td><td>The lead and the worker load it by name, so it must be installed.</td></tr>
+          <tr><td class="local"><code>~\.claude\settings.json</code></td><td>Claude Code's settings</td><td>After every tool call it runs <code>node …\hooks\context-guard.mjs</code>; on every prompt <code>node …\hooks\decision-reminder.mjs</code>. Both name this repo's path, not a junction. It also holds <code>autoContinueAtUsageLimit: false</code> and turns the pane on. A third hook there, <code>sync-instructions.ps1</code>, is not the team's.</td></tr>
+          <tr><td class="local"><code>~\.claude\CLAUDE.md</code></td><td>Your global instructions</td><td>Section "Agents" (changed 23:18): the team runs only in a chat you switch on with <code>/software-developer-agent</code>; an ordinary chat starts no watch and the hooks stay silent in it; big searches go to a searcher. Its decisions paragraph: in a switched-on chat, decisions go to the register, not the chat.</td></tr>
+          <tr><td class="kept"><code>C:\Repos\My projects\claude-code-extensions\decisions-pane</code></td><td>The Decisions pane plugin</td><td>Shows only in a chat switched on with <code>/software-developer-agent</code>: when the chat starts and at every look, it checks for that chat's marker, <code>~\.claude\state\software-developer-agent\team-on\&lt;session id&gt;</code>. Without it: no tab, no register read. With it, reads the chat's own repo only: <code>decisions\OPEN_DECISIONS_CLAUDE.md</code> and <code>ANSWERS_LOG_CLAUDE.jsonl</code>, every 2 seconds. Takes the file names and the marker's folder from <code>orchestration.config.json</code>, two folders above its register script, <code>~\.claude\skills\orchestrate-agents\scripts\register.mjs</code>. Writes nothing itself: Submit runs <code>register.mjs answer</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>In the project's repo: what a task writes</h3>
+    <div class="table-wrap">
+      <table>
+        <caption>Names as the agent files give them. In this repo each also ends in <code>_CLAUDE</code>, and the working
+          folder is <code>misc\implementation\agent-team\stage-&lt;N&gt;\</code>.</caption>
+        <thead><tr><th>File</th><th>Written by</th><th>Holds</th></tr></thead>
+        <tbody>
+          <tr class="group"><th colspan="3">The working folder</th></tr>
+          <tr><td class="kept">the lead brief</td><td>main chat</td><td>The project's paths, checks and limits. Stage 2: <code>AGENT_TEAM_STAGE_2_LEAD_BRIEF_CLAUDE.md</code>.</td></tr>
+          <tr><td class="kept">the task's start file</td><td>main chat</td><td>The task, when it is not in a plan. Stage 2: <code>ANSWERS_LOG_TASK_CLAUDE.md</code>.</td></tr>
+          <tr><td class="kept"><code>&lt;TASK&gt;_LEAD.md</code></td><td>lead</td><td>Plan, decisions with reasons, run states, register ids; a <code>## Hand-off</code> at a stop.</td></tr>
+          <tr><td class="kept"><code>&lt;RUN&gt;_TASK.md</code></td><td>lead</td><td>What one run must do and read.</td></tr>
+          <tr><td class="kept">the progress file</td><td>worker</td><td>Its diary; a <code>## Hand-off</code> at a stop. Its path comes from the task file; this repo uses <code>&lt;RUN&gt;_PROGRESS_CLAUDE.md</code>.</td></tr>
+          <tr><td class="kept"><code>&lt;RUN&gt;_REPORT.md</code></td><td>worker</td><td>What it built and checked, then the four-line block.</td></tr>
+          <tr><td class="kept"><code>&lt;RUN&gt;_HASHES_BEFORE.csv</code></td><td>lead</td><td>File fingerprints before a run. Kept out of git here (D-30).</td></tr>
+          <tr><td class="kept">a facts file</td><td>lead</td><td>Shared facts for runs side by side. Seen once: stage 2's <code>R6_FACTS_CLAUDE.md</code>.</td></tr>
+          <tr><td class="kept"><code>entry.json</code></td><td>lead</td><td>The register entry it is adding.</td></tr>
+          <tr><td class="kept">a workflow script</td><td>lead</td><td>A fan-out to many agents that only the main chat may run.</td></tr>
+          <tr><td class="kept">status file, sizes file</td><td>lead, main chat</td><td>One row per run: state; size, tool calls, minutes, peak memory. Stage 2: <code>STATUS_CLAUDE.md</code>, <code>SIZES_CLAUDE.md</code>.</td></tr>
+          <tr><td class="kept"><code>&lt;TASK&gt;_SUMMARY.md</code></td><td>lead</td><td>What changed, what was checked, the ids, each run's tokens and minutes.</td></tr>
+          <tr class="group"><th colspan="3">Reports and hand-overs (this repo)</th></tr>
+          <tr><td class="kept"><code>misc\reports\</code></td><td>not stated in the files</td><td>Stage reports and dated session reports: <code>AGENT_TEAM_STAGE_1_REPORT_CLAUDE.md</code>, <code>2026-10-24_SESSION_WATCH_REPORT_CLAUDE.md</code>.</td></tr>
+          <tr><td class="kept"><code>misc\handovers\</code></td><td>main chat</td><td>The hand-over a fresh chat reads first: <code>2026-10-27_0935_HANDOVER_CLAUDE.md</code>.</td></tr>
+          <tr class="group"><th colspan="3">The decision register, <code>&lt;repo root&gt;\decisions\</code></th></tr>
+          <tr><td class="kept"><code>OPEN_DECISIONS_CLAUDE.md</code></td><td><code>register.mjs</code></td><td>Every entry until it is closed, each with its status.</td></tr>
+          <tr><td class="kept"><code>ANSWERS_LOG_CLAUDE.jsonl</code></td><td><code>register.mjs</code></td><td>Every answer, one JSON line each, never deleted.</td></tr>
+          <tr><td class="kept"><code>RESOLVED_DECISIONS_CLAUDE.md</code></td><td><code>register.mjs</code></td><td>Closed entries, each with its final answer, summary and outcome.</td></tr>
+          <tr><td class="local"><code>.lock</code>, <code>.&lt;file&gt;.&lt;n&gt;.tmp</code></td><td><code>register.mjs</code></td><td>Only for the milliseconds of a write.</td></tr>
+          <tr><td class="kept"><code>ANSWERED_DECISIONS_CLAUDE.md</code></td><td>older registers</td><td>Folded into the answers log and deleted at the next write.</td></tr>
+          <tr><td class="local"><code>.git\info\exclude</code> lines</td><td><code>register.mjs</code></td><td>Only in repos outside <code>C:\Repos\My projects\*</code>: keeps the register out of git on this machine.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>On this machine only</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Path</th><th>Written by</th><th>Holds, and how long</th></tr></thead>
+        <tbody>
+          <tr class="group"><th colspan="3" class="wrap">The team's state folder <span class="new">new</span>, <code>~\.claude\state\software-developer-agent\</code> (setting <code>teamState.folder</code>)</th></tr>
+          <tr><td class="local"><code>team-on\&lt;session id&gt;</code></td><td><code>team-on.mjs</code></td><td>The time the chat was switched on. Both hooks and the Decisions pane check that it exists. Never removed.</td></tr>
+          <tr><td class="local"><code>context-guard\&lt;agent id&gt;.json</code>, <code>session-&lt;session id&gt;.json</code>, and a <code>.lock</code> beside each</td><td>the context guard</td><td>The last warning level sent, the size and the time, per agent and for the main chat. The hook never deletes them.</td></tr>
+          <tr><td class="local"><code>usage-reading\usage-limits.json</code></td><td><code>usage-probe.ps1</code></td><td>The latest five-hour and weekly percent and reset times. Shared by every watch.</td></tr>
+          <tr><td class="local"><code>usage-probe\</code></td><td><code>usage-probe.ps1</code></td><td>An empty folder its Haiku call runs in, so no project's files come along. The call keeps no transcript.</td></tr>
+          <tr><td class="local"><code>usage-watch\&lt;session id&gt;.txt</code></td><td>Usage and context watch</td><td>Its process id and start time. Removed when the watch ends.</td></tr>
+          <tr><td class="local"><code>usage-watch\&lt;session id&gt;.decision.json</code></td><td>Usage and context watch</td><td>Resume or hand over, the limit and its reset, each agent's cache expiry. Only at a limit or the size cap.</td></tr>
+          <tr><td class="local"><code>heavy-commands\slot-&lt;n&gt;.txt</code></td><td><code>run-heavy.ps1</code></td><td>Who holds a heavy-command slot. Removed when the command ends.</td></tr>
+          <tr><td class="local"><code>logs\limit-stop.log</code></td><td>the limit-stop server, the guard, the watch</td><td>One line per event: listening, which agent was told, failures, the end. Never what an agent said.</td></tr>
+          <tr><td class="local"><code>logs\relaunch.log</code></td><td><code>start-session-in-vscode.ps1</code></td><td>Each relaunch step, with the time.</td></tr>
+          <tr class="group"><th colspan="3">Temp folder, <code>%TEMP%</code> = <code>C:\Users\user\AppData\Local\Temp</code>: none of the team's state</th></tr>
+          <tr><td class="local"><code>claude\&lt;project folder&gt;\&lt;session id&gt;\scratchpad\</code></td><td>Claude Code</td><td>The chat's scratch folder. A worker keeps its progress file here when its task names no path.</td></tr>
+          <tr><td class="local"><code>oa-*</code>, <code>limit-scripts-tests-*</code></td><td>the team's tests</td><td>Each test run makes its own scratch folders and deletes them when it ends.</td></tr>
+          <tr class="group"><th colspan="3">Not files</th></tr>
+          <tr><td class="local"><code>\\.\pipe\claude-limit-stop-&lt;session id&gt;</code></td><td>the limit-stop server</td><td>The stop texts. Memory only; gone when the server ends.</td></tr>
+          <tr><td class="local">named lock <code>xpp-agent-heavy-command-slot-&lt;n&gt;</code></td><td><code>run-heavy.ps1</code></td><td>The slot itself. Windows frees it if its holder dies.</td></tr>
+          <tr><td class="local">scheduled task <code>ClaudeRelaunch-&lt;folder&gt;-&lt;yyyyMMddHHmm&gt;</code></td><td><code>schedule-relaunch.ps1</code></td><td>Opens the next chat. Deletes itself 12 hours after its start time.</td></tr>
+          <tr class="group"><th colspan="3">Read, never written: <code>~\.claude\projects\&lt;project folder&gt;\</code></th></tr>
+          <tr><td class="local"><code>&lt;session id&gt;.jsonl</code></td><td>Claude Code</td><td>The main chat. The guard reads its last 512 KB; the watch its last 4 MB.</td></tr>
+          <tr><td class="local"><code>&lt;session id&gt;\subagents\agent-&lt;id&gt;.jsonl</code>, <code>agent-&lt;id&gt;.meta.json</code></td><td>Claude Code</td><td>Each agent's transcript; its type, and whether it finished. Workflow agents sit in <code>subagents\workflows\&lt;run&gt;\</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What stays outside the state folder, and why</h3>
+    <ul class="wrap">
+      <li>The register's lock <code>decisions\.lock</code>, and the short-lived <code>.&lt;name&gt;.&lt;pid&gt;.tmp</code>
+        beside each safe save: each must sit beside the file it guards or replaces.</li>
+      <li>The named lock <code>xpp-agent-heavy-command-slot-&lt;n&gt;</code>: it lives in memory, not in a file, so its
+        name did not change.</li>
+      <li>The test suites' scratch folders in <code>%TEMP%</code> (<code>oa-*</code>, <code>limit-scripts-tests-*</code>):
+        each test run makes and deletes its own.</li>
+      <li>Claude Code's own files: the transcripts under <code>~\.claude\projects\</code>, its temp folder
+        <code>%TEMP%\claude\</code>, and <code>~\.claude.json</code>.</li>
+      <li><code>~\.claude\state\mcp-discover-verdicts.json</code>: another tool's file, not the team's.</li>
+    </ul>
+    <p class="note wrap"><strong>The move</strong> (your answers to D-36 and D-39). The old places were the temp folder
+      (<code>claude-agent-team-on\</code>, <code>claude-context-guard\</code>, <code>claude-usage-probe\</code>,
+      <code>claude-session-watch-&lt;session id&gt;.txt</code> and <code>.decision.json</code>,
+      <code>xpp-agent-heavy-command-slot-&lt;n&gt;.txt</code>) and <code>~\.claude\state\</code> itself
+      (<code>usage-limits.json</code>, <code>relaunch.log</code>, <code>limit-stop.log</code>). At the switch-over each
+      old file is copied into its new folder, and deleted only where the copy is identical.</p>
+  </section>
+
+  <section id="wrong" aria-labelledby="wrong-h">
+    <span class="eyebrow">Failure handling</span>
+    <h2 id="wrong-h">When something fails</h2>
+    <ul class="cases">
+      <li class="case"><b>A marker is deleted</b><span>A disk cleanup no longer reaches the markers: they sit in the
+        team's state folder, not in the temp folder (D-36). If the switch-on marker is deleted by hand, both hooks fall
+        quiet in that chat: no size warnings, no answers in prompts. The Decisions pane closes at its next look. Typing
+        <code>/software-developer-agent</code> again writes it again, and the pane shows from its next look;
+        <code>team-on.mjs</code> is safe to run twice. A lost guard marker only means a warning may come a second time.</span></li>
+      <li class="case"><b>You type <code>/clear</code> in a team chat</b><span>The chat gets a new session id, so the
+        team is off there: the Decisions tab closes and the hooks fall silent. Type <code>/software-developer-agent</code>
+        again (step 1). Reopening a chat from the history keeps its id, so the team stays on there.</span></li>
+      <li class="case"><b>Claude Code restarts</b><span>The watches stop; every file stays. A watch started again finds
+        the old marker, sees that it names a dead process, and ignores it.</span></li>
+      <li class="case"><b>Two writers reach the register at once</b><span>The second waits up to 10 seconds for
+        <code>decisions\.lock</code>. A lock older than 60 seconds belongs to a crashed writer and is removed. The prompt
+        hook waits only 2 seconds and leaves the answers for the watch.</span></li>
+      <li class="case"><b>The register is from an older version</b><span>Its <code>ANSWERED_DECISIONS_CLAUDE.md</code> is
+        folded into the answers log at the next write. <code>register.mjs migrate</code> converts the rest.</span></li>
+      <li class="case"><b>The usage probe fails</b><span>It prints <code>USAGE PROBE FAILED</code> and writes nothing, so
+        the last reading stays.</span></li>
+      <li class="case"><b>The limit-stop log cannot be written</b><span>The server does not start, because a failure
+        would reach the main chat only through that log. The main chat is told, and stops its leads by message instead.</span></li>
+      <li class="case"><b>The repo moves</b><span>The junctions, the two hook paths in <code>settings.json</code> and the
+        skills path in the agent files are all full paths. Run <code>install.ps1</code> again and change the others (README).</span></li>
+    </ul>
+  </section>
+
+  <section id="open" aria-labelledby="open-h">
+    <span class="eyebrow">Not settled yet</span>
+    <h2 id="open-h">Still open</h2>
+    <ul class="open">
+      <li><span class="flag flag-new">new</span>The switch is new (2026-10-26, D-32 and D-33). The command
+        <code>/software-developer-agent</code> lives in <code>team-switch\SKILL.md</code>, linked as
+        <code>~\.claude\skills\software-developer-agent</code>; it appears in a chat after the next Claude Code start.
+        Typing it in a fresh chat has not been tried yet.</li>
+      <li><span class="flag flag-new">new</span>The marker holds the switch-on time. Nothing reads that time; the hooks
+        and the Decisions pane only check that the file exists.</li>
+      <li><span class="flag">note</span><code>misc\handovers\</code> holds one hand-over so far, written on 27 October 2026 at 09:35.</li>
+      <li><span class="flag">note</span>Every working file in this repo ends in <code>_CLAUDE</code>. The agent files'
+        names (<code>&lt;RUN&gt;_TASK.md</code>) leave it out, and no file I read states that rule.</li>
+      <li><span class="flag">note</span>The progress file's name and the facts file are not named in the agent files.
+        The names on this page come from stage 2.</li>
+      <li><span class="flag">note</span>That a chat reopened from the history stays on was measured outside VS Code (a
+        headless run, 2026-10-27). It has not been tried in a VS Code chat yet.</li>
+      <li><span class="flag">note</span>The named lock of a heavy-command slot keeps an older name,
+        <code>xpp-agent-heavy-command-slot-…</code> (from the xpp-agent repo). It is in memory, not a file, so it did
+        not move.</li>
+      <li><span class="flag">note</span>The guard's markers pile up: the hook never deletes them, and no cleanup reaches
+        the state folder. 23 agent markers were in the old folder on 2026-10-26.</li>
+      <li><span class="flag">note</span><code>~\.claude\state\mcp-discover-verdicts.json</code> sits beside the team's
+        state folder. Nothing in this repo names it, so it belongs to something else and stays where it is.</li>
+    </ul>
+  </section>
+
+  <section id="objects" aria-labelledby="objects-h">
+    <span class="eyebrow">Reference</span>
+    <h2 id="objects-h">For developers: which setting names which file</h2>
+    <details>
+      <summary>Settings in <code>orchestrate-agents\orchestration.config.json</code>, and names fixed in code</summary>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Setting</th><th>Value</th><th>Read by</th></tr></thead>
+          <tbody>
+            <tr><td><code>teamState.folder</code><span class="new">new</span></td><td><code>%USERPROFILE%\.claude\state\software-developer-agent</code></td><td>every hook and script: each folder and file below is a path under it</td></tr>
+            <tr><td><code>agentTeam.onFolder</code><span class="new">new</span></td><td><code>team-on</code> (under the state folder)</td><td><code>lib\agent-team.mjs</code>: <code>team-on.mjs</code> writes, both hooks read; the pane</td></tr>
+            <tr><td><code>contextGuard.markerFolder</code></td><td><code>context-guard</code> (under the state folder)</td><td><code>hooks\context-guard.mjs</code></td></tr>
+            <tr><td><code>contextGuard.transcriptTailKB</code></td><td>512</td><td><code>hooks\context-guard.mjs</code></td></tr>
+            <tr><td><code>usageAndContextWatch.tailMegabytes</code></td><td>4</td><td><code>scripts\watch-usage-and-context.ps1</code></td></tr>
+            <tr><td><code>usageAndContextWatch.recordFolder</code><span class="new">new</span></td><td><code>usage-watch</code> (under the state folder)</td><td><code>scripts\watch-usage-and-context.ps1</code>: <code>&lt;session id&gt;.txt</code>, <code>&lt;session id&gt;.decision.json</code></td></tr>
+            <tr><td><code>usageLimits.stateFile</code></td><td><code>usage-reading\usage-limits.json</code> (under the state folder)</td><td><code>usage-probe.ps1</code> writes, the watch reads</td></tr>
+            <tr><td><code>usageLimits.probeWorkingFolder</code></td><td><code>usage-probe</code> (under the state folder)</td><td><code>scripts\usage-probe.ps1</code></td></tr>
+            <tr><td><code>limitStop.pipePrefix</code></td><td><code>claude-limit-stop</code></td><td><code>lib\limit-stop.mjs</code></td></tr>
+            <tr><td><code>limitStop.logFile</code></td><td><code>logs\limit-stop.log</code> (under the state folder)</td><td><code>lib\limit-stop.mjs</code></td></tr>
+            <tr><td><code>relaunch.logFile</code></td><td><code>logs\relaunch.log</code> (under the state folder)</td><td><code>scripts\start-session-in-vscode.ps1</code></td></tr>
+            <tr><td><code>relaunch.taskNamePrefix</code>, <code>relaunch.expireAfterHours</code></td><td><code>ClaudeRelaunch</code>, 12</td><td><code>scripts\schedule-relaunch.ps1</code></td></tr>
+            <tr><td><code>register.folder</code>, <code>openFile</code>, <code>answersLogFile</code>, <code>resolvedFile</code>, <code>answeredFile</code></td><td><code>decisions</code> and the four file names</td><td><code>lib\decision-register.mjs</code>, the pane</td></tr>
+            <tr><td><code>register.commitInRepos</code></td><td><code>C:\Repos\My projects\*</code></td><td><code>lib\decision-register.mjs</code></td></tr>
+            <tr><td><code>runHeavy.holderFolder</code><span class="new">new</span></td><td><code>heavy-commands</code> (under the state folder): <code>slot-&lt;n&gt;.txt</code></td><td><code>scripts\run-heavy.ps1</code></td></tr>
+            <tr><td>fixed in code</td><td>the named lock <code>xpp-agent-heavy-command-slot-&lt;n&gt;</code> (memory, no file)</td><td><code>scripts\run-heavy.ps1</code></td></tr>
+            <tr><td>fixed in code</td><td><code>decisions\.lock</code>, <code>.&lt;file&gt;.&lt;n&gt;.tmp</code></td><td><code>lib\decision-register.mjs</code>, <code>lib\text-file.mjs</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    Written 2026-10-26 at 23:20 from this repo's <code>README.md</code>, <code>CLAUDE.md</code>, <code>.gitignore</code>
+    and <code>scripts\install.ps1</code>; the three agent files; <code>team-rules\SKILL.md</code>;
+    <code>orchestrate-agents\SKILL.md</code>, its references and <code>orchestration.config.json</code>; the hooks, and
+    the scripts and helpers that read or write files; <code>~\.claude\settings.json</code>; the "Agents" section and the
+    decisions paragraph of <code>~\.claude\CLAUDE.md</code>; the Decisions pane's README and code; the stage 2 working
+    folder (names and first lines only); open entries D-32 and D-33; and listings of the junctions, the temp folder and
+    <code>~\.claude\state\</code> on disk. The Shop repo, the invoice import, its runs, D-12, the log line and every time
+    in the example are made up. Every folder, file pattern and setting is real. The switch was read from code still
+    being written, and may change. Updated 2026-10-27 at 09:22: the Decisions pane now checks the switch (D-34). That
+    part comes from the report of the stage 2 run that built it and from the pane's "not on" line in its code.
+    Updated 2026-10-27 at 11:47: the team's state folder (D-36, D-39), from the layout the code is being changed to;
+    the note on <code>/clear</code> (D-35), quoting <code>team-switch\SKILL.md</code>; and six junctions, counted in
+    <code>scripts\install.ps1</code>.
+  </footer>
+
+</main>
+</body>
+</html>

@@ -23,7 +23,7 @@ evidence, so a rule is changed only when the fact behind it changes. Newest fact
   `cache_creation_input_tokens` and `cache_read_input_tokens` of the newest assistant record with non-zero usage.
 - **If the hook does not reach subagents** (it is proven by a live test before use), the lead watches each worker
   instead with the Agent size and stall watch:
-  `& 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-agent-size-and-stall.ps1' -AgentId <id> -SessionId $env:CLAUDE_CODE_SESSION_ID -AgentType software-developer`
+  `& "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\watch-agent-size-and-stall.ps1" -AgentId <id> -SessionId $env:CLAUDE_CODE_SESSION_ID -AgentType software-developer`
   with the PowerShell tool, `run_in_background` and the description `Agent size and stall watch` (a subagent's
   shell carries the main session's id; it warns at that type's `contextCaps` warning size), and sends the hook's
   words by message

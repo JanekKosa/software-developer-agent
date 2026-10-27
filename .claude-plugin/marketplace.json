@@ -1,0 +1,12 @@
+{
+  "name": "software-developer-agent",
+  "description": "Claude Code mods of the agent team, kept beside the team's own code.",
+  "owner": { "name": "JanekKosa" },
+  "plugins": [
+    {
+      "name": "decisions-pane",
+      "source": "./decisions-pane",
+      "description": "A pane in the Claude chat that lists the decisions the agent team's register waits for you on, and records your pick and comments in the register."
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+PASS  dry run prints the whole plan and writes nothing
+PASS  apply copies exactly the planned files, keeps their times and leaves the rest
+PASS  apply copies the config first, the libraries next and the gate lib\agent-team.mjs last
+PASS  a second apply finds everything the same and writes nothing
+PASS  an identical file already in the new place is SAME and the rest is copied
+PASS  refuses a code conflict: live and staged both changed one file
+PASS  refuses a base file missing from the staged copy
+PASS  refuses a new staged file that live already has with other content
+PASS  refuses while a limit-stop server listens
+PASS  refuses while a watch runs with an old mark
+PASS  refuses while a watch runs with a new mark
+PASS  a mark whose process is gone or started at another time is no running watch
+PASS  refuses when a new-place file differs from the old file it would receive
+PASS  refuses a staged setting that is not a plain path under the root
+PASS  refuses a base list line that is not path, tab, hash
+PASS  refuses -Apply and -RemoveOld together
+PASS  names every reason at once, and the dry run refuses too
+PASS  never copies a name that fails the session id check
+PASS  runs as a child process with the exit codes the main session sees
+PASS  RemoveOld before the switch-over refuses and deletes nothing
+PASS  RemoveOld deletes only identical old copies and keeps the rest with the reason
+PASS  trim cuts a copy of the real log back to its first 841 bytes
+PASS  trim keeps a real line written after the test lines, and one between them
+PASS  trim refuses when the first 841 bytes are not the real ones and changes nothing
+PASS  trim of a log that is already 841 bytes does nothing
+PASS  trim refuses a log shorter than 841 bytes
+CASES | 26 of 26 passed
+CLEANUP | run folder removed: True; helper processes started and stopped by id: 8524

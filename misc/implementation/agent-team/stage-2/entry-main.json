@@ -1,0 +1,21 @@
+{
+  "kind": "initiative",
+  "blocking": false,
+  "urgency": "low",
+  "raisedBy": "main session (your question: customise the developer agent per project or per domain)",
+  "task": "Agent team: customise the worker per project and per domain",
+  "what": "Customise the universal worker in three layers instead of copying it. (1) The universal worker stays one file, never copied. (2) A domain pack, kept in the agent repo (domains/<name>/), holds what every project of one kind shares: the skills to read at start, the build and test commands, and extra guardrails. Examples: d365-xpp, web-typescript, powershell-tools. (3) A project profile, one small file in the project's own repo (.claude/agent-team.json), names its domain packs and adds its own skills, checks and rules. The project wins over the domain, and the domain wins over the universal worker. The lead reads the profile and writes what applies into each worker's task file; the worker reads the listed skills by path at start, the way it reads the vendored skills now. Claude Code fixes an agent's preloaded skills in its file, so a per-project list must be read at start rather than preloaded. Today's way is the project's CLAUDE.md plus a whole worker type copied per project (xpp-agent has xpp-porter and navigator-builder), and those copies drift.",
+  "example": "xpp-agent's profile says: domain d365-xpp, plus 'MCP server work: build with npm, test with node --test'. The d365-xpp pack makes every worker there read xpp-development and d365fo-environment and never touch the shared cloud environment. A React project's profile says only: domain web-typescript.",
+  "options": [
+    "A: build the three layers after the self-contained repo task, by the same lead, because both change how the agents load skills (one or two worker runs); later move xpp-porter and navigator-builder onto a d365-xpp pack",
+    "B: keep today's way: the project's CLAUDE.md plus a copied worker type per project (no work; the copies keep drifting)",
+    "C: project profiles only, no domain packs (smaller; projects of one kind repeat the same lines)"
+  ],
+  "recommendation": "A, because it keeps one worker, puts shared domain knowledge in one place, and lets each project add only what is its own.",
+  "meanwhile": "Nothing changes; the self-contained repo task (D-38) goes on and will be told this may follow.",
+  "evidence": [
+    "C:\\Repos\\My projects\\software-developer-agent\\orchestrate-agents\\references\\worker-rules.md",
+    "C:\\Repos\\My projects\\xpp-agent\\.claude\\agents\\xpp-porter.md",
+    "C:\\Repos\\My projects\\software-developer-agent\\agents\\software-developer.md"
+  ]
+}

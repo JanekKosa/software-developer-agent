@@ -1,0 +1,29 @@
+  ok    paths under teamState.folder: lib\config.mjs answers every case of the table as written (the table is S1's rule)
+  ok    paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs
+  ok    paths under teamState.folder: start-session-in-vscode.ps1 and run-heavy.ps1 each answer every case of the table word for word as lib\config.mjs
+  ok    paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions
+  ok    paths under teamState.folder: the shipped settings put the relaunch log and the slot holders where the layout says (D-39)
+  ok    paths under teamState.folder: the shipped settings put the reading, the probe's folder and the watch's records where the layout says (D-39)
+-- 'paths under teamState.folder*': exit 0
+  ok    start: a window title names the folder as a whole part, never as a substring
+  ok    start: the open link escapes the prompt
+  ok    start: finds the code command and lists VS Code windows (read only)
+  ok    start: the link is opened only with the project window in front, else a notice names the folder and the prompt
+  ok    start: the notices say why the chat starts: the limit has reset, or the session handed over at its context cap
+  ok    start: every notification of the main part opens with the cause or is the plan's notice
+  ok    start: -DryRun touches nothing on screen and logs every step
+  ok    start: -DryRun with no window of the project in front would open nothing and show the prompt
+  ok    start: a missing relaunch key is logged and nothing starts
+  ok    start: without -LogPath the log is relaunch.logFile under teamState.folder, with %NAME% filled in in the root
+  ok    start: a broken teamState.folder or relaunch.logFile is START NOT RUN in the words of lib\config.mjs, and nothing is logged
+  ok    start: a passed -LogPath wins over relaunch.logFile, which is then not needed
+-- 'start:*': exit 0
+  ok    heavy: slots, free-memory floor and wait come from runHeavy unless passed
+  ok    heavy run: a missing runHeavy key is HEAVY COMMAND NOT RUN naming it, and the command does not run
+  ok    heavy: the holder folder is runHeavy.holderFolder under teamState.folder unless -HolderFolder is passed, and a slot's holder file is slot-<n>.txt in it
+  ok    heavy run: the holder lines come from <root>\heavy-commands, or from a passed -HolderFolder, and no slot is taken
+  ok    heavy run: a broken runHeavy.holderFolder or teamState.folder is HEAVY COMMAND NOT RUN in the words of lib\config.mjs, and the command does not run
+  ok    heavy run: the slot count comes from the settings, the command exit code passes through, and the holder file is <root>\heavy-commands\slot-<n>.txt while it runs
+  ok    heavy run: the free-memory floor comes from the settings
+-- 'heavy*': exit 0
+TOTAL FAILED: 0

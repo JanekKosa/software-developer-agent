@@ -1,0 +1,63 @@
+M0 | baseline clean | no change
+M1 | caught | S2 child rule: drive/colon refusal removed (usage-probe)
+      ps: paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs
+      ps: paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions
+M2 | caught | S2 child rule: leading/trailing separator refusal removed (usage-probe)
+      ps: paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs
+      ps: paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions
+M3 | caught | S2 child rule: / refusal removed (watch)
+      ps: paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs
+      ps: paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions
+M4 | caught | S2 child rule: . and .. part refusal removed (watch)
+      ps: paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs
+      ps: paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions
+M5 | caught | S2: root not checked as absolute (usage-probe)
+      ps: paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs
+      ps: paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions
+M6 | caught | S2: probe reading back in the old place
+      ps: probe run: without -StatePath and -WorkingFolder the reading goes to <root>\usage-reading\usage-limits.json and claude runs in <root>\usage-probe
+M7 | caught | S2: probe folder ignoring the root
+      ps: probe run: without -StatePath and -WorkingFolder the reading goes to <root>\usage-reading\usage-limits.json and claude runs in <root>\usage-probe
+M8 | caught | S2: watch mark back in %TEMP%
+      ps: watch run: its marker and its limit decision live in usageAndContextWatch.recordFolder under teamState.folder, and the marker goes when it ends
+      ps: watch run: WATCH ALREADY RUNNING when a live watch holds the marker
+M9 | caught | S2: watch record back in %TEMP%
+      ps: watch run: its marker and its limit decision live in usageAndContextWatch.recordFolder under teamState.folder, and the marker goes when it ends
+M10 | caught | S2: a passed -StatePath no longer wins
+      ps: probe run: a passed -StatePath and -WorkingFolder win over the settings, which are then not needed
+M11 | caught | S3a: relaunch log ignoring the root
+      ps: start: without -LogPath the log is relaunch.logFile under teamState.folder, with %NAME% filled in in the root
+      ps: start: a broken teamState.folder or relaunch.logFile is START NOT RUN in the words of lib\config.mjs, and nothing is logged
+M12 | caught | S3a: a passed -LogPath no longer wins
+      ps: start: a passed -LogPath wins over relaunch.logFile, which is then not needed
+M13 | caught | S3a: holder back in %TEMP%
+      ps: heavy: the holder folder is runHeavy.holderFolder under teamState.folder unless -HolderFolder is passed, and a slot's holder file is slot-<n>.txt in it
+      ps: heavy run: the holder lines come from <root>\heavy-commands, or from a passed -HolderFolder, and no slot is taken
+      ps: heavy run: the slot count comes from the settings, the command exit code passes through, and the holder file is <root>\heavy-commands\slot-<n>.txt while it runs
+M14 | caught | S3a: holder ignoring the root
+      ps: heavy: the holder folder is runHeavy.holderFolder under teamState.folder unless -HolderFolder is passed, and a slot's holder file is slot-<n>.txt in it
+      ps: heavy run: the holder lines come from <root>\heavy-commands, or from a passed -HolderFolder, and no slot is taken
+      ps: heavy run: a broken runHeavy.holderFolder or teamState.folder is HEAVY COMMAND NOT RUN in the words of lib\config.mjs, and the command does not run
+      ps: heavy run: the slot count comes from the settings, the command exit code passes through, and the holder file is <root>\heavy-commands\slot-<n>.txt while it runs
+M15 | caught | S3a: a passed -HolderFolder no longer wins
+      ps: heavy: the holder folder is runHeavy.holderFolder under teamState.folder unless -HolderFolder is passed, and a slot's holder file is slot-<n>.txt in it
+      ps: heavy run: the holder lines come from <root>\heavy-commands, or from a passed -HolderFolder, and no slot is taken
+M16 | caught | S3a: % let through in Node
+      ps: paths under teamState.folder: lib\config.mjs answers every case of the table as written (the table is S1's rule)
+      node: each refused child value is an error naming the setting and what is wrong with it
+      node: a % in a child is refused, so a %NAME% there is neither filled in nor kept as a folder named %NAME%
+      node: the % keeps its place in the order of the rules: after the drive, the edges and the /, before the empty and the dot parts
+M17 | caught | S3a: % let through in one PowerShell copy (watch)
+      ps: paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs
+      ps: paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions
+M18 | caught | S3a extra: run-heavy does not make the holder folder
+      ps: heavy run: the slot count comes from the settings, the command exit code passes through, and the holder file is <root>\heavy-commands\slot-<n>.txt while it runs
+M19 | caught | S3a extra: % checked after the dot rule in one PowerShell copy (run-heavy)
+      ps: paths under teamState.folder: start-session-in-vscode.ps1 and run-heavy.ps1 each answer every case of the table word for word as lib\config.mjs
+      ps: paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions
+M20 | caught | S3a extra: % checked after the dot rule in Node
+      ps: paths under teamState.folder: lib\config.mjs answers every case of the table as written (the table is S1's rule)
+      node: each refused child value is an error naming the setting and what is wrong with it
+      node: a % in a child is refused, so a %NAME% there is neither filled in nor kept as a folder named %NAME%
+      node: the % keeps its place in the order of the rules: after the drive, the edges and the /, before the empty and the dot parts
+MUTATION | 20 of 20 caught | survived:  | invalid: 

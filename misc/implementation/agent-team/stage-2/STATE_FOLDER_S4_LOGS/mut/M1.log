@@ -1,0 +1,450 @@
+
+tests\hooks\decisions.test.ts:
+(pass) R8 a Follow up keeps its text exactly: spaces at both ends of its first line, deeper indents, empty lines [4.69ms]
+(pass) R7 the notice of unreadable log lines names five of them and counts the rest [0.81ms]
+(pass) R1 lettered options split at each letter, and the recommendation marks one [0.64ms]
+(pass) R1b options named by a word and a colon are marked by that word [0.81ms]
+(pass) R2 one option, or none, is no choice [0.69ms]
+(pass) R3 ids are read without leading zeros, and a child names its parent [0.91ms]
+(pass) R4 a field that runs onto the next line is read whole [0.88ms]
+(pass) R5 the answer words [15.48ms]
+(pass) R6 the folder above a path stops at the drive [1.13ms]
+
+tests\hooks\pane.test.ts:
+(fail) D1 with no decisions folder the pane stays closed, and the command says nothing waits [289.97ms]
+  AssertionError: expect(received).toMatchObject()
+  
+  Expected: { text: "No decisions wait for you." }
+  Received: {
+    text: "The agent team is not on in this chat. Type /software-developer-agent to switch it on; the Decisions pane then shows here.",
+    ref: undefined
+  }
+(fail) D2 only entries waiting for the person are listed, and the pane opens with their count [440.23ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(fail) D3 an entry with no Status line waits for the person, as register.mjs reads it [184.30ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(fail) D4 the most urgent entries come first, and a child names its parent [289.63ms]
+  AssertionError: expect(received).toBeLessThan()
+  
+  Expected: < -1
+  Received: -1
+(fail) D5 Submit with nothing picked agrees with the recommendation, and the entry leaves the pane [258.67ms]
+  HooksError: press: no Button of decisions-pane keyed "submit:C:\\work\\shop::D-12" is drawn in this Pane on the vscode surface
+(fail) D6 a picked option and a comment are sent together [248.11ms]
+  HooksError: press: no Button of decisions-pane keyed "pick:C:\\work\\shop::D-12:B" is drawn in this Pane on the vscode surface
+(fail) D7 Other needs words: an empty one is refused; Enter in the box sends nothing, Submit sends [136.30ms]
+  HooksError: press: no Button of decisions-pane keyed "pick:C:\\work\\shop::D-12:other" is drawn in this Pane on the vscode surface
+(fail) D7b a text box drawn anew gets back what the person typed [133.36ms]
+  HooksError: input: no Input of decisions-pane keyed "note:C:\\work\\shop::D-12" is drawn in this Pane on the vscode surface
+(fail) D8 pressing the picked option again drops the pick [159.45ms]
+  HooksError: press: no Button of decisions-pane keyed "pick:C:\\work\\shop::D-12:A" is drawn in this Pane on the vscode surface
+(fail) D8b a comment with nothing picked agrees and adds the comment [149.83ms]
+  HooksError: input: no Input of decisions-pane keyed "note:C:\\work\\shop::D-12" is drawn in this Pane on the vscode surface
+(fail) D8c the heading draws urgency, kind and blocking bold, each in its own colour [143.52ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["#ff8c00", true]
+  Received: [undefined, undefined]
+(fail) D9 an entry with fewer than two options takes plain text at once [208.32ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["Submit"]
+  Received: []
+(fail) D10 sentence options split and the recommended one is marked [146.38ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "○ Accept. (recommended)",
+    "○ Remove it.",
+    "○ Other: type your own answer in the box below"
+  ]
+  Received: []
+(fail) D11 a refused answer stays with the reason, and the entry stays [187.22ms]
+  HooksError: press: no Button of decisions-pane keyed "submit:C:\\work\\shop::D-12" is drawn in this Pane on the vscode surface
+(fail) D12 register.mjs is run with the script from the default path under the home folder [265.27ms]
+  HooksError: press: no Button of decisions-pane keyed "submit:C:\\work\\shop::D-12" is drawn in this Pane on the vscode surface
+(fail) D13 an old-layout entry shows its Answered line, and its Still open line as Follow up [178.80ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "Answered: 2026-10-25 17:30: \"B, but not before September\"",
+    "",
+    "Follow up: should invoices from 31 August that arrived on 1 September count?",
+    ""
+  ]
+  Received: []
+(fail) D13b old in-entry lines come first in file order, then the log and the Follow up blocks by time [281.00ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "Follow up: which month?",
+    "Answered: 2026-10-25 17:30: \"B\"",
+    "Answered: 2026-10-20 08:00: from the log",
+    "Follow up: 2026-10-26 09:00: September, then."
+  ]
+  Received: []
+(fail) D19 two answers and two Follow up blocks show in time order, line and paragraph breaks kept [255.28ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "Answered: 2026-10-26 10:05: A, retry once",
+    "but log it",
+    "",
+    "Follow up: 2026-10-26 10:20: first line of the text",
+    "second line",
+    "third line",
+    "",
+    "Answered: 2026-10-26 10:50: Other: ask finance, Zażółć gęślą jaźń",
+    "",
+    "Follow up: 2026-10-26 11:05: one paragraph",
+    "",
+    "a new paragraph after an empty line",
+    "",
+    ""
+  ]
+  Received: []
+(fail) D20 a continuation line that starts with "- " stays text of the Follow up, never a field [225.71ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "Follow up: 2026-10-26 10:20: A new option:",
+    "- Options: C",
+    "- Status: waiting-for-agent"
+  ]
+  Received: []
+(fail) D21 with no answers log the entry shows with no answers and no notice [157.78ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(fail) D22 broken log lines are left out, every entry still shows, and one notice names the lines [147.50ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "First?"
+  Received: "0 decisions wait for you\nNo decisions wait for you."
+(fail) D22c each entry shows only the answers of its own id, an id with leading zeros included [127.42ms]
+  AssertionError: expect(received).toHaveLength()
+  
+  Expected: length 1
+  Received: length 0
+(fail) D22b a log that is all broken leaves the entries and says so in one line [144.52ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "Should a rejected invoice be retried?"
+  Received: ["0 decisions wait for you", "No decisions wait for you."]
+(fail) D23 another repo's answers log is never read [121.32ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "Shop question?"
+  Received: "0 decisions wait for you\nNo decisions wait for you."
+(fail) D24 a new answer in the log, then a new Follow up block, show at the next poll [165.80ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "Answered: 2026-10-26 10:40: second answer"
+  Received: "0 decisions wait for you\nNo decisions wait for you."
+(fail) D25 an answer goes to the log through register.mjs, and shows above the follow-up that comes back [158.41ms]
+  HooksError: press: no Button of decisions-pane keyed "pick:C:\\work\\shop::D-12:B" is drawn in this Pane on the vscode surface
+(fail) D26 the log file is the one register.answersLogFile names [176.40ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "Answered: 2026-10-26 10:05: from the named log"
+  Received: "0 decisions wait for you\nNo decisions wait for you."
+(fail) D27 an answer and a follow-up in the same minute: the answer first [137.94ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "Answered: 2026-10-26 10:20: the answer",
+    "Follow up: 2026-10-26 10:20: the follow-up"
+  ]
+  Received: []
+(fail) D28 a failed read of the open file keeps the decisions shown before; the next poll shows the new ones [158.30ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "First?"
+  Received: "0 decisions wait for you\nNo decisions wait for you."
+(fail) D29 a failed read of the answers log keeps the answers and notice shown before; the next poll updates them [141.24ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "Should a rejected invoice be retried?"
+  Received: ["0 decisions wait for you", "No decisions wait for you."]
+(fail) D30 a first read that fails shows nothing, and the next poll shows the decisions [287.20ms]
+  AssertionError: expect(received).toHaveLength()
+  
+  Expected: length 1
+  Received: length 0
+(fail) D31 a missing file is no failed read: it is not read, gives no notice, and is not tried again [145.79ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: 1
+  Received: 0
+(fail) D32 a size check of the open file that fails, not as "not found", keeps the decisions shown; the next poll shows the new ones [184.49ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "First?"
+  Received: "0 decisions wait for you\nNo decisions wait for you."
+(fail) D33 a size check of the answers log that fails keeps the answers shown; the next poll shows the new one [138.11ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "Answered: 2026-10-26 10:05: first answer"
+  Received: ["0 decisions wait for you", "No decisions wait for you."]
+(fail) D34 an open file that is really removed shows no decisions and no notice, however long it stays away [102.42ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "Decisions (1)"
+  Received: undefined
+(fail) D35 reads that fail for 30 seconds say so once, over the decisions shown before; the first good read clears it [345.13ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "The decisions register could not be read since 01:16:42; the pane shows what it held before and keeps trying."
+  ]
+  Received: []
+(fail) D36 size checks that fail for 30 seconds say so too; the first good read clears it [405.88ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "The decisions register could not be read since 01:16:42; the pane shows what it held before and keeps trying."
+  ]
+  Received: []
+(fail) D37 a single failed read gives no notice, and a good read between failures starts the 30 seconds again [139.44ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "Decisions (2)"
+  Received: undefined
+(fail) D14 only the chat repo register is listed, even when the team shows another in every chat [103.66ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "Shop question?"
+  Received: "0 decisions wait for you\nNo decisions wait for you."
+(pass) D14b with only another repo holding decisions, the pane stays closed [140.24ms]
+(fail) D15 a pane the person closed stays closed until a new entry arrives [108.57ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "Decisions (2)"
+  Received: undefined
+(fail) D16 the command hides the pane and shows it again [157.31ms]
+  AssertionError: expect(received).toMatchObject()
+  
+  Expected: { text: "Decisions pane hidden." }
+  Received: {
+    text: "The agent team is not on in this chat. Type /software-developer-agent to switch it on; the Decisions pane then shows here.",
+    ref: undefined
+  }
+(fail) D17 an entry an agent adds while the pane is open retitles its tab [181.76ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "Decisions (2)"
+  Received: undefined
+(fail) D18 the pane draws on every surface; mobile says it has no text box [177.36ms]
+  AssertionError: expect(received).toBeDefined()
+  
+  Expected: defined
+  Received: undefined
+
+tests\hooks\points.test.ts:
+(pass) P1 the sample entry gives a row whose What, Recommendation and options are its points [6.84ms]
+(pass) P2 an entry without point lines reads as before: other indented lines continue the field with a space [6.29ms]
+(pass) P3 a Follow up block keeps its "  - " lines as text; the next field reads points again [1.67ms]
+(pass) P4 points under an empty field line: the first point is the value; a point runs on; a point line with no words adds none [0.66ms]
+(pass) P5 options from points: one per point, lettered or numbered, never split at sentences; the first point of the recommendation marks one [1.38ms]
+(fail) P6 the sample entry draws its first point as today and each further point on its own line, indented, after "• " [513.11ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "The pane shows each entry as one block of text.",
+    "  • The register joins line breaks into spaces.",
+    "  • The pane draws each field as one line.",
+    "Example: D-40's three options sat in one paragraph.",
+    "Recommendation: A, because the user asked for it.",
+    "  • It also makes long entries quicker to read.",
+    "Meanwhile: Work goes on assuming A."
+  ]
+  Received: []
+(fail) P7 an entry without points draws as before: no bullets, each field one line, sentences kept together [185.82ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "Retry the invoice? It failed twice.",
+    "Example: Invoice 1001 for 250.00 PLN was rejected at 10:02 because the tax service timed out.",
+    "Recommendation: Accept, because it is cheap. Removing costs a day.",
+    "Meanwhile: Rejected invoices wait in the error list."
+  ]
+  Received: []
+
+tests\hooks\team-on.test.ts:
+(fail) O1 each %NAME% in the root is filled in from its variable, once, left to right [5.66ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "C:\\Users\\me\\.claude\\state\\software-developer-agent"
+  Received: null
+(fail) O2 a root naming a variable that is not set, or set to nothing, gives no root [1.18ms]
+  AssertionError: expect(received).toBeNull()
+  
+  Expected: null
+  Received: "C:\\state\\%NOPE%"
+(pass) O3 a root that is not a drive letter, a colon and a backslash once filled in gives no root [2.60ms]
+(pass) O4 a root that is missing or not text gives no root [1.41ms]
+(pass) O5 a child the team refuses is not a path under the root, and gives no marker path [10.84ms]
+(pass) O6 a child of plain names joined by backslashes is a path under the root [0.81ms]
+(pass) O7 a session id the team would refuse gives no marker path [2.68ms]
+(pass) O8 with no root there is no marker path [0.42ms]
+(pass) O9 a marker path is joined as Node path.win32.join joins the root, the child and the id [1.18ms]
+(fail) O10 the shipped settings and a home folder give the marker under the home folder [0.37ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "C:\\Users\\user\\.claude\\state\\software-developer-agent\\team-on\\56c67d3d-b3c0-43be-a82c-b3a9cdc23274"
+  Received: null
+(pass) O11 the root is read from teamState.folder, and is missing in any other shape [0.62ms]
+(pass) O12 the child is read from agentTeam.onFolder, and is missing in any other shape [0.54ms]
+
+tests\hooks\team-switch.test.ts:
+(fail) S1 in a chat not switched on, waiting decisions open no pane, give no rows, and no other file is touched [255.82ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "C:\\Users\\me\\.claude\\state\\software-developer-agent\\team-on\\0f6c1d2e-3a4b-4c5d-8e9f-a0b1c2d3e4f5"
+  Received: [
+    "C:\\Users\\me\\.claude\\skills\\orchestrate-agents\\orchestration.config.json",
+    "C:\\Users\\me\\.claude\\skills\\orchestrate-agents\\orchestration.config.json",
+    "C:\\Users\\me\\.claude\\skills\\orchestrate-agents\\orchestration.config.json"
+  ]
+(fail) S2 in a switched-on chat the pane opens as before, the marker looked at before the register [155.60ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(fail) S3 a marker written after the chat started shows the pane at the next look, without a reload [460.30ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(pass) S4 a session id that is missing counts as off, and no marker is looked for [236.06ms]
+(pass) S4 a session id that is not a string counts as off, and no marker is looked for [198.38ms]
+(pass) S4 a session id that is empty counts as off, and no marker is looked for [141.46ms]
+(pass) S4 a session id that is a dot counts as off, and no marker is looked for [148.57ms]
+(pass) S4 a session id that is two dots counts as off, and no marker is looked for [366.56ms]
+(pass) S4 a session id that is a backslash counts as off, and no marker is looked for [244.42ms]
+(pass) S4 a session id that is a slash counts as off, and no marker is looked for [133.13ms]
+(pass) S4 a session id that is 129 characters long counts as off, and no marker is looked for [185.71ms]
+(pass) S4 a session id that is a space counts as off, and no marker is looked for [131.67ms]
+(pass) S4 a session id that is a drive letter counts as off, and no marker is looked for [192.67ms]
+(pass) S4 a session id that is an underscore counts as off, and no marker is looked for [155.04ms]
+(pass) S4 a session id that is a trailing line break counts as off, and no marker is looked for [164.18ms]
+(fail) S4b a session id of 128 letters, digits and dashes counts as on [173.63ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(pass) S5 a switch folder setting that is missing, with no agentTeam settings counts as off, and no marker is looked for [170.10ms]
+(pass) S5 a switch folder setting that is missing counts as off, and no marker is looked for [198.65ms]
+(pass) S5 a switch folder setting that is not a string counts as off, and no marker is looked for [142.11ms]
+(pass) S5 a switch folder setting that is empty counts as off, and no marker is looked for [152.85ms]
+(pass) S5 a switch folder setting that is a drive counts as off, and no marker is looked for [167.29ms]
+(pass) S5 a switch folder setting that is a drive and a folder counts as off, and no marker is looked for [169.78ms]
+(pass) S5 a switch folder setting that is a colon inside counts as off, and no marker is looked for [140.78ms]
+(pass) S5 a switch folder setting that is a leading backslash counts as off, and no marker is looked for [249.55ms]
+(pass) S5 a switch folder setting that is a trailing backslash counts as off, and no marker is looked for [184.37ms]
+(pass) S5 a switch folder setting that is a leading slash counts as off, and no marker is looked for [131.82ms]
+(pass) S5 a switch folder setting that is a slash counts as off, and no marker is looked for [146.15ms]
+(pass) S5 a switch folder setting that is a star counts as off, and no marker is looked for [106.37ms]
+(pass) S5 a switch folder setting that is a question mark counts as off, and no marker is looked for [131.91ms]
+(pass) S5 a switch folder setting that is angle brackets counts as off, and no marker is looked for [199.32ms]
+(pass) S5 a switch folder setting that is a bar counts as off, and no marker is looked for [206.83ms]
+(pass) S5 a switch folder setting that is quoted counts as off, and no marker is looked for [209.01ms]
+(pass) S5 a switch folder setting that is a variable counts as off, and no marker is looked for [138.41ms]
+(pass) S5 a switch folder setting that is a percent sign counts as off, and no marker is looked for [107.26ms]
+(pass) S5 a switch folder setting that is an empty part counts as off, and no marker is looked for [82.58ms]
+(pass) S5 a switch folder setting that is a dot counts as off, and no marker is looked for [73.66ms]
+(pass) S5 a switch folder setting that is two dots counts as off, and no marker is looked for [100.24ms]
+(pass) S5 a switch folder setting that is a dot part counts as off, and no marker is looked for [89.39ms]
+(pass) S5 a switch folder setting that is a two-dot part counts as off, and no marker is looked for [88.14ms]
+(fail) S5b a switch folder with a space and dots in its name counts as on [68.76ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(fail) S5c a switch folder of several parts joined by backslashes counts as on [81.48ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(fail) S6 a marker only at the old place under TEMP counts as off, and the old place is never looked at [136.76ms]
+  AssertionError: expect(received).toContain()
+  
+  Expected: containing "C:\\Users\\me\\.claude\\state\\software-developer-agent\\team-on\\0f6c1d2e-3a4b-4c5d-8e9f-a0b1c2d3e4f5"
+  Received: [
+    "C:\\Users\\me\\.claude\\skills\\orchestrate-agents\\orchestration.config.json",
+    "C:\\Users\\me\\.claude\\skills\\orchestrate-agents\\orchestration.config.json"
+  ]
+(pass) S6b team settings with no root (the shape before the team moved its files) count as off, even with the old marker [95.52ms]
+(pass) S6c a root naming a variable that is not set counts as off, and no marker is looked for [147.97ms]
+(pass) S6d a root that is not text counts as off, and no marker is looked for [136.95ms]
+(pass) S6d a root that is empty counts as off, and no marker is looked for [103.71ms]
+(pass) S6d a root that is relative counts as off, and no marker is looked for [110.35ms]
+(pass) S6d a root that is rooted without a drive counts as off, and no marker is looked for [107.06ms]
+(pass) S6d a root that is a share (UNC) counts as off, and no marker is looked for [113.63ms]
+(pass) S6d a root that is a drive without a backslash counts as off, and no marker is looked for [112.16ms]
+(pass) S6d a root that is a drive and a slash counts as off, and no marker is looked for [104.95ms]
+(fail) S6d a root that is an unset variable in the middle counts as off, and no marker is looked for [187.55ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: []
+  Received: [
+    "C:\\state\\%STATE_DIR%\\team-on\\0f6c1d2e-3a4b-4c5d-8e9f-a0b1c2d3e4f5",
+    "C:\\state\\%STATE_DIR%\\team-on\\0f6c1d2e-3a4b-4c5d-8e9f-a0b1c2d3e4f5"
+  ]
+(pass) S6d a root that is another variable than USERPROFILE, though set counts as off, and no marker is looked for [111.46ms]
+(pass) S6e a root written as an absolute path with a trailing backslash counts as on [105.15ms]
+(pass) S6f a drive root as the root keeps one backslash [69.58ms]
+(fail) S8 a marker check refused while on keeps the pane and its reads; the next look is fine [88.48ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "Decisions (2)"
+  Received: undefined
+(fail) S8b a refused read of the team settings while on keeps the pane [81.11ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "Decisions (2)"
+  Received: undefined
+(fail) S8c a session id that cannot be read while on keeps the pane [81.79ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "Decisions (2)"
+  Received: undefined
+(fail) S8d team settings caught half written (not JSON) while on keep the pane; the next look is fine [77.74ms]
+  AssertionError: expect(received).toBe()
+  
+  Expected: "Decisions (1)"
+  Received: undefined
+(fail) S8e a look that fails while off keeps it off: nothing past the switch is read until a look says on [103.44ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: ["open decisions-pane \"Decisions (1)\""]
+  Received: []
+(fail) S9 a marker removed closes the pane at the next look, and the register is no longer read [88.01ms]
+  AssertionError: expect(received).toEqual()
+  
+  Expected: [
+    "open decisions-pane \"Decisions (1)\"",
+    "close decisions-pane by plugin"
+  ]
+  Received: []
+(pass) S10 the command in a chat not switched on says how to switch it on, and opens no pane [78.12ms]
+(fail) S11 the command right after the chat is switched on shows the pane, without waiting for the next look [90.37ms]
+  AssertionError: expect(received).toMatchObject()
+  
+  Expected: { text: "Decisions pane shown." }
+  Received: {
+    text: "The agent team is not on in this chat. Type /software-developer-agent to switch it on; the Decisions pane then shows here.",
+    ref: undefined
+  }
+(pass) S12 the command after the marker is gone says how to switch it on, and the pane closes [79.29ms]
+
+ 73 pass
+ 63 fail
+Ran 136 tests across 5 files. [12.47s]

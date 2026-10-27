@@ -1,0 +1,20 @@
+{
+  "kind": "question",
+  "blocking": false,
+  "urgency": "low",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "claude-code-mods holds what was learned while writing Claude Code mods, such as the Decisions pane. The team does not need it to work: a worker reads it only when it changes the pane. It lives in the xpp-agent repo, and the other mods in claude-code-extensions (chat colours, the Agents pane, the toolbar) rely on it too.",
+  "example": "On a new laptop with A, the team runs and the pane shows your decisions. A run that changes the pane there starts without those notes, unless that laptop has them.",
+  "options": [
+    "A: leave it in xpp-agent; a run that changes the pane reads it when the PC has it (no cost).",
+    "B: move it here with the pane (part of the pane run; the mods in claude-code-extensions then depend on this repo for it).",
+    "C: copy it here (part of the pane run; two copies that drift)."
+  ],
+  "recommendation": "A, because the team works without it, and its main users are the mods in claude-code-extensions.",
+  "meanwhile": "Work goes on assuming A; nothing changes.",
+  "evidence": [
+    "C:\\Repos\\My projects\\xpp-agent\\Docs\\Skills\\claude-code-mods\\SKILL.md",
+    "C:\\Repos\\My projects\\software-developer-agent\\misc\\implementation\\agent-team\\stage-2\\AGENT_TEAM_STAGE_2_LEAD_BRIEF_CLAUDE.md"
+  ]
+}

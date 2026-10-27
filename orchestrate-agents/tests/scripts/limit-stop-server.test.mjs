@@ -25,9 +25,10 @@ const FALLBACK = 'Only now the fallback: send STOP FOR LIMIT by message (start-m
 // ---------------------------------------------------------------------------------------------------------------
 
 /**
- * Builds a scratch skill copy with test settings for the limit stop: a pipe prefix unique to this test and a log
- * file in the scratch folder. The settings runs before K removed (an end time, a repeat count, a lead deadline) are
- * set to small values, so a server that still obeyed them would fail these tests.
+ * Builds a scratch skill copy with test settings for the limit stop: a pipe prefix unique to this test and a scratch
+ * state root (teamState.folder), so the log is <scratch>\state\logs\limit-stop.log through the shipped
+ * limitStop.logFile. The settings runs before K removed (an end time, a repeat count, a lead deadline) are set to small
+ * values, so a server that still obeyed them would fail these tests.
  * @param {import('node:test').TestContext} t test context, for cleanup
  * @param {(config: object) => void} [adjust] further changes to the copy's settings
  * @returns {{server: string, prefix: string, log: string, base: string}} the world
@@ -36,14 +37,14 @@ function makeWorld(t, adjust = () => {}) {
     const base = makeScratchDir('stop');
     t.after(() => removeScratchDir(base));
     const prefix = `oa-test-stop-${process.pid}-${Math.random().toString(36).slice(2, 10)}`;
-    const log = path.join(base, 'state', 'limit-stop.log');
+    const log = path.join(base, 'state', 'logs', 'limit-stop.log');
     const skill = makeSkillCopy(base, (config) => {
+        config.teamState = { ...config.teamState, folder: path.join(base, 'state') };
         config.limitStop = {
             ...config.limitStop,
             pipePrefix: prefix,
             connectTimeoutMs: 2000,
             startCheckSeconds: 10,
-            logFile: log,
             logTailKB: 64,
             leadAgentTypes: ['task-lead'],
             processCheckSeconds: 1,
@@ -473,6 +474,37 @@ test('the log names the session, each agent told and the process watched, and no
     assert.match(log, new RegExp(`^\\d{4}-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d \\| ${SESSION} \\| listening on .*${SESSION} \\(pid \\d+\\): .*; watching the session's Claude Code process ${process.pid}\\n`, 'm'));
     assert.match(log, /told a1111111111111111 \(task-lead, lead\)\n/);
     assert.equal(log.includes('STOP FOR LIMIT'), false, 'the texts are not copied into the log');
+});
+
+test('the log lies at limitStop.logFile under teamState.folder, its folders made on the first line', async (t) => {
+    const world = makeWorld(t, (config) => { config.limitStop.logFile = 'deep\\er\\server.log'; });
+    await startServe(t, world, serverArgs(SESSION, inTwoHours()));
+    const log = path.join(world.base, 'state', 'deep', 'er', 'server.log');
+    assert.match(fs.readFileSync(log, 'utf8'), new RegExp(`\\| ${SESSION} \\| listening on `));
+    assert.equal(fs.existsSync(world.log), false, 'nothing at the shipped place');
+});
+
+test('a refused limitStop.logFile or a root that is not absolute: serve, start and check exit 2 naming the setting', async (t) => {
+    const cases = [
+        ['limitStop.logFile', (config) => { config.limitStop.logFile = '..\\limit-stop.log'; }],
+        ['limitStop.logFile', (config) => { config.limitStop.logFile = 'C:\\limit-stop.log'; }],
+        ['limitStop.logFile', (config) => { config.limitStop.logFile = 'logs/limit-stop.log'; }],
+        ['teamState.folder', (config) => { config.teamState.folder = 'relative\\state'; }],
+    ];
+    for (const [name, adjust] of cases) {
+        const world = makeWorld(t, adjust);
+        const pattern = new RegExp(`'${name.replace('.', '\\.')}'`);
+        const serve = await runServer(world, ['serve', ...serverArgs(SESSION, inTwoHours())]);
+        assert.equal(serve.code, 2, `${name} serve`);
+        assert.match(serve.stderr, pattern, `${name} serve`);
+        for (const mode of ['start', 'check']) {
+            const args = mode === 'start' ? serverArgs(SESSION, inTwoHours()) : ['--session', SESSION];
+            const run = await runServer(world, [mode, ...args]);
+            assert.equal(run.code, mode === 'start' ? 1 : 2, `${name} ${mode}: ${run.stdout}`);
+            assert.match(run.stdout, pattern, `${name} ${mode}`);
+        }
+        assert.deepEqual(fs.readdirSync(world.base).sort(), ['orchestrate-agents'], `${name}: nothing written`);
+    }
 });
 
 test('a log that cannot be written: serve exits 4 without listening, and start says NOT STARTED, naming the log', async (t) => {

@@ -8,8 +8,10 @@
 # enough free memory, then runs the command with PowerShell in the current folder, its output passed through.
 # The last line starts with HEAVY COMMAND DONE and gives the wait, the run time, the peak memory of the command's
 # process tree and the exit code; the script exits with the command's own exit code. The slot count, the free-memory
-# floor and the wait come from orchestration.config.json (runHeavy) unless passed; a missing setting is HEAVY COMMAND
-# NOT RUN with exit code 1, and no slot is taken. A wait that runs out is HEAVY COMMAND NOT RUN with exit code 124.
+# floor, the wait and the folder of the holder files (which say who holds each slot) come from
+# orchestration.config.json (runHeavy, the folder as a path under teamState.folder) unless passed; a missing or refused
+# setting is HEAVY COMMAND NOT RUN with exit code 1, and no slot is taken. A wait that runs out is HEAVY COMMAND NOT
+# RUN with exit code 124.
 # An unknown or misspelled parameter fails before any line runs, instead of being ignored (D-0007).
 [CmdletBinding()]
 param(
@@ -23,10 +25,14 @@ param(
     [int]$WaitMinutes,
     # How often to measure the command's memory while it runs.
     [int]$SampleSeconds = 2,
-    # The orchestration settings: the slot count, the free-memory floor and the wait.
+    # The folder of the holder files, a full path, used as given. Default: runHeavy.holderFolder under teamState.folder.
+    [string]$HolderFolder,
+    # The orchestration settings: the slot count, the free-memory floor, the wait and the holder folder.
     [string]$ConfigPath = (Join-Path $PSScriptRoot '..\orchestration.config.json')
 )
 
+# Each slot's named lock, machine-wide, is this prefix and the slot number. The name stays as it was when the holder
+# files moved under teamState.folder, so an older run-heavy still takes turns with this one.
 $slotPrefix = 'xpp-agent-heavy-command-slot-'
 
 # --- Settings -----------------------------------------------------------------------------------------------------
@@ -47,14 +53,81 @@ function Get-ConfigValue($config, [string]$key, [string]$path) {
     return , $node
 }
 
-# The slot count, the free-memory floor and the wait by parameter name: a parameter in $bound (the passed ones) as
-# passed, else its key under runHeavy. A passed parameter's key is not needed.
+# One setting by its dotted key, read the way lib\config.mjs requireSetting reads it: a part that is missing, spelled
+# in another case, or null is an error in that function's words, so this script and the Node code say the same.
+function Get-RequiredSetting($config, [string]$key) {
+    $node = $config
+    foreach ($part in $key.Split('.')) {
+        if ($node -isnot [Collections.IDictionary] -or -not ($node.Keys -ccontains $part) -or $null -eq $node[$part]) {
+            throw "orchestration.config.json has no setting '$key'"
+        }
+        $node = $node[$part]
+    }
+    return , $node
+}
+
+# Why a path under teamState.folder is refused, or $null when it is not: the first rule of lib\config.mjs
+# STATE_PATH_RULES it breaks, in that order and in those words. '\z' stands for JavaScript's '$': .NET's '$' also
+# matches before a final line feed.
+function Get-StatePathFault([string]$value) {
+    $parts = $value.Split('\')
+    if ($value -ceq '') { return 'is empty' }
+    if ($value.Contains(':')) { return "has a drive or a ':'" }
+    if ($value -cmatch '^[\\/]|[\\/]\z') { return "starts or ends with '\' or '/'" }
+    if ($value.Contains('/')) { return "has a '/'; parts are joined by '\'" }
+    if ($value -cmatch '[*?"<>|%]') { return 'has one of * ? " < > | %' }
+    if ($parts -ccontains '') { return 'has an empty part' }
+    if ($parts -ccontains '.' -or $parts -ccontains '..') { return "has a '.' or '..' part" }
+    return $null
+}
+
+# The absolute path of a file or folder of the team's own from its setting: the root teamState.folder (each %NAME%
+# filled in from the environment, then absolute: a drive letter, ':' and '\') joined with the setting, one or more
+# plain names joined by '\', so it never points outside the root. A copy of lib\config.mjs requireStatePath: the same
+# checks in the same order, refused in the same words. The join tidies the root as Node's path.join does (doubled
+# separators, '/', '.' and '..' parts); [IO.Path]::GetFullPath would also drop the trailing dots and spaces of a name,
+# and Join-Path fails on a drive that does not exist.
+function Get-StatePath($config, [string]$key) {
+    $root = Get-RequiredSetting $config 'teamState.folder'
+    if ($root -isnot [string] -or $root -ceq '') {
+        throw "orchestration.config.json setting 'teamState.folder' must be a path, not $(ConvertTo-Json -InputObject $root -Compress -Depth 10)"
+    }
+    foreach ($found in [regex]::Matches($root, '%([^%]+)%')) {
+        if (-not [Environment]::GetEnvironmentVariable($found.Groups[1].Value)) {
+            throw "orchestration.config.json setting 'teamState.folder' names $($found.Value), which is not set"
+        }
+    }
+    $root = [regex]::Replace($root, '%([^%]+)%', { param($found) [Environment]::GetEnvironmentVariable($found.Groups[1].Value) })
+    if ($root -cnotmatch '^[A-Za-z]:\\') {
+        throw "orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not $(ConvertTo-Json -InputObject $root -Compress)"
+    }
+    $value = Get-RequiredSetting $config $key
+    if ($value -isnot [string]) {
+        throw "orchestration.config.json setting '$key' must be text, a path under 'teamState.folder', not $(ConvertTo-Json -InputObject $value -Compress -Depth 10)"
+    }
+    $fault = Get-StatePathFault $value
+    if ($fault) {
+        throw "orchestration.config.json setting '$key' must be a path under 'teamState.folder' but ${fault}: $(ConvertTo-Json -InputObject $value -Compress)"
+    }
+    $names = [Collections.Generic.List[string]]::new()
+    foreach ($name in $root.Substring(3) -csplit '[\\/]') {
+        if ($name -ceq '..') { if ($names.Count -gt 0) { $names.RemoveAt($names.Count - 1) } }
+        elseif ($name -cne '' -and $name -cne '.') { $names.Add($name) }
+    }
+    $names.Add($value)
+    return $root.Substring(0, 3) + ($names -join '\')
+}
+
+# The slot count, the free-memory floor, the wait and the holder folder by parameter name: a parameter in $bound (the
+# passed ones) as passed, else its setting, a key under runHeavy; the holder folder's is a path under teamState.folder.
+# A passed parameter's setting is not needed.
 function Get-HeavySettings($config, [string]$path, $bound) {
     $keys = [ordered]@{ Slots = 'runHeavy.slots'; MinFreeMB = 'runHeavy.minFreeMB'; WaitMinutes = 'runHeavy.waitMinutes' }
     $settings = @{}
     foreach ($name in $keys.Keys) {
         $settings[$name] = if ($bound.ContainsKey($name)) { $bound[$name] } else { Get-ConfigValue $config $keys[$name] $path }
     }
+    $settings.HolderFolder = if ($bound.ContainsKey('HolderFolder')) { $bound.HolderFolder } else { Get-StatePath $config 'runHeavy.holderFolder' }
     return $settings
 }
 
@@ -90,9 +163,9 @@ function Get-TreeMemoryMB([int]$rootId) {
 
 # --- Slots --------------------------------------------------------------------------------------------------------
 
-# The file that says who holds a slot, so a waiting agent can tell what it waits for.
+# The file that says who holds a slot, so a waiting agent can tell what it waits for: slot-<n>.txt in the holder folder.
 function Get-HolderFile([int]$slot) {
-    return Join-Path $env:TEMP "$slotPrefix$slot.txt"
+    return Join-Path $HolderFolder "slot-$slot.txt"
 }
 
 # Tries every slot once. Returns @{ Mutex; Slot; Abandoned } for the slot taken, or $null when all are held.
@@ -189,6 +262,8 @@ if ($MyInvocation.InvocationName -eq '.') { return }
 
 try {
     $settings = Get-HeavySettings (Read-OrchestrationConfig $ConfigPath) $ConfigPath $PSBoundParameters
+    # Made here, before any slot is taken, so a folder that cannot be made stops the script with the same line.
+    [IO.Directory]::CreateDirectory($settings.HolderFolder) | Out-Null
 }
 catch {
     Write-Host "HEAVY COMMAND NOT RUN | $($_.Exception.Message)"
@@ -198,6 +273,7 @@ catch {
 $Slots = $settings.Slots
 $MinFreeMB = $settings.MinFreeMB
 $WaitMinutes = $settings.WaitMinutes
+$HolderFolder = $settings.HolderFolder
 
 $asked = Get-Date
 $deadline = $asked.AddMinutes($WaitMinutes)

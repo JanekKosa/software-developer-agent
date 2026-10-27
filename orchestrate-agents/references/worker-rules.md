@@ -15,15 +15,18 @@ experimental:
 skills:
   - team-rules              # the rules leads and workers share: guardrails, CLAUDE.md first, clock, progress file, report block
   - report-changes
-  - machine-pitfalls        # the machine's traps, which used to come from the global CLAUDE.md
+  - windows-pitfalls        # the traps of any Windows PC, part of the team
+  - machine-pitfalls        # this PC's own traps; the init run gives a PC that has none an empty starter
 disallowedTools: Workflow
 ```
 
 Why each line: `omitClaudeMd` keeps the global and project instruction files out of a context that needs only the
 task; `cacheTtl: 1h` keeps a worker that waits for its lead's answer from being re-read from scratch; `team-rules`
 carries the user's guardrails and the rules every lead and worker share, so they need no copy;
-`machine-pitfalls` carries the traps the agent no longer gets from the global file. Subagents never get the
-`Workflow` tool anyway; the line says so on purpose.
+`windows-pitfalls` and `machine-pitfalls` carry the traps the agent no longer gets from the global file: the first
+those true on any Windows PC, the second this PC's own (each PC keeps its own, outside the repo). `skills:` is a plain
+list of names, so a project adds its own skills the same way. Subagents never get the `Workflow` tool anyway; the
+line says so on purpose.
 
 ## The sections to copy
 
@@ -44,7 +47,7 @@ session edits that file.
 ## Heavy commands
 
 Other agents may be working beside the worker. It runs every heavy command (type-check, tests, build, a long
-real-data run) through `& 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\run-heavy.ps1' -Command '<command>'`:
+real-data run) through `& "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\run-heavy.ps1" -Command '<command>'`:
 it waits for its turn and for free memory, and its last line gives the peak. A redirection to a log file goes
 inside the command. An error that a type-check or test run shows in a file another agent is changing is that
 agent's: the worker reports it and does not fix it.
