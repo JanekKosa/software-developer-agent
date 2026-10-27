@@ -1,0 +1,21 @@
+{
+  "kind": "question",
+  "blocking": false,
+  "urgency": "medium",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "The lead and the worker load a notes skill, machine-pitfalls, when they start. It lives in the xpp-agent repo and holds the traps found on this PC. You said: \"yeah but the agent will run on different pcs\". About half of the notes hold on any Windows PC (PowerShell ignores letter case in variable names; moving a folder that holds folder links empties the link targets; how Claude Code agents behave). The other half is true only here (the broken git.exe, no Python, VS Code running out of memory on this PC's 7.8 GB).",
+  "example": "On a new laptop with B, the worker still knows that moving a folder with links in it empties them, because that is true there too. It is no longer told to avoid C:\\Program Files\\Git\\cmd\\git.exe, which is broken only on this PC.",
+  "options": [
+    "A: the repo carries only the habit: at start, load this PC's own notes if it has them, and add each new trap to them. Each PC keeps its notes outside the repo; install.ps1 creates an empty notes skill on a PC that has none (one small run; a new PC starts knowing no traps).",
+    "B: as A, and the traps that hold on any Windows PC move into the repo as a team skill; only this PC's own traps stay in its notes outside the repo (one run that sorts about 30 KB of notes in two; a new PC starts with the general traps).",
+    "C: copy the whole skill into the repo (no sorting; every PC is told this PC's facts, some of them wrong there, such as the git path)."
+  ],
+  "recommendation": "B, because the general traps took hours to find here and hold on every Windows PC, while A's habit keeps each PC's own facts out of the repo.",
+  "meanwhile": "Nothing changes on this PC until the run; the notes keep loading as now. Work goes on assuming B.",
+  "evidence": [
+    "C:\\Repos\\My projects\\xpp-agent\\Docs\\Skills\\machine-pitfalls\\SKILL.md",
+    "C:\\Repos\\My projects\\software-developer-agent\\agents\\task-lead.md",
+    "C:\\Repos\\My projects\\software-developer-agent\\agents\\software-developer.md"
+  ]
+}

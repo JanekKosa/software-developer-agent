@@ -1,0 +1,20 @@
+{
+  "kind": "issue",
+  "blocking": false,
+  "urgency": "medium",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "Two of the skills that would come into this public repo name clients. explain-clearly's guide for explainer pages names one client twice, the folder of that client's repo on this PC, and one of its ticket numbers. machine-pitfalls names another client's environment once. At the next push they would be public on GitHub. No password, token or customer record was found in either.",
+  "example": "One line of explain-clearly points at a guide page in that client's repo, by the client's name and a ticket number, as the model page to copy.",
+  "options": [
+    "A: replace them with invented names in what comes here; with a move, the original loses them too (part of the skills run).",
+    "B: leave out the lines that name them (part of the skills run; the explainer-page guide loses its pointer to a model page).",
+    "C: bring them in unchanged (no cost; the names become public)."
+  ],
+  "recommendation": "A, because the guides keep their examples and no client is named in public.",
+  "meanwhile": "Work goes on assuming A; nothing is copied before the skills run.",
+  "evidence": [
+    "C:\\Repos\\My projects\\xpp-agent\\Docs\\Skills\\explain-clearly\\references\\explainer-page.md",
+    "C:\\Repos\\My projects\\xpp-agent\\Docs\\Skills\\machine-pitfalls\\references\\files-and-links.md"
+  ]
+}

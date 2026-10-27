@@ -1,0 +1,161 @@
+D C:\Users\user\AppData\Local\Temp\claude-agent-team-on
+F C:\Users\user\AppData\Local\Temp\claude-agent-team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 24 639286884117351086 6BE1DE04AA584046BC31D8DF212BD2A053484A4446949E3CCE90FF160AC48C75
+F C:\Users\user\AppData\Local\Temp\claude-agent-team-on\56c67d3d-b3c0-43be-a82c-b3a9cdc23274 24 639286896576967841 A0890ECF6E89C3CDF16CC9870732831DBCE92D17F3F3C84A4DE66107D4B0F7B3
+F C:\Users\user\AppData\Local\Temp\claude-agent-team-on\bf7022c6-e279-4ccd-81b9-ef9cadd8ee4f 24 639286496470183486 A2A4B3D7FA077BD3BB4BCEC0B853E7B92A9ABB5560F773D78AECFE40B9406239
+D C:\Users\user\AppData\Local\Temp\claude-context-guard
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a0114a36fbb10c5cf.json 73 639285627856308676 59EA76A84C97F95A1BF63CDE0543BD0671958EDF0631A574309067FAF21945A4
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a04a592b6ffd74265.json 73 639286854503372731 B045CBBF70E0884934CC55043FE9777907E3FDA489BA1B5CF42ABD2A664E2BF3
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a0902b21c850c0fa1.json 73 639286954182737108 9B665377C1089FC13F949091879C5FFE72B32539167E0E451F9829684B692A57
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a12e8f686abe8a4ab.json 73 639286047786847937 19405059A21B8E399F1A2A48C29EF2B3952871C50185A9C6F9998B8ECF322806
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a2066b354f46fdbcd.json 73 639285718370065810 9DEB31040DBF6CBDD288D29308C4E5BD6F93E4EB02B066BE2B3E535B688F12C8
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a2cde90b8ed39c49f.json 73 639285939053007286 F173C001B9D6F07E9EC4DCBDFC6C6D496A2224E043744CB78B46EAB890985AE2
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a2ee80c9b46399141.json 73 639285535152463663 3056C76B34F831B59BF0C807C71F9574EADFC2A619E564A37C48F442C77F6D40
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a32ea1713cf44c75a.json 73 639286231216167288 3222BDA248052F6D4268D22515EA2017C4E2DD6884CC08F4D68161FC592A42AD
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a4609875df793cffd.json 73 639286412111677763 7D34C4D2E71B6284B037903B67CA4E6F7844DA5BA0BE59C078B5FB05751BF54D
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a5054318360937bed.json 73 639285499712456590 4C6850439DB18DBCE204902A1CA7E6F017013B84752690F5479E316447F6437D
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a5f32877e69c36390.json 73 639286050736803771 6FD4E5D41E9E8BF86C0E53CDD39F02C9F215CBECBA132AA124AC794CF814583A
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a6033c2eafacb0fd8.json 73 639285873311997654 5DCC173AE7C22609DA6D8F8C1433B4C2A90F4009D106713301AEFA8DFA312D33
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a678263a59c7f8ad1.json 73 639285994384112353 904A7100C8B880C6B4C11E23DACF1186CEB7411B3DA2ED765B0F0AE02AD9E445
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a7de81feb6257bc11.json 73 639286228112665624 B373458153CD1EC3B6E4CD40EB4103FDAE7D0F459889384F3A6CA45D02D2270E
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a8c663664f096610f.json 73 639285605160259146 62270ADB4A9BACAE87F16E4732F2620D99C734B47ABB77C25E928B215253D97A
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a8ce5ba4b4e3956d2.json 73 639285895072965913 B33FB09118FF3436B4DF997276D47F868C1AEF71CCD03ECF2FF3FEF16F769F03
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\a9c712cd62849b686.json 73 639286207776668969 531581821F38DBB099922E1CE78EBBC11834D45B842662EA50579013A0E2D1B3
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\aa04391c3e489803e.json 73 639287022683280328 81C6B8AB1905F416ACF4C93E933929C9809CECEF1893C50BCFCF37FFE7E12997
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\aa40bbde9e0feef82.json 73 639285184796085826 8191AE442EB03BEB9B11C6148EA2D64D5AA10E84C269DDE0E7B8CC9DBD780C9E
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\aa800f33dd8aa1cb2.json 73 639285446576102955 407827F5BEC34AE42295AE758C04E3532F0DEDB153CBB523ECD7B7F11B34EE91
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\aa8109f9e69c25a4f.json 73 639286384391345423 182530A2D58FD507BED3163A5A6E9D8039CE90E76FC17722479D2114C5C8C0EC
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\acc68d85a70a2c9e9.json 73 639285169271529638 67CBF9158AE73F228669940248A44917FDDF39D57D4330488AC1B559CB182F58
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\ae2f7359e3f73c143.json 73 639285931644071318 388D3C267EF4508B636D2EEFFDFB3E38B25769B3A3D925C7EDF019B9D02810BF
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\aea7aacc57d12632c.json 73 639285958165927759 F5F656BD161E7E9DDC9F847A1A94A2AAB77EB4A8751A1472B2E8EB31A29B908A
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\af664e873f0e1f71c.json 73 639286271058163238 7118F18BFF7274F5EE99E27A676F33EFC90C80B2ADC388596E67DD344567FD46
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\session-111d8651-32ea-42b6-8502-d6ed0cc40ca7.json 73 639286063050112505 743D6A55077AA9BA3186D497B5928ED09A2F229CF5FAAD34D51E34900B1991CA
+F C:\Users\user\AppData\Local\Temp\claude-context-guard\session-bf7022c6-e279-4ccd-81b9-ef9cadd8ee4f.json 73 639286868469625324 1B832E677B5CF71B751283718A4727722FF61AE320FE65FB5DFA550D1899923D
+D C:\Users\user\AppData\Local\Temp\claude-usage-probe
+ABSENT C:\Users\user\AppData\Local\Temp\team-on
+D C:\Users\user\.claude\state
+F C:\Users\user\.claude\state\limit-stop.log 11409 639286924109521728 61544C7214A6F81990086175BD88ED921A107BC6038FF22B75EB0BC8319598C9
+F C:\Users\user\.claude\state\mcp-discover-verdicts.json 750 639286889215316413 C93B37E0A26C1E0C5374483AECDEF9124D8052D0FDA0B7CCB60CE51B259327E6
+F C:\Users\user\.claude\state\relaunch.log 1782 639286869714438468 B1F21F66160FDF14C2F85A5CECE263E05CDFDA137BAFB618A104305D52926533
+F C:\Users\user\.claude\state\usage-limits.json 172 639287033792116544 8AE5B17C688CADAA633538B51CC8F58C64688A5CE102D8ECC9073ED131CBA7BA
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\hooks
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\hooks\context-guard.mjs 24011 639286498367639849 E0E57696F445D647B0D65C29D3C4460889EB249592311D3B3800F49E3EF97FFF
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\hooks\decision-reminder.mjs 6895 639286498464954926 9AAD7F4B2E5BD139C28870A9BB106CF557C879FC0F991E3552956D22008FE871
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\agent-team.mjs 2944 639286884517954391 CB05AE4B2A16C7BF618455AFE2A68E87EF18BB34B2BE522C1DB35520AF062CA8
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\config.mjs 4186 639285436611093762 B586F0F08D62B1235B16C48925EE30C9AAFFDC0985DF80F7A9BC011D61EE9627
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\decision-register.mjs 77729 639286996450556033 52815B1907DCBDFD4FD3587E6502E792B35B734C18C83C71179B744680ED0848
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\file-lock.mjs 3002 639285094776667204 7B8264587328B20684BCA68ED3D6AA89A6DABA6B98F5648D70039243CA5D4D57
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\git-repo.mjs 4985 639285129660481955 65D7C56E182D8540A12F8BBD37E1D244C2C537CB341A5C430050C99E6FF35FE0
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\hook-io.mjs 1811 639285096964798335 A5FC8E9A894D6B348AB10140986BE7FAF7E0A55B7B2C274345B5B67D2A1A2FAF
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\limit-stop.mjs 16334 639286403219223393 51294C321884C2915BD0027DD7498D75F6D40C7A786C3B78D34CF6A16F9CA318
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\local-time.mjs 457 639285094768734053 353BB5788AADB363CE8A13A54DC507DC74DD3D02A9B8C38B451CBF88CFC3DFF7
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\sleep.mjs 385 639285094760666190 CC3CE3F8DAB546AC219717EF1C924FA4BFC94D2F798EDF9E6DFF8E47A36BE786
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\text-file.mjs 4241 639285122096927714 6CE9C9491A368A7D037068FA90F51CFDDF4F107C9E9333DF9194C791F172F481
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\lib\transcript.mjs 5190 639286402560088766 E7933C54C75811D97BBC05163155C0B0C150EC1997623C782CB36B6FF2ED6B90
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\orchestration.config.json 17335 639286884509409115 48595EF71D31CD97AC2DCA5BBB857BF73B1B7A5B6BD9A5A7FE73C1EF280171D2
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\references
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\references\agent-team-guide.html 39966 639286861857208590 E17384189255DE5972F26355D5855026C6DECD9386D964A432DD67C9C672CB47
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\references\lead-brief-template.md 2751 639285113890054609 F5ABBCCB80778163649D757CE0C063DA18307115EF62512FD84AD3A404320870
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\references\lessons.md 8219 639286400092088809 8D93CB530A1FC6501049D2C9E7FFF70DC37931B8CC3AF968D24525EE1CF32F93
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\references\limits-and-caps-guide.html 41285 639286400092245235 EE81E8B3344DA3B4C1A59B9CACDB11D74B25BA982F9C82DD4B820D2209489398
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\references\start-messages.md 7213 639286400092434634 9B496280FACBE192248F42677223DD9247BA8F9CE5C59C4EB80E2A142A61650E
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\references\usage-limits.md 20865 639286419443611442 C2AEE91D8006C1337FC2F8076D9E6EC5D5D07C465ABCCA583A80F46495AAB5CB
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\references\worker-rules.md 2982 639285183041684351 BCE6B46AE19702608CC36C49122833DC3AAD52EF2C9931D488591F5BD18D1358
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\limit-stop-server.mjs 30268 639286403218931944 DB231AADDD681E431A7819E54BBC17644A02EEB996D8717DE3C23BB11391B255
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\register.mjs 15121 639286997786546072 78F2F7488D140DBE624F0AC5799BE3F1D9E803CEB5FD5388FC0744A6C6AFEFFD
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\run-heavy.ps1 10785 639285598576613408 2DD7C334B1010FC1954B9E454439DB63F222D34BABD8264B7E3DC9A02FA3C156
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\schedule-relaunch.ps1 10846 639285598568452130 04461FF89F1DD6E08EBD7E688EC86B8CACB5C0B36E1B7256F8F79365D3F63529
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\start-session-in-vscode.ps1 16837 639285598592748113 710949B197640CBEBE332B03912D80E7DCB718A8BC4EB4BE07CD2C53762D7B1F
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\team-on.mjs 1540 639286495946828190 72C1382C9249E877623EBDAC3AA5B2B42C7B20B9912E7DB1779A49B2E5E61F66
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\usage-probe.ps1 14153 639286402559932407 CF17C042848CDACF7618423ADBFD9491C17DD455A458CC21E994B619EAE89944
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-agent-size-and-stall.ps1 7494 639286402559660961 AEB18BE0BB5582D9B3AD67098F598873404295D9EEA95A461E08136D57963182
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-decision-answers.ps1 12968 639286385265052825 82EBE3A07297A9ECF3326D72D6ED437F7F53AD15A7405F37FB1E45BC28F2F07F
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-usage-and-context.ps1 48667 639286499326197678 7730A889B3A424AF2DC7728DD9598F0A5EA9AB546E2456E9C57CEB1CDA14F244
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\SKILL.md 31059 639287018965174596 0DA1B4564C17D94A2349BB9F9F5F90C2658167F42BCDF6D84EEF36A97ADF61A3
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\helpers
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\helpers\scratch.mjs 6460 639285091722118255 591EDAEE5461DB7DE46D272DC1555C269FC960D9B018316FBF79119819E5868A
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\hooks
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\hooks\context-guard.test.mjs 54756 639286497190939169 041411BE1462EC48F9DB1E9B1E29A3AE9DE76E54E3E553A2554721EC0903807F
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\hooks\decision-reminder.test.mjs 25310 639286999009704004 0460BD3BF491677E18F8BF87287BA1199DACFA36294E68D08161B4E4C399390B
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\lib
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\lib\agent-team.test.mjs 4577 639286497856858531 CA461E9AD014C34EF66C67D4BDA3C956DA59BA0FC89D3829A8789222D0862A1A
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\lib\basics.test.mjs 9024 639285439225546032 3378897D0442681D5E31340A6A8D1F027F6F333EED8EAB340AC916D6B53ECA3A
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\lib\decision-register-migrate.test.mjs 22212 639286337681953933 F0290626C23500457B4E571A2BFA871D8F30F5077E96D1A30FC14F18F15D58B7
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\lib\decision-register-points.test.mjs 21424 639287006154356291 BC01FEF4447CFA81CBAE34653831E3DAA282129DA422E5282E3E8CD9D9213E2D
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\lib\decision-register.test.mjs 73443 639286997660311080 55D26641C7E4DC03ADB49F668A2B9CCD1FFA52842E124054AEC5E2DBC641FEA3
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\lib\git-repo.test.mjs 6425 639285092283966090 440C96F270F916B3F680C03DC268F60E18727CDCC2DEE708325A56532E24B349
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\lib\transcript.test.mjs 5531 639285102562730701 D48C63FC935D25043F133EB0039D0F3CE1F6EBEC1FF0349BFA2E6841A14F0AF7
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\limit-scripts.tests.ps1 148919 639286406534494590 612ECB865DB950B8E3F9AF5B1AAEEFE791F93C92DFB07792978C41201C593238
+D C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\scripts
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\scripts\limit-stop-server.test.mjs 41231 639286401658015727 CF3F21D8497E0E159C7B25BF722719E6F27F1BAFDE2CC56ECB75D182D01DE185
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\scripts\register.test.mjs 54306 639286996566003041 DFC3CCE61B2898A9D2FA9995B1E5430097FE7EA9652DCC61A6AC6B24DCE96C35
+F C:\Repos\My projects\software-developer-agent\orchestrate-agents\tests\scripts\watch-decision-answers.test.mjs 33721 639286419368861300 72017F3A8A258F15839B92061EDA7A976E1B0D025E10DBC32CFA36861D085799
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\hooks
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\hooks\context-guard.mjs 23539 639286925364263155 B2FAF0A9D6153E36DA5B5B62BB2ABA2F0DC3215573A3DEB8D943B349F3455B51
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\hooks\decision-reminder.mjs 6895 639286498464954926 9AAD7F4B2E5BD139C28870A9BB106CF557C879FC0F991E3552956D22008FE871
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\agent-team.mjs 2726 639286925187688978 2938DE2B4A7014406FEC4EFCCAB51426DC7399798C33A2D7EF790F0F8892AA7A
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\config.mjs 6992 639286996312102674 D796286CEFC8EB7145BC351A0071EED5B93EAAB30BA944A8B7FD556EB6337053
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\decision-register.mjs 77729 639287028218263680 52815B1907DCBDFD4FD3587E6502E792B35B734C18C83C71179B744680ED0848
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\file-lock.mjs 3002 639285094776667204 7B8264587328B20684BCA68ED3D6AA89A6DABA6B98F5648D70039243CA5D4D57
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\git-repo.mjs 4985 639285129660481955 65D7C56E182D8540A12F8BBD37E1D244C2C537CB341A5C430050C99E6FF35FE0
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\hook-io.mjs 1811 639285096964798335 A5FC8E9A894D6B348AB10140986BE7FAF7E0A55B7B2C274345B5B67D2A1A2FAF
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\limit-stop.mjs 16395 639286925510811390 5B264EE2116379BAE17A7F2FB2D1BEFB87F7B7D60A5079F23661A90C27EE1CE4
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\local-time.mjs 457 639285094768734053 353BB5788AADB363CE8A13A54DC507DC74DD3D02A9B8C38B451CBF88CFC3DFF7
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\sleep.mjs 385 639285094760666190 CC3CE3F8DAB546AC219717EF1C924FA4BFC94D2F798EDF9E6DFF8E47A36BE786
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\text-file.mjs 4241 639285122096927714 6CE9C9491A368A7D037068FA90F51CFDDF4F107C9E9333DF9194C791F172F481
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\lib\transcript.mjs 5190 639286402560088766 E7933C54C75811D97BBC05163155C0B0C150EC1997623C782CB36B6FF2ED6B90
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\orchestration.config.json 19333 639286994311773462 1F40C85DFB8F1534B352849A11765E7FB1E873EC450819B51B4A4B05627654B2
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\references
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\references\agent-team-guide.html 42822 639286948846813036 24B698727AB3603414A1019E1421DA48976EB4D15E3FBE925C462A8943BB5CE0
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\references\lead-brief-template.md 2751 639285113890054609 F5ABBCCB80778163649D757CE0C063DA18307115EF62512FD84AD3A404320870
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\references\lessons.md 8219 639286400092088809 8D93CB530A1FC6501049D2C9E7FFF70DC37931B8CC3AF968D24525EE1CF32F93
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\references\limits-and-caps-guide.html 41285 639286400092245235 EE81E8B3344DA3B4C1A59B9CACDB11D74B25BA982F9C82DD4B820D2209489398
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\references\start-messages.md 7213 639286400092434634 9B496280FACBE192248F42677223DD9247BA8F9CE5C59C4EB80E2A142A61650E
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\references\usage-limits.md 20967 639286945641704488 CAFD0C0D8878BBA611D4E6A6B967D71BBFDDA54F23A4938D7128E7FB4C967B78
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\references\worker-rules.md 2982 639285183041684351 BCE6B46AE19702608CC36C49122833DC3AAD52EF2C9931D488591F5BD18D1358
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\limit-stop-server.mjs 30264 639286925540978905 E3779E621F6C90ADED0DBDC24B8680AD3EDF31AAE01166ECFD004C37188BC1C3
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\register.mjs 15121 639287028218949203 78F2F7488D140DBE624F0AC5799BE3F1D9E803CEB5FD5388FC0744A6C6AFEFFD
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\run-heavy.ps1 15651 639286997291939670 0FB54BB38E0B79EF616F1D867387FD8BB7E96E9412967624D9A15BDD57DC0007
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\schedule-relaunch.ps1 10846 639285598568452130 04461FF89F1DD6E08EBD7E688EC86B8CACB5C0B36E1B7256F8F79365D3F63529
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\start-session-in-vscode.ps1 20136 639286996702132247 9043737420C904BBBC883C383425C9F1DA1DB97A3AC1023219DAE07AD6A9CC80
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\team-on.mjs 1608 639286925327849791 73DFC709D334040CC3139B8B165180224DD2B08A14D17831B19BE03973A492A5
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\usage-probe.ps1 17325 639286996334844239 44925AF05C6D439B25A5658DAED6AB4BE5742DB079E65AFCAD787CB0B4F9FB11
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\watch-agent-size-and-stall.ps1 7494 639286402559660961 AEB18BE0BB5582D9B3AD67098F598873404295D9EEA95A461E08136D57963182
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\watch-decision-answers.ps1 12968 639286385265052825 82EBE3A07297A9ECF3326D72D6ED437F7F53AD15A7405F37FB1E45BC28F2F07F
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\scripts\watch-usage-and-context.ps1 52526 639286996360758920 1490BA30191F7C3A2BBAF1C2064C81303B6C97F04BD2EC30DB14E6512B6E31F7
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\SKILL.md 31127 639287028220858446 DF45CE043A6AFBA4B56553164A82AF9E64AF69860A707A2EEB69AF51C7BFE32C
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\helpers
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\helpers\scratch.mjs 7415 639286924739950079 C715E10715E3C8BAC7E8D623B4161342B5FFAC48B3381F880671FD4C7AE17F0A
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\hooks
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\hooks\context-guard.test.mjs 57881 639286922577069740 8EF4F13D90A523280433424560C27C20190D9680CBB1829DEEC1BD77ACBCAFA6
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\hooks\decision-reminder.test.mjs 25606 639287028221404472 457BBC64D79C098930F59DF73AD165ECEB69C9253C75292D31065F26EE407DB2
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib\agent-team.test.mjs 8877 639286927242782891 F4C8F160C54B8E129FD3ACBD86602606E0862B87D41A9C275DA0E31110B9262C
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib\basics.test.mjs 9024 639285439225546032 3378897D0442681D5E31340A6A8D1F027F6F333EED8EAB340AC916D6B53ECA3A
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib\decision-register-migrate.test.mjs 22212 639286337681953933 F0290626C23500457B4E571A2BFA871D8F30F5077E96D1A30FC14F18F15D58B7
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib\decision-register-points.test.mjs 21424 639287028220363370 BC01FEF4447CFA81CBAE34653831E3DAA282129DA422E5282E3E8CD9D9213E2D
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib\decision-register.test.mjs 73443 639287028219356015 55D26641C7E4DC03ADB49F668A2B9CCD1FFA52842E124054AEC5E2DBC641FEA3
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib\git-repo.test.mjs 6425 639285092283966090 440C96F270F916B3F680C03DC268F60E18727CDCC2DEE708325A56532E24B349
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib\state-path.test.mjs 9314 639286994196091536 4E224B97523E7AD399800B417388A9847BD7C32FB2406C2A21CEC2F15D0F4F4D
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\lib\transcript.test.mjs 5531 639285102562730701 D48C63FC935D25043F133EB0039D0F3CE1F6EBEC1FF0349BFA2E6841A14F0AF7
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\limit-scripts.tests.ps1 183075 639287016070290382 07F90736BA5A92A63D2A3DB4C787C666F5DC50B60AEBE2C087105A8569D4F354
+D C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\scripts
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\scripts\limit-stop-server.test.mjs 43364 639286922895846553 6A7F8783CDAC45FF0DA46D99451E65C5D131B21DDAB5FA3CF39B2939A68524D0
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\scripts\register.test.mjs 54306 639287028219976004 DFC3CCE61B2898A9D2FA9995B1E5430097FE7EA9652DCC61A6AC6B24DCE96C35
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\orchestrate-agents\tests\scripts\watch-decision-answers.test.mjs 33721 639286419368861300 72017F3A8A258F15839B92061EDA7A976E1B0D025E10DBC32CFA36861D085799
+F C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING_BASE_CLAUDE.txt 4483 639287028222126973 337A29FEDAE66D976EF5D7DC881764381F45D10374106C4C4270DC76335D5BF4
+F C:\Users\user\AppData\Local\Temp\claude-session-watch-111d8651-32ea-42b6-8502-d6ed0cc40ca7.txt 24 639285852120201403 3E7D01580B1D6FFA516C83E2CCD70A6305289135E7ADC0D1147291747F73B64C
+F C:\Users\user\AppData\Local\Temp\claude-session-watch-56c67d3d-b3c0-43be-a82c-b3a9cdc23274.txt 24 639286896627182731 BB61A161D130DF43296CB9BD74C81B82A5C675B8A0860C743ACD6334B4D25067
+F C:\Users\user\AppData\Local\Temp\claude-session-watch-bf7022c6-e279-4ccd-81b9-ef9cadd8ee4f.decision.json 168 639286868766544239 258B6A2AD55FF36EAC81C2524CE5A123B4BF992B7C283920CE1972F4ABEE2C09
+F C:\Users\user\AppData\Local\Temp\claude-session-watch-d879e15e-e677-483f-a0d6-fe3743956e44.txt 24 639286401678310430 3D4B5FB64C1EB29AB84641DDE91F5980331FB36225B3B6A01186D1FE2A70A410
+F C:\Users\user\AppData\Local\Temp\claude-session-watch-dad36b3f-b3bc-419a-b216-1cc2877c5e5b.txt 23 639286146608246377 400390E1006C8773CB0FF1C47BDBCE76968A3C50565F60E81AFE6A23404F9480
+F C:\Users\user\AppData\Local\Temp\claude-session-watch-f45a8524-7cc5-4312-bec1-0f8bab8b1736.txt 24 639285409090856236 F87B20CC6832A4E6226BD244D85509F88086D52EABC3912E846D4971D2AEE340
+F C:\Users\user\AppData\Local\Temp\xpp-agent-heavy-command-slot-1.txt 425 639287034735863277 728A22DA3ADEA1EF0DCF93153578282531BA43A0EDB272E76D28434368D69D3F

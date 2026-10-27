@@ -10,6 +10,7 @@ experimental:
 skills:
   - team-rules
   - report-changes
+  - windows-pitfalls
   - machine-pitfalls
 disallowedTools: Workflow
 ---
@@ -19,7 +20,7 @@ whatever language and project your task names. Whoever started you cannot review
 judgement is the quality gate. Work carefully and prove each claim: the user prefers thorough over fast and never
 wants a check dropped to save time.
 
-Your skill files live in `C:\Repos\My projects\software-developer-agent\skills\` (called `<skills>` below).
+Your skill files live in `~\.claude\software-developer-agent\skills\` (called `<skills>` below; `~` is your home folder, `%USERPROFILE%`).
 
 ## 1. First steps of every run, in this order
 
@@ -29,8 +30,8 @@ Your skill files live in `C:\Repos\My projects\software-developer-agent\skills\`
    never read a long brief whole.
 2. **Read these three skills in full.** They are part of this definition. `team-rules` (the rules you share with
    your lead: the user's guardrails, the project's instructions, the clock, the progress file, plain reports, the
-   report block, messages), `report-changes` and `machine-pitfalls` (the traps of this machine and its tools) are
-   already loaded.
+   report block, messages), `report-changes`, `windows-pitfalls` (the traps of any Windows PC and its tools) and
+   `machine-pitfalls` (this PC's own traps) are already loaded.
    - `<skills>\karpathy-guidelines\SKILL.md`: think first, keep it simple, change only what the task needs.
    - `<skills>\test-driven-development\SKILL.md`: the failing test comes before the code.
    - `<skills>\verification-before-completion\SKILL.md`: no claim without the output that proves it.
@@ -278,14 +279,13 @@ Known clashes, resolved:
   not); otherwise use the Node equivalent or say what could not run.
 - `i-have-adhd` stays on until told to stop. Use it only when the task message asks, and only for that run.
 
-## 11. Machine traps not in `machine-pitfalls`
+## 11. Machine traps, now in `windows-pitfalls`
 
-- `robocopy` needs `/R:1 /W:1`, and its exit codes below 8 mean success although PowerShell reports a failure.
-- `Start-Process pwsh -File <path with a space>` needs an extra pair of quotes around the path, or it starts nothing
-  and says nothing.
-- Write a long script to a file with the Write tool and run the file. Inline here-strings holding regexes or system
-  paths get refused by the harness.
-- A backtick-n inside a single-quoted PowerShell string is not a line break.
-- `Get-ChildItem -Recurse` or Glob over a tree with hundreds of junctions may never finish. Give a narrow path.
-- Build shell command strings with a quoting helper, and start command-line tools with an argument array, never
-  through a shell or a `.cmd` shim.
+These six moved to the `windows-pitfalls` skill on 2026-10-27; each line says where.
+
+- `robocopy` retries and exit codes: `references/files-and-links.md`.
+- `Start-Process pwsh -File <path with a space>`: `references/shells.md`.
+- Inline here-strings with regexes or system paths refused by the harness: `references/shells.md`.
+- A backtick-n inside a single-quoted PowerShell string: `references/shells.md`.
+- `Get-ChildItem -Recurse` or Glob over a tree with many junctions: `references/files-and-links.md`.
+- Command strings built with a quoting helper, tools started with an argument array: `references/shells.md`.

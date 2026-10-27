@@ -10,10 +10,12 @@
 #
 #   pwsh -NoProfile -File tests\limit-scripts.tests.ps1 [-Only '<wildcard>'] [-WorkRoot <folder>] [-RealTask]
 #
-# The exit code is the number of failed cases. Everything it writes lives under its own work folder, plus the watch's
-# marker and decision files in %TEMP%, which are named after invented session ids; all are removed at the end. It
-# never runs the real usage probe, never opens a vscode:// link, never sends a key, and touches the Task Scheduler
-# only with -RealTask (one task a year ahead, removed again).
+# The exit code is the number of failed cases. Everything it writes lives under its own work folder, which is removed
+# at the end: every settings file it gives a script names a teamState.folder in that work folder, and every script it
+# starts runs there with USERPROFILE, TEMP and TMP pointing into it, so a script that slipped back to an old place
+# (%TEMP%, %USERPROFILE%\.claude\state) writes into the work folder and fails a case instead of touching the real
+# files. It never runs the real usage probe, never opens a vscode:// link, never sends a key, and touches the Task
+# Scheduler only with -RealTask (one task a year ahead, removed again).
 param(
     # The folder holding the scripts under test. A mutation check points it at a changed copy.
     [string]$ScriptsRoot = (Join-Path $PSScriptRoot '..\scripts'),
@@ -34,12 +36,23 @@ $ScriptsRoot = [IO.Path]::GetFullPath($ScriptsRoot)
 $RealConfig = [IO.Path]::GetFullPath((Join-Path $ScriptsRoot '..\orchestration.config.json'))
 $Invariant = [Globalization.CultureInfo]::InvariantCulture
 New-Item -ItemType Directory -Force $WorkRoot | Out-Null
+# The root of the team's own files in every settings file the cases give a script (New-TestConfig), and the home, the
+# temp folder and the working folder of every script the cases start (Start-ScriptProcess).
+$TestStateRoot = Join-Path $WorkRoot 'team-state'
+$TestHome = Join-Path $WorkRoot 'home'
+$TestTemp = Join-Path $WorkRoot 'temp'
+$TestCwd = Join-Path $WorkRoot 'cwd'
+New-Item -ItemType Directory -Force $TestHome, $TestTemp, $TestCwd | Out-Null
+# A script's function called here in the test goes the same way: a path it builds from %TEMP% ([IO.Path]::GetTempPath())
+# or %USERPROFILE% lands in the work folder too.
+$env:USERPROFILE = $TestHome
+$env:TEMP = $TestTemp
+$env:TMP = $TestTemp
 
 # --- The runner --------------------------------------------------------------------------------------------------
 
 $script:Passed = 0
 $script:Failed = 0
-$script:CleanUp = [Collections.Generic.List[string]]::new()
 
 # Runs one case and prints ok or FAIL with the reason. A case fails by throwing.
 function Test-Case([string]$name, [scriptblock]$body) {
@@ -167,9 +180,15 @@ function New-FixtureSession([string[]]$mainLines, [object[]]$agents = @()) {
             Write-Lines (Join-Path $folder "agent-$($agent.Id).meta.json") @($meta | ConvertTo-Json -Compress)
         }
     }
-    $script:CleanUp.Add((Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$session.txt"))
-    $script:CleanUp.Add((Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$session.decision.json"))
-    return [pscustomobject]@{ ProjectsRoot = $projects; SessionId = $session; Transcript = $transcript; Subagents = $subagents }
+    # Where a watch run with a settings file of New-TestConfig keeps its marker and its limit decision for the session.
+    # The folder is made here so a case can write a record before the watch runs; a case with a root of its own shows
+    # that the watch makes its folder itself.
+    $records = Join-Path $TestStateRoot 'usage-watch'
+    New-Item -ItemType Directory -Force $records | Out-Null
+    return [pscustomobject]@{
+        ProjectsRoot = $projects; SessionId = $session; Transcript = $transcript; Subagents = $subagents
+        MarkerPath = Join-Path $records "$session.txt"; DecisionPath = Join-Path $records "$session.decision.json"
+    }
 }
 
 # A usage reading in the shape usage-probe.ps1 writes. A window given as $null is missing.
@@ -182,9 +201,11 @@ function New-ReadingFile([DateTimeOffset]$checkedAt, $fivePercent, $fiveResets, 
 }
 
 # A copy of the real settings with some values changed ('usageLimits.resumeMarginMinutes' = 3, or a deeper key such
-# as 'contextCaps.main.warn'); $null removes a key.
+# as 'contextCaps.main.warn'); $null removes a key. Its teamState.folder is $TestStateRoot unless $changes sets it, so
+# no script given it can reach the real root.
 function New-TestConfig([hashtable]$changes) {
     $config = Get-Content -LiteralPath $RealConfig -Raw | ConvertFrom-Json -AsHashtable
+    $config['teamState']['folder'] = $TestStateRoot
     foreach ($key in $changes.Keys) {
         $parts = $key.Split('.')
         $node = $config
@@ -202,10 +223,16 @@ function Start-StandIn([int]$seconds) {
     return Start-Process -FilePath (Join-Path $PSHOME 'pwsh.exe') -ArgumentList '-NoProfile', '-Command', "Start-Sleep -Seconds $seconds" -WindowStyle Hidden -PassThru
 }
 
-# Starts a script as a child pwsh with an argument list, its output redirected.
+# Starts a script as a child pwsh with an argument list, its output redirected. It runs in $TestCwd with USERPROFILE
+# $TestHome and TEMP and TMP $TestTemp, so a path the script builds from them, or a relative one, stays in the work
+# folder.
 function Start-ScriptProcess([string]$file, [string[]]$arguments) {
     $info = [Diagnostics.ProcessStartInfo]::new((Join-Path $PSHOME 'pwsh.exe'))
     foreach ($argument in @('-NoProfile', '-NonInteractive', '-File', $file) + $arguments) { $info.ArgumentList.Add($argument) }
+    $info.WorkingDirectory = $TestCwd
+    $info.Environment['USERPROFILE'] = $TestHome
+    $info.Environment['TEMP'] = $TestTemp
+    $info.Environment['TMP'] = $TestTemp
     $info.RedirectStandardOutput = $true
     $info.RedirectStandardError = $true
     $info.UseShellExecute = $false
@@ -232,14 +259,14 @@ function Invoke-Script([string]$file, [string[]]$arguments, [int]$timeoutSeconds
 }
 
 # A stand-in for limit-stop-server.mjs, so no watch run starts a real server. Started, it writes the arguments it got
-# to stub-args-<session>.json beside itself, and whether the watch's decision record existed by then to
-# stub-record-<session>.txt, and prints the line in LIMIT_TESTS_STUB_SAYS, else a STARTED line. Asked to check, it
+# to stub-args-<session>.json beside itself, and whether the watch's decision record existed by then (in the record
+# folder of a settings file of New-TestConfig) to stub-record-<session>.txt, and prints the line in LIMIT_TESTS_STUB_SAYS, else a STARTED line. Asked to check, it
 # adds its arguments as one line to stub-check-<session>.txt and prints the line in stub-check-says-<session>.txt
 # beside itself (read at each check, so a case can change it while a watch runs), else the line in
 # LIMIT_TESTS_STUB_CHECK_SAYS, else a FINE line.
 $StubServer = Join-Path $WorkRoot 'stub-limit-stop-server.mjs'
 Write-Lines $StubServer @(
-    "import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import { fileURLToPath } from 'node:url';",
+    "import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url';",
     "const args = process.argv.slice(2);",
     "const session = args[args.indexOf('--session') + 1];",
     "const here = path.dirname(fileURLToPath(import.meta.url));",
@@ -251,7 +278,7 @@ Write-Lines $StubServer @(
     "    process.exitCode = says.includes('NOT CHECKED') ? 2 : 0;",
     "} else if (args[0] === 'start') {",
     "    fs.writeFileSync(path.join(here, ``stub-args-`${session}.json``), JSON.stringify(args));",
-    "    const record = path.join(os.tmpdir(), ``claude-session-watch-`${session}.decision.json``);",
+    "    const record = path.join($(ConvertTo-Json -InputObject $TestStateRoot), 'usage-watch', ```${session}.decision.json``);",
     "    fs.writeFileSync(path.join(here, ``stub-record-`${session}.txt``), String(fs.existsSync(record)));",
     "    const says = process.env.LIMIT_TESTS_STUB_SAYS ?? 'LIMIT STOP SERVER STARTED | process 4242 | pipe stub';",
     "    console.log(says);",
@@ -277,6 +304,7 @@ $Watch = Join-Path $ScriptsRoot 'watch-usage-and-context.ps1'
 $Probe = Join-Path $ScriptsRoot 'usage-probe.ps1'
 $Schedule = Join-Path $ScriptsRoot 'schedule-relaunch.ps1'
 $Start = Join-Path $ScriptsRoot 'start-session-in-vscode.ps1'
+$Heavy = Join-Path $ScriptsRoot 'run-heavy.ps1'
 $NoReading = Join-Path $WorkRoot 'no-reading.json'
 $t0 = [DateTimeOffset]::new(2026, 10, 25, 9, 0, 0, [TimeSpan]::FromHours(1))
 
@@ -292,6 +320,193 @@ function Import-ScriptFunctions([string]$path, [hashtable]$arguments = @{}) {
     # Not $command: run-heavy.ps1's [string]$Command parameter, dot-sourced into this scope, would turn it into text.
     foreach ($defined in Get-Command -CommandType Function | Where-Object { $_.ScriptBlock.File -eq $path }) {
         Set-Item -Path "function:script:$($defined.Name)" -Value $defined.ScriptBlock
+    }
+}
+
+# --- The paths under teamState.folder: each script's copy of lib\config.mjs requireStatePath -----------------------
+
+"paths under teamState.folder"
+
+# The cases of the rule, as @{ Name; Config (a settings file's text); Key; Says (the error, word for word as
+# lib\config.mjs words it) or Path }. They run with LIMIT_TESTS_STATE_HOME set to $StateHome and LIMIT_TESTS_REL to a
+# relative name (Use-StateCaseVariables).
+$StateHome = Join-Path $WorkRoot 'state-home'
+function Get-StateCases {
+    $file = 'orchestration.config.json'
+    $root = @{ folder = 'C:\team' }
+    $child = { param($value) @{ teamState = $root; usageLimits = @{ stateFile = $value } } }
+    $case = { param($name, $config, $says, $path, $key = 'usageLimits.stateFile') @{ Name = $name; Config = (ConvertTo-Json -InputObject $config -Depth 5 -Compress); Key = $key; Says = $says; Path = $path } }
+    $under = "$file setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but"
+    $notAbsolute = "$file setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not"
+    & $case 'no root section' @{ usageLimits = @{ stateFile = 'a' } } "$file has no setting 'teamState.folder'"
+    & $case 'a null root' @{ teamState = @{ folder = $null }; usageLimits = @{ stateFile = 'a' } } "$file has no setting 'teamState.folder'"
+    & $case 'the root section in another case' @{ TeamState = $root; usageLimits = @{ stateFile = 'a' } } "$file has no setting 'teamState.folder'"
+    & $case 'a number for the root' @{ teamState = @{ folder = 5 }; usageLimits = @{ stateFile = 'a' } } "$file setting 'teamState.folder' must be a path, not 5"
+    & $case 'an empty root' @{ teamState = @{ folder = '' }; usageLimits = @{ stateFile = 'a' } } "$file setting 'teamState.folder' must be a path, not """""
+    & $case 'a list for the root' @{ teamState = @{ folder = @('C:\team') }; usageLimits = @{ stateFile = 'a' } } "$file setting 'teamState.folder' must be a path, not [""C:\\team""]"
+    & $case 'a root naming a variable that is not set' @{ teamState = @{ folder = '%LIMIT_TESTS_NOT_SET_9F2%\team' }; usageLimits = @{ stateFile = 'a' } } "$file setting 'teamState.folder' names %LIMIT_TESTS_NOT_SET_9F2%, which is not set"
+    & $case 'a relative root' @{ teamState = @{ folder = 'team\state' }; usageLimits = @{ stateFile = 'a' } } "$notAbsolute ""team\\state"""
+    & $case 'a UNC root' @{ teamState = @{ folder = '\\server\share\team' }; usageLimits = @{ stateFile = 'a' } } "$notAbsolute ""\\\\server\\share\\team"""
+    & $case 'a drive-relative root' @{ teamState = @{ folder = 'C:team' }; usageLimits = @{ stateFile = 'a' } } "$notAbsolute ""C:team"""
+    & $case 'a root with forward slashes' @{ teamState = @{ folder = 'C:/team' }; usageLimits = @{ stateFile = 'a' } } "$notAbsolute ""C:/team"""
+    & $case 'a root relative once its variable is filled in' @{ teamState = @{ folder = '%LIMIT_TESTS_REL%\team' }; usageLimits = @{ stateFile = 'a' } } "$notAbsolute ""rel-9f2\\team"""
+    & $case 'a root from a variable' @{ teamState = @{ folder = '%LIMIT_TESTS_STATE_HOME%\team' }; usageLimits = @{ stateFile = 'usage-reading\usage-limits.json' } } $null "$StateHome\team\usage-reading\usage-limits.json"
+    & $case 'a root with a doubled separator, . and .. parts, a / and a trailing separator' @{ teamState = @{ folder = 'C:\a\\b\.\c\..\d/e\' }; usageLimits = @{ stateFile = 'x' } } $null 'C:\a\b\d\e\x'
+    & $case 'a root that climbs above its drive' @{ teamState = @{ folder = 'C:\a\..\..\b' }; usageLimits = @{ stateFile = 'x' } } $null 'C:\b\x'
+    & $case 'a bare drive root' @{ teamState = @{ folder = 'C:\' }; usageLimits = @{ stateFile = 'x' } } $null 'C:\x'
+    & $case 'no such setting' @{ teamState = $root; usageLimits = @{} } "$file has no setting 'usageLimits.stateFile'"
+    & $case 'no such section' @{ teamState = $root } "$file has no setting 'usageAndContextWatch.recordFolder'" $null 'usageAndContextWatch.recordFolder'
+    & $case 'a null setting' (& $child $null) "$file has no setting 'usageLimits.stateFile'"
+    & $case 'a number' (& $child 7) "$file setting 'usageLimits.stateFile' must be text, a path under 'teamState.folder', not 7"
+    & $case 'a list' (& $child @('a')) "$file setting 'usageLimits.stateFile' must be text, a path under 'teamState.folder', not [""a""]"
+    & $case 'a boolean' (& $child $true) "$file setting 'usageLimits.stateFile' must be text, a path under 'teamState.folder', not true"
+    & $case 'empty' (& $child '') "$under is empty: """""
+    & $case 'a drive' (& $child 'C:\x') "$under has a drive or a ':': ""C:\\x"""
+    & $case 'a colon' (& $child 'a:b') "$under has a drive or a ':': ""a:b"""
+    & $case 'a colon before a /' (& $child 'C:/x') "$under has a drive or a ':': ""C:/x"""
+    & $case 'a leading \' (& $child '\x') "$under starts or ends with '\' or '/': ""\\x"""
+    & $case 'a trailing \' (& $child 'x\') "$under starts or ends with '\' or '/': ""x\\"""
+    & $case 'a leading / before the / rule' (& $child '/x') "$under starts or ends with '\' or '/': ""/x"""
+    & $case 'a leading \\ before the empty part' (& $child '\\a') "$under starts or ends with '\' or '/': ""\\\\a"""
+    & $case 'a /' (& $child 'a/b') "$under has a '/'; parts are joined by '\': ""a/b"""
+    foreach ($bad in '*', '?', '"', '<', '>', '|', '%') {
+        & $case "a $bad" (& $child "a$($bad)b") "$under has one of * ? "" < > | %: $(ConvertTo-Json -InputObject "a$($bad)b" -Compress)"
+    }
+    & $case 'a % before an empty part' (& $child 'a%\\b') "$under has one of * ? "" < > | %: ""a%\\\\b"""
+    & $case 'a % before a .. part' (& $child '%\..') "$under has one of * ? "" < > | %: ""%\\.."""
+    & $case 'an empty part' (& $child 'a\\b') "$under has an empty part: ""a\\\\b"""
+    & $case 'an empty part before a .. part' (& $child 'a\\..') "$under has an empty part: ""a\\\\.."""
+    & $case 'a . alone' (& $child '.') "$under has a '.' or '..' part: ""."""
+    & $case 'a leading .. part' (& $child '..\x') "$under has a '.' or '..' part: ""..\\x"""
+    & $case 'a . part' (& $child 'a\.\b') "$under has a '.' or '..' part: ""a\\.\\b"""
+    & $case 'a trailing .. part' (& $child 'a\..') "$under has a '.' or '..' part: ""a\\.."""
+    & $case 'the usage reading' (& $child 'usage-reading\usage-limits.json') $null 'C:\team\usage-reading\usage-limits.json'
+    & $case 'the probe folder' @{ teamState = $root; usageLimits = @{ probeWorkingFolder = 'usage-probe' } } $null 'C:\team\usage-probe' 'usageLimits.probeWorkingFolder'
+    & $case 'the record folder' @{ teamState = $root; usageAndContextWatch = @{ recordFolder = 'usage-watch' } } $null 'C:\team\usage-watch' 'usageAndContextWatch.recordFolder'
+    & $case 'names ending in dots and spaces, kept as they are' (& $child 'a.\b..c\d ') $null 'C:\team\a.\b..c\d '
+    & $case 'a %NAME% in the child, refused rather than filled in or kept' (& $child '%TEMP%\x') "$under has one of * ? "" < > | %: ""%TEMP%\\x"""
+    & $case 'multibyte names' (& $child 'zespół\ślad.json') $null 'C:\team\zespół\ślad.json'
+    & $case 'a trailing \ followed by a lone LF does not end in \' (& $child "a\`n") $null "C:\team\a\`n"
+}
+
+# Runs $body with the variables the cases name set, and removes them afterwards.
+function Use-StateCaseVariables([scriptblock]$body) {
+    $env:LIMIT_TESTS_STATE_HOME = $StateHome
+    $env:LIMIT_TESTS_REL = 'rel-9f2'
+    Remove-Item Env:\LIMIT_TESTS_NOT_SET_9F2 -ErrorAction SilentlyContinue
+    try { return & $body }
+    finally { Remove-Item Env:\LIMIT_TESTS_STATE_HOME, Env:\LIMIT_TESTS_REL -ErrorAction SilentlyContinue }
+}
+
+# What a script's own Get-StatePath answers for each case: 'path|<path>' or 'error|<message>'. The script is
+# dot-sourced in a scope of its own, so each script's copy is the one asked; $arguments fills its mandatory parameters.
+function Get-ScriptStateAnswers([string]$stateScript, [object[]]$stateCases, [hashtable]$arguments = @{}) {
+    return @(& {
+            . $stateScript @arguments
+            foreach ($stateCase in $stateCases) {
+                try { "path|$(Get-StatePath ($stateCase.Config | ConvertFrom-Json -AsHashtable) $stateCase.Key)" }
+                catch { "error|$($_.Exception.Message)" }
+            }
+        })
+}
+
+# What lib\config.mjs requireStatePath answers for each case, the same way.
+function Get-NodeStateAnswers([object[]]$stateCases) {
+    $casesFile = Join-Path $WorkRoot "state-cases-$([guid]::NewGuid().ToString('N').Substring(0, 6)).json"
+    $answersFile = "$casesFile.answers.json"
+    [IO.File]::WriteAllText($casesFile, (ConvertTo-Json -InputObject @($stateCases | ForEach-Object { [ordered]@{ config = $_.Config; key = $_.Key } }) -Depth 5), [Text.UTF8Encoding]::new($false))
+    $configUrl = [Uri]::new([IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\lib\config.mjs'))).AbsoluteUri
+    & node --input-type=module -e "import fs from 'node:fs'; import { requireStatePath } from '$configUrl'; const answers = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')).map((c) => { try { return 'path|' + requireStatePath(JSON.parse(c.config), c.key); } catch (error) { return 'error|' + error.message; } }); fs.writeFileSync(process.argv[2], JSON.stringify(answers));" $casesFile $answersFile
+    return @([IO.File]::ReadAllText($answersFile) | ConvertFrom-Json)
+}
+
+# The cases whose answer differs from the case's Says or Path, one line each.
+function Get-StateMismatches([object[]]$stateCases, [object[]]$answers) {
+    for ($i = 0; $i -lt $stateCases.Count; $i++) {
+        $want = if ($null -ne $stateCases[$i].Path) { "path|$($stateCases[$i].Path)" } else { "error|$($stateCases[$i].Says)" }
+        if ($answers[$i] -cne $want) { "$($stateCases[$i].Name): expected <$want>, got <$($answers[$i])>" }
+    }
+}
+
+Test-Case 'paths under teamState.folder: lib\config.mjs answers every case of the table as written (the table is S1''s rule)' {
+    $cases = @(Get-StateCases)
+    $answers = Use-StateCaseVariables { Get-NodeStateAnswers $cases }
+    Assert-Equal $cases.Count $answers.Count 'one answer per case'
+    $wrong = @(Get-StateMismatches $cases $answers)
+    Assert-Equal 0 $wrong.Count "differences on $($cases.Count): $($wrong -join ' || ')"
+}
+
+Test-Case 'paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs' {
+    $cases = @(Get-StateCases)
+    foreach ($script in $Probe, $Watch) {
+        $answers = Use-StateCaseVariables { Get-ScriptStateAnswers $script $cases }
+        $wrong = @(Get-StateMismatches $cases $answers)
+        Assert-Equal 0 $wrong.Count "$(Split-Path -Leaf $script): differences on $($cases.Count): $($wrong -join ' || ')"
+    }
+}
+
+Test-Case 'paths under teamState.folder: start-session-in-vscode.ps1 and run-heavy.ps1 each answer every case of the table word for word as lib\config.mjs' {
+    $cases = @(Get-StateCases)
+    foreach ($pair in @(@($Start, @{}), @($Heavy, @{ Command = 'unused' }))) {
+        $answers = Use-StateCaseVariables { Get-ScriptStateAnswers $pair[0] $cases $pair[1] }
+        $wrong = @(Get-StateMismatches $cases $answers)
+        Assert-Equal 0 $wrong.Count "$(Split-Path -Leaf $pair[0]): differences on $($cases.Count): $($wrong -join ' || ')"
+    }
+}
+
+# The text of one function of a script as written, found by the PowerShell parser, or $null when it has none.
+function Get-FunctionText([string]$file, [string]$name) {
+    $tree = [Management.Automation.Language.Parser]::ParseFile($file, [ref]$null, [ref]$null)
+    $found = $tree.Find({ param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq $name }, $true)
+    if ($found) { return $found.Extent.Text }
+    return $null
+}
+
+Test-Case 'paths under teamState.folder: the four scripts that read such a path hold the same text of the rule''s three functions' {
+    foreach ($name in 'Get-RequiredSetting', 'Get-StatePathFault', 'Get-StatePath') {
+        $first = Get-FunctionText $Probe $name
+        Assert-True ($null -ne $first) "usage-probe.ps1 has $name"
+        foreach ($script in $Watch, $Start, $Heavy) {
+            Assert-Equal $first (Get-FunctionText $script $name) "$(Split-Path -Leaf $script): $name"
+        }
+    }
+}
+
+Test-Case 'paths under teamState.folder: the shipped settings put the relaunch log and the slot holders where the layout says (D-39)' {
+    $shipped = Get-Content -LiteralPath $RealConfig -Raw | ConvertFrom-Json -AsHashtable
+    $layout = [ordered]@{ 'relaunch.logFile' = 'logs\relaunch.log'; 'runHeavy.holderFolder' = 'heavy-commands' }
+    foreach ($key in $layout.Keys) {
+        $section, $name = $key.Split('.')
+        Assert-Equal $layout[$key] $shipped[$section][$name] $key
+        $why = $shipped[$section]["_why$($name.Substring(0, 1).ToUpperInvariant())$($name.Substring(1))"]
+        Assert-True ($why -is [string] -and $why.Contains('under teamState.folder') -and -not $why.Contains('%')) "$key has a _why that says it lies under teamState.folder and names no %NAME%: $why"
+    }
+    $shipped.teamState.folder = 'C:\Users\demo\.claude\state\software-developer-agent'
+    $cases = @($layout.Keys | ForEach-Object { @{ Name = $_; Config = (ConvertTo-Json -InputObject $shipped -Depth 10 -Compress); Key = $_; Path = Join-Path $shipped.teamState.folder $layout[$_] } })
+    foreach ($pair in @(@($Start, @{}), @($Heavy, @{ Command = 'unused' }))) {
+        $wrong = @(Get-StateMismatches $cases (Get-ScriptStateAnswers $pair[0] $cases $pair[1]))
+        Assert-Equal 0 $wrong.Count "$(Split-Path -Leaf $pair[0]): $($wrong -join ' || ')"
+    }
+}
+
+Test-Case 'paths under teamState.folder: the shipped settings put the reading, the probe''s folder and the watch''s records where the layout says (D-39)' {
+    $shipped = Get-Content -LiteralPath $RealConfig -Raw | ConvertFrom-Json -AsHashtable
+    Assert-Equal '%USERPROFILE%\.claude\state\software-developer-agent' $shipped.teamState.folder 'the root'
+    $layout = [ordered]@{
+        'usageLimits.stateFile' = 'usage-reading\usage-limits.json'; 'usageLimits.probeWorkingFolder' = 'usage-probe'
+        'usageAndContextWatch.recordFolder' = 'usage-watch'
+    }
+    foreach ($key in $layout.Keys) {
+        $section, $name = $key.Split('.')
+        Assert-Equal $layout[$key] $shipped[$section][$name] $key
+        $why = $shipped[$section]["_why$($name.Substring(0, 1).ToUpperInvariant())$($name.Substring(1))"]
+        Assert-True ($why -is [string] -and $why.Contains('under teamState.folder') -and -not $why.Contains('%')) "$key has a _why that says it lies under teamState.folder and names no %NAME%: $why"
+    }
+    $shipped.teamState.folder = 'C:\Users\demo\.claude\state\software-developer-agent'
+    $cases = @($layout.Keys | ForEach-Object { @{ Name = $_; Config = (ConvertTo-Json -InputObject $shipped -Depth 10 -Compress); Key = $_; Path = Join-Path $shipped.teamState.folder $layout[$_] } })
+    foreach ($script in $Probe, $Watch) {
+        $wrong = @(Get-StateMismatches $cases (Get-ScriptStateAnswers $script $cases))
+        Assert-Equal 0 $wrong.Count "$(Split-Path -Leaf $script): $($wrong -join ' || ')"
     }
 }
 
@@ -380,7 +595,9 @@ Test-Case 'probe: a missing settings key is an error naming the key' {
         $config = New-TestConfig @{ $key = $null }
         $run = Invoke-Script $Probe @('-ConfigPath', $config, '-StatePath', (Join-Path $WorkRoot 'never.json'), '-ClaudePath', 'C:\nowhere\claude.exe')
         Assert-Equal 1 $run.ExitCode "exit code ($key)"
-        Assert-True (($run.Lines -join ' ') -cmatch "no key '$([regex]::Escape($key))'") "reason names the key: $($run.Lines)"
+        # A path under teamState.folder is read by the copy of lib\config.mjs requireStatePath, in its words.
+        $says = if ($key -ceq 'usageLimits.probeWorkingFolder') { "has no setting '$key'" } else { "no key '$key'" }
+        Assert-True (($run.Lines -join ' ') -cmatch [regex]::Escape($says)) "reason names the key: $($run.Lines)"
         Assert-True (-not (Test-Path (Join-Path $WorkRoot 'never.json'))) "nothing written ($key)"
     }
 }
@@ -400,11 +617,12 @@ Test-Case 'probe: a fresh reading is younger than the fresh age; 0 never serves 
 
 # A stand-in for claude.exe: a batch file that lists the flag on --help and otherwise prints a recorded stream with
 # one rate_limit_event, or, with $event empty, a stream without one and exit code 1. With $argumentsLog it also writes
-# the arguments of the probe call (not of the --help call) to that file.
-function New-FakeClaude([string]$event, [string]$argumentsLog = '') {
+# the arguments of the probe call (not of the --help call) to that file, and with $folderLog the folder it runs in.
+function New-FakeClaude([string]$event, [string]$argumentsLog = '', [string]$folderLog = '') {
     $path = Join-Path $WorkRoot "fake-claude-$([guid]::NewGuid().ToString('N').Substring(0, 6)).cmd"
     $body = @('@echo off', 'if "%1"=="--help" (', '  echo   --no-session-persistence   Disable session persistence', '  exit /b 0', ')')
     if ($argumentsLog) { $body += ">`"$argumentsLog`" echo %*" }
+    if ($folderLog) { $body += ">`"$folderLog`" cd" }
     $body += 'echo {"type":"system","subtype":"init","model":"claude-haiku-5-5"}'
     $body += if ($event) { "echo $event" } else { @('echo {"type":"result","subtype":"error"}', 'exit /b 1') }
     [IO.File]::WriteAllText($path, ($body -join "`r`n") + "`r`n", [Text.Encoding]::ASCII)
@@ -414,7 +632,7 @@ function New-FakeClaude([string]$event, [string]$argumentsLog = '') {
 Test-Case 'probe run: prints the reading and writes the same line to the state file' {
     $claude = New-FakeClaude '{"type":"rate_limit_event","rate_limit_info":{"unifiedWindows":{"five_hour":{"utilization":0.955,"resetsAt":1792926600},"seven_day":{"utilization":0.47,"resetsAt":1793426400}}}}'
     $state = Join-Path $WorkRoot 'probe-state\usage-limits.json'
-    $run = Invoke-Script $Probe @('-ConfigPath', $RealConfig, '-StatePath', $state, '-ClaudePath', $claude, '-WorkingFolder', (Join-Path $WorkRoot 'probe-cwd'))
+    $run = Invoke-Script $Probe @('-ConfigPath', (New-TestConfig @{}), '-StatePath', $state, '-ClaudePath', $claude, '-WorkingFolder', (Join-Path $WorkRoot 'probe-cwd'))
     Assert-Equal 0 $run.ExitCode "exit code ($($run.Lines))"
     Assert-Equal 1 $run.Lines.Count 'one line'
     Assert-Equal $run.Lines[0] ([IO.File]::ReadAllText($state)) 'printed line = written file'
@@ -434,20 +652,20 @@ Test-Case 'probe run: passes the configured model and effort to claude' {
 Test-Case 'probe run: a reading that cannot be written is a failure, not a silent success' {
     $claude = New-FakeClaude '{"type":"rate_limit_event","rate_limit_info":{"unifiedWindows":{"five_hour":{"utilization":0.2,"resetsAt":1792926600}}}}'
     $blocker = Join-Path $WorkRoot 'a-file'; Write-Lines $blocker @('not a folder')
-    $run = Invoke-Script $Probe @('-ConfigPath', $RealConfig, '-StatePath', (Join-Path $blocker 'usage-limits.json'), '-ClaudePath', $claude, '-WorkingFolder', (Join-Path $WorkRoot 'probe-cwd'))
+    $run = Invoke-Script $Probe @('-ConfigPath', (New-TestConfig @{}), '-StatePath', (Join-Path $blocker 'usage-limits.json'), '-ClaudePath', $claude, '-WorkingFolder', (Join-Path $WorkRoot 'probe-cwd'))
     Assert-Equal 1 $run.ExitCode "exit code ($($run.Lines))"
     Assert-True ($run.Lines[-1] -cmatch '^USAGE PROBE FAILED \| the reading could not be written') "reason: $($run.Lines)"
 }
 
 Test-Case 'probe run: no rate_limit_event is exit 1 with a reason' {
-    $run = Invoke-Script $Probe @('-ConfigPath', $RealConfig, '-StatePath', (Join-Path $WorkRoot 'never.json'), '-ClaudePath', (New-FakeClaude ''), '-WorkingFolder', (Join-Path $WorkRoot 'probe-cwd'))
+    $run = Invoke-Script $Probe @('-ConfigPath', (New-TestConfig @{}), '-StatePath', (Join-Path $WorkRoot 'never.json'), '-ClaudePath', (New-FakeClaude ''), '-WorkingFolder', (Join-Path $WorkRoot 'probe-cwd'))
     Assert-Equal 1 $run.ExitCode 'exit code'
     Assert-True ($run.Lines[-1] -cmatch '^USAGE PROBE FAILED \| claude exited with 1 and gave no rate_limit_event') "reason: $($run.Lines)"
     Assert-True (-not (Test-Path (Join-Path $WorkRoot 'never.json'))) 'nothing written'
 }
 
 Test-Case 'probe: a claude that cannot start is exit 1 with a reason, nothing written' {
-    $run = Invoke-Script $Probe @('-ConfigPath', $RealConfig, '-StatePath', (Join-Path $WorkRoot 'never.json'), '-ClaudePath', 'C:\nowhere\claude.exe')
+    $run = Invoke-Script $Probe @('-ConfigPath', (New-TestConfig @{}), '-StatePath', (Join-Path $WorkRoot 'never.json'), '-ClaudePath', 'C:\nowhere\claude.exe')
     Assert-Equal 1 $run.ExitCode 'exit code'
     Assert-True (($run.Lines -join ' ') -cmatch '^USAGE PROBE FAILED \|') "reason line: $($run.Lines)"
     Assert-True (-not (Test-Path (Join-Path $WorkRoot 'never.json'))) 'nothing written'
@@ -472,22 +690,63 @@ Test-Case 'probe run: a reading younger than stateFreshMinutes is printed as it 
     Assert-True ([IO.File]::ReadAllText($state) -cmatch '"percent":30') "a new reading was written: $([IO.File]::ReadAllText($state))"
 }
 
-Test-Case 'probe run: the state file and the working folder come from the settings, with %NAME% expanded' {
+Test-Case 'probe run: without -StatePath and -WorkingFolder the reading goes to <root>\usage-reading\usage-limits.json and claude runs in <root>\usage-probe' {
     $probeHome = Join-Path $WorkRoot "probe-home-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
     $env:LIMIT_TESTS_HOME = $probeHome
     try {
-        $config = New-TestConfig @{ 'usageLimits.stateFile' = '%LIMIT_TESTS_HOME%\state\usage-limits.json'; 'usageLimits.probeWorkingFolder' = '%LIMIT_TESTS_HOME%\probe-cwd' }
-        $claude = New-FakeClaude '{"type":"rate_limit_event","rate_limit_info":{"unifiedWindows":{"five_hour":{"utilization":0.2,"resetsAt":1792926600}}}}'
+        # The shipped paths under a root that names a variable, as the shipped root does.
+        $config = New-TestConfig @{ 'teamState.folder' = '%LIMIT_TESTS_HOME%\team' }
+        $folderLog = Join-Path $WorkRoot "probe-folder-$([guid]::NewGuid().ToString('N').Substring(0, 6)).txt"
+        $claude = New-FakeClaude '{"type":"rate_limit_event","rate_limit_info":{"unifiedWindows":{"five_hour":{"utilization":0.2,"resetsAt":1792926600}}}}' '' $folderLog
         $run = Invoke-Script $Probe @('-ConfigPath', $config, '-ClaudePath', $claude)
         Assert-Equal 0 $run.ExitCode "exit code ($($run.Lines))"
-        Assert-Equal $run.Lines[0] ([IO.File]::ReadAllText((Join-Path $probeHome 'state\usage-limits.json'))) 'written to the expanded state file'
-        Assert-True (Test-Path -LiteralPath (Join-Path $probeHome 'probe-cwd') -PathType Container) 'the expanded working folder was made'
-        $unset = New-TestConfig @{ 'usageLimits.stateFile' = '%LIMIT_TESTS_NOT_SET_9F2%\usage-limits.json' }
+        Assert-Equal $run.Lines[0] ([IO.File]::ReadAllText((Join-Path $probeHome 'team\usage-reading\usage-limits.json'))) 'written to <root>\usage-reading\usage-limits.json'
+        Assert-Equal (Join-Path $probeHome 'team\usage-probe') ([IO.File]::ReadAllText($folderLog).Trim()) 'claude ran in <root>\usage-probe'
+        Assert-True (-not (Test-Path -LiteralPath (Join-Path $TestHome '.claude\state\usage-limits.json'))) 'not in the old place of the reading'
+        Assert-True (-not (Test-Path -LiteralPath (Join-Path $TestTemp 'claude-usage-probe'))) 'not in the old place of the working folder'
+        $unset = New-TestConfig @{ 'teamState.folder' = '%LIMIT_TESTS_NOT_SET_9F2%\team' }
         $bad = Invoke-Script $Probe @('-ConfigPath', $unset, '-ClaudePath', $claude, '-WorkingFolder', (Join-Path $WorkRoot 'probe-cwd'))
         Assert-Equal 1 $bad.ExitCode 'an unset variable fails'
-        Assert-True (($bad.Lines -join ' ') -cmatch "^USAGE PROBE FAILED \| .*usageLimits\.stateFile.*%LIMIT_TESTS_NOT_SET_9F2%") "names the key and the variable: $($bad.Lines)"
+        Assert-Equal "USAGE PROBE FAILED | orchestration.config.json setting 'teamState.folder' names %LIMIT_TESTS_NOT_SET_9F2%, which is not set" ($bad.Lines -join ' ') 'the reason, in the words of lib\config.mjs'
     }
     finally { Remove-Item Env:\LIMIT_TESTS_HOME -ErrorAction SilentlyContinue }
+}
+
+Test-Case 'probe run: a passed -StatePath and -WorkingFolder win over the settings, which are then not needed' {
+    $root = Join-Path $WorkRoot "probe-root-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    $state = Join-Path $WorkRoot "probe-passed-$([guid]::NewGuid().ToString('N').Substring(0, 6))\usage-limits.json"
+    $folder = Join-Path $WorkRoot "probe-passed-folder-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    $folderLog = Join-Path $WorkRoot "probe-folder-$([guid]::NewGuid().ToString('N').Substring(0, 6)).txt"
+    $claude = New-FakeClaude '{"type":"rate_limit_event","rate_limit_info":{"unifiedWindows":{"five_hour":{"utilization":0.2,"resetsAt":1792926600}}}}' '' $folderLog
+    $passed = @('-StatePath', $state, '-WorkingFolder', $folder, '-ClaudePath', $claude, '-FreshMinutes', '0')
+    $run = Invoke-Script $Probe (@('-ConfigPath', (New-TestConfig @{ 'teamState.folder' = $root })) + $passed)
+    Assert-Equal 0 $run.ExitCode "exit code ($($run.Lines))"
+    Assert-Equal $run.Lines[0] ([IO.File]::ReadAllText($state)) 'written to the passed state file'
+    Assert-Equal $folder ([IO.File]::ReadAllText($folderLog).Trim()) 'claude ran in the passed folder'
+    Assert-True (-not (Test-Path -LiteralPath $root)) 'nothing made under the root'
+    $refused = New-TestConfig @{ 'teamState.folder' = 'team'; 'usageLimits.stateFile' = '..\x.json'; 'usageLimits.probeWorkingFolder' = 'C:\x' }
+    $again = Invoke-Script $Probe (@('-ConfigPath', $refused) + $passed)
+    Assert-Equal 0 $again.ExitCode "settings that would be refused are not read ($($again.Lines))"
+}
+
+Test-Case 'probe: the transcript folder of the working folder under .claude is the name Claude Code gives it' {
+    # Claude Code 2.1.286 names it with e.replace(/[^a-zA-Z0-9]/g,"-") (read in its bundle on 2026-10-27; names over 200
+    # characters are cut and get a hash, which this one is far from): the '.' of '\.claude' becomes a dash beside the
+    # dash of the '\'. No folder of this machine's ~\.claude\projects comes from a path with a dot; the second pair is
+    # a real one, from a path with ':', '\' and ' '.
+    $working = 'C:\Users\demo\.claude\state\software-developer-agent\usage-probe'
+    Assert-Equal 'C--Users-demo--claude-state-software-developer-agent-usage-probe' (Get-ProjectFolderName $working) 'the folder under .claude'
+    Assert-Equal 'c--Repos-My-projects-software-developer-agent' (Get-ProjectFolderName 'c:\Repos\My projects\software-developer-agent') 'a real folder'
+    $projects = Join-Path $WorkRoot 'probe-projects-dotted'
+    $folder = Join-Path $projects 'C--Users-demo--claude-state-software-developer-agent-usage-probe'
+    # The name with the dot dropped instead of turned into a dash.
+    $decoy = Join-Path $projects 'C--Users-demo-claude-state-software-developer-agent-usage-probe'
+    New-Item -ItemType Directory -Force $folder, $decoy | Out-Null
+    $since = Get-Date
+    $new = Join-Path $folder 'new.jsonl'; Write-Lines $new @('{}')
+    $decoyFile = Join-Path $decoy 'new.jsonl'; Write-Lines $decoyFile @('{}')
+    Assert-Equal $new (Remove-ProbeTranscript $projects $working $since.AddSeconds(-1)) 'removed from the folder Claude Code wrote'
+    Assert-True (Test-Path -LiteralPath $decoyFile) 'the decoy stays'
 }
 
 # --- watch-usage-and-context.ps1: unit cases ---------------------------------------------------------------------
@@ -619,7 +878,7 @@ Test-Case 'watch: last activity is the newest write of the session or any of its
 }
 
 Test-Case 'watch: settings come from the config unless passed as a parameter' {
-    $config = Read-OrchestrationConfig (New-TestConfig @{ 'usageAndContextWatch.everySeconds' = 7; 'contextCaps.main.warn' = 123000; 'usageLimits.stateFile' = '%WINDIR%\x\usage.json'; 'usageAndContextWatch.resetMarginMinutes' = 3; 'usageAndContextWatch.retryMinutes' = 4 })
+    $config = Read-OrchestrationConfig (New-TestConfig @{ 'usageAndContextWatch.everySeconds' = 7; 'contextCaps.main.warn' = 123000; 'teamState.folder' = 'C:\team-root'; 'usageLimits.stateFile' = 'r\usage.json'; 'usageAndContextWatch.recordFolder' = 'records'; 'usageAndContextWatch.resetMarginMinutes' = 3; 'usageAndContextWatch.retryMinutes' = 4 })
     $settings = Get-WatchSettings $config 'test.json' @{ RetryMinutes = 2; WakeOnErrors = @('server_error') }
     Assert-Equal 7 $settings.EverySeconds 'from the config'
     Assert-Equal 123000 $settings.WarnTokens 'the warning size is contextCaps.main.warn'
@@ -627,7 +886,9 @@ Test-Case 'watch: settings come from the config unless passed as a parameter' {
     Assert-Equal 4 (Get-WatchSettings $config 'test.json' @{}).RetryMinutes 'the retry wait from the config'
     Assert-Equal 'server_error' ($settings.WakeOnErrors -join '|') 'a passed list'
     Assert-Equal 'rate_limit|server_error' ((Get-WatchSettings $config 'test.json' @{}).WakeOnErrors -join '|') 'the list from the config'
-    Assert-Equal (Join-Path $env:WINDIR 'x\usage.json') $settings.UsageStatePath 'the state file, expanded'
+    Assert-Equal 'C:\team-root\r\usage.json' $settings.UsageStatePath 'the state file, under teamState.folder'
+    Assert-Equal 'C:\team-root\records' $settings.RecordFolder 'the record folder, under teamState.folder'
+    Assert-Equal 'D:\elsewhere' (Get-WatchSettings $config 'test.json' @{ RecordFolder = 'D:\elsewhere' }).RecordFolder 'a passed record folder'
     Assert-Equal 4 $settings.TailMegabytes 'tail'
     Assert-Equal 3 $settings.ResetMarginMinutes 'the reset margin from the config'
     Assert-Equal 20 $settings.CacheLookbackReplies 'lookback'
@@ -650,11 +911,15 @@ Test-Case 'config: a wake after a reset and every relaunch wait one minute, a wa
     }
 }
 
-Test-Case 'watch: a settings path naming a variable that is not set is an error naming the key and the variable' {
+Test-Case 'watch: a root naming a variable that is not set, or a record folder that climbs out, is an error in the words of lib\config.mjs' {
     Remove-Item Env:\LIMIT_TESTS_NOT_SET -ErrorAction SilentlyContinue
-    Assert-Throws { Expand-ConfigPath '%LIMIT_TESTS_NOT_SET%\usage.json' 'usageLimits.stateFile' 'test.json' } "test\.json key 'usageLimits\.stateFile' names %LIMIT_TESTS_NOT_SET%, which is not set\." 'an unset variable'
-    $config = Read-OrchestrationConfig (New-TestConfig @{ 'usageLimits.stateFile' = '%LIMIT_TESTS_NOT_SET%\usage.json' })
-    Assert-Throws { Get-WatchSettings $config 'test.json' @{} } 'names %LIMIT_TESTS_NOT_SET%, which is not set' 'through the watch settings'
+    $config = Read-OrchestrationConfig (New-TestConfig @{ 'teamState.folder' = '%LIMIT_TESTS_NOT_SET%\team' })
+    $unset = "orchestration.config.json setting 'teamState.folder' names %LIMIT_TESTS_NOT_SET%, which is not set"
+    Assert-Throws { Get-WatchSettings $config 'test.json' @{} } "^$([regex]::Escape($unset))$" 'an unset variable in the root'
+    Assert-True ($null -ne (Get-WatchSettings $config 'test.json' @{ UsageStatePath = 'C:\x\usage.json'; RecordFolder = 'C:\x\records' })) 'with both paths passed the root is not needed'
+    $climbs = Read-OrchestrationConfig (New-TestConfig @{ 'usageAndContextWatch.recordFolder' = 'a\..\..\x' })
+    $refused = "orchestration.config.json setting 'usageAndContextWatch.recordFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: ""a\\..\\..\\x"""
+    Assert-Throws { Get-WatchSettings $climbs 'test.json' @{} } "^$([regex]::Escape($refused))$" 'a record folder that climbs out'
 }
 
 Test-Case 'watch: the probe is run with the settings file, the state file and the fresh age' {
@@ -858,7 +1123,7 @@ Test-Case 'watch run: WATCH ALREADY RUNNING when a live watch holds the marker' 
     $fixture = New-FixtureSession @(New-ReplyLine ([DateTimeOffset]::Now) '' -write1h 10)
     $standIn = Start-StandIn 20
     try {
-        Set-Content -LiteralPath (Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).txt") -Value "$($standIn.Id) $($standIn.StartTime.Ticks)" -NoNewline
+        Set-Content -LiteralPath $fixture.MarkerPath -Value "$($standIn.Id) $($standIn.StartTime.Ticks)" -NoNewline
         $run = Invoke-Script $Watch (Get-WatchArguments $fixture $config $NoReading)
         Assert-Equal 0 $run.ExitCode 'exit code'
         Assert-True ($run.Lines[-1] -cmatch "^WATCH ALREADY RUNNING \| process $($standIn.Id) ") "last line: $($run.Lines[-1])"
@@ -872,7 +1137,7 @@ Test-Case 'watch run: SESSION NEAR CAP still ends the watch first, and its recor
     $reading = New-ReadingFile $now 99 $now.AddHours(2) 50 $now.AddDays(3)
     $run = Invoke-Script $Watch (Get-WatchArguments $fixture $config $reading)
     Assert-True ($run.Lines[0] -cmatch '^SESSION NEAR CAP \| the context is at 451k tokens') "first line: $($run.Lines)"
-    $record = Get-Content -LiteralPath (Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).decision.json") -Raw | ConvertFrom-Json -AsHashtable
+    $record = Get-Content -LiteralPath $fixture.DecisionPath -Raw | ConvertFrom-Json -AsHashtable
     Assert-Equal 'context-cap' $record.window "no limit decision taken: $($record | ConvertTo-Json -Compress)"
 }
 
@@ -891,7 +1156,7 @@ function Format-ExpectedClock([DateTimeOffset]$at, [DateTimeOffset]$now) {
 
 # Writes the limit decision a watch keeps for a session, as Write-DecisionRecord does.
 function Write-FixtureDecision($fixture, [string]$decision, [string]$window, [DateTimeOffset]$resetsAt, [DateTimeOffset]$takenAt) {
-    $path = Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).decision.json"
+    $path = $fixture.DecisionPath
     $record = [ordered]@{ takenAt = $takenAt.ToString('o', $Invariant); decision = $decision; window = $window; percent = 98; resetsAt = $resetsAt.ToString('o', $Invariant); agents = @() }
     Write-Lines $path @($record | ConvertTo-Json -Compress)
 }
@@ -929,7 +1194,7 @@ Test-Case 'watch run: at SESSION NEAR CAP it records the cap hand-over, starts t
     Assert-Equal 'true' (Get-Content -LiteralPath (Join-Path $WorkRoot "stub-record-$($fixture.SessionId).txt") -Raw) 'the cap hand-over was on record before the server started'
     $expected = "$RestartSentence $ServerSentence $LeadsSentence Then write the hand-over, listing every lead's hand-off, and run & '$Schedule' -ProjectDir <project folder> -HandoverPath <hand-over file> -ContextCap, which starts a new chat with Read <hand-over> and carry on, $(Get-ExpectedStopClause $fixture); then end the session. The context-guard hook may say SESSION NEAR CAP and STOP FOR LIMIT too; they mean the same."
     Assert-Equal $expected $run.Lines[2] 'steps'
-    $record = Get-Content -LiteralPath (Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).decision.json") -Raw | ConvertFrom-Json -AsHashtable
+    $record = Get-Content -LiteralPath $fixture.DecisionPath -Raw | ConvertFrom-Json -AsHashtable
     Assert-Equal 'hand-over|context-cap' "$($record.decision)|$($record.window)" 'the cap hand-over on record'
     Assert-Equal 0 (Get-StubChecks $fixture).Count 'no check before the hand-over was announced'
 }
@@ -1064,7 +1329,7 @@ Test-Case 'watch run: LIMIT NEAR hand over names the worker, not the searcher, t
     $steps = "^$([regex]::Escape("$RestartSentence $ServerSentence $LeadsSentence Then write the hand-over, listing every lead's hand-off, and run & '$Schedule' -ProjectDir <project folder> -HandoverPath <hand-over file> -At")) \S+, $([regex]::Escape((Get-ExpectedStopClause $fixture)))\.$"
     Assert-True ($run.Lines[2] -cmatch $steps) "what to do: $($run.Lines[2])"
     Assert-True ($run.Lines[2] -cnotmatch 'STOP FOR LIMIT') "no stop message to send: $($run.Lines[2])"
-    $record = Get-Content -LiteralPath (Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).decision.json") -Raw | ConvertFrom-Json -AsHashtable
+    $record = Get-Content -LiteralPath $fixture.DecisionPath -Raw | ConvertFrom-Json -AsHashtable
     Assert-Equal 'hand-over' $record.decision 'recorded decision'
 }
 
@@ -1133,7 +1398,7 @@ Test-Case 'watch run: resume is recorded quietly, then flips to hand over when a
         @{ Id = $lead; Type = 'task-lead'; Lines = @(New-ReplyRun $now.AddMinutes(-30) 3 $lead '5m') })
     $leadPath = Join-Path $fixture.Subagents "agent-$lead.jsonl"
     $reading = New-ReadingFile $now 97 $now.AddMinutes(30) 50 $now.AddDays(3)
-    $decisionPath = Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).decision.json"
+    $decisionPath = $fixture.DecisionPath
     $standIn = Start-StandIn 40
     try {
         $started = Start-ScriptProcess $Watch (Get-WatchArguments $fixture $config $reading $standIn.Id)
@@ -1154,7 +1419,7 @@ Test-Case 'watch run: a hand-over on record is never taken back and never repeat
     $now = [DateTimeOffset]::Now
     $fixture = New-FixtureSession @(New-ReplyRun $now.AddMinutes(-1) 3 '' '1h')
     $reading = New-ReadingFile $now 96 $now.AddMinutes(5) 50 $now.AddDays(3)
-    $decisionPath = Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).decision.json"
+    $decisionPath = $fixture.DecisionPath
     Write-Lines $decisionPath @(([ordered]@{ takenAt = $now.AddMinutes(-2).ToString('o'); decision = 'hand-over'; window = 'five-hour'; percent = 95; resetsAt = $now.AddMinutes(5).ToString('o'); agents = @() } | ConvertTo-Json -Compress))
     $standIn = Start-StandIn 5
     try {
@@ -1170,7 +1435,7 @@ Test-Case 'watch run: restarted during a hand-over it stays quiet over the warni
     $now = [DateTimeOffset]::Now
     $overCap = @((New-ReplyLine $now.AddMinutes(-1) '' -write1h 5000 -read 446000), (New-UserLine $now))
     $atCap = New-FixtureSession $overCap
-    Write-CapRecord (Get-DecisionRecordPath $atCap.SessionId) $now.AddMinutes(-2)
+    Write-CapRecord $atCap.DecisionPath $now.AddMinutes(-2)
     $limitNear = New-FixtureSession $overCap
     Write-FixtureDecision $limitNear 'hand-over' 'five-hour' $now.AddMinutes(30) $now.AddMinutes(-2)
     $reading = New-ReadingFile $now 96 $now.AddMinutes(30) 50 $now.AddDays(3)
@@ -1212,7 +1477,7 @@ Test-Case 'watch run: a check that cannot check ends the watch, saying so' {
             @{ Says = 'LIMIT STOP SERVER NOT CHECKED | its log C:\x\limit-stop.log cannot be read: EBUSY'; First = 'LIMIT STOP SERVER NOT CHECKED | its log C:\x\limit-stop.log cannot be read: EBUSY' },
             @{ Says = 'nonsense'; First = 'LIMIT STOP SERVER NOT CHECKED | node exited with 0 and said: nonsense' })) {
         $fixture = New-FixtureSession @(New-ReplyRun $now.AddMinutes(-1) 3 '' '1h')
-        Write-CapRecord (Get-DecisionRecordPath $fixture.SessionId) $now.AddMinutes(-2)
+        Write-CapRecord $fixture.DecisionPath $now.AddMinutes(-2)
         $env:LIMIT_TESTS_STUB_CHECK_SAYS = $case.Says
         try { $run = Invoke-Script $Watch (Get-WatchArguments $fixture $config $NoReading) }
         finally { Remove-Item Env:\LIMIT_TESTS_STUB_CHECK_SAYS -ErrorAction SilentlyContinue }
@@ -1240,7 +1505,7 @@ function Wait-StubChecks($fixture, [int]$count, [int]$timeoutSeconds = 20) {
 # A session with a cap hand-over on record whose stub check prints $says.
 function New-CheckedSession([DateTimeOffset]$now, [string]$says) {
     $fixture = New-FixtureSession @(New-ReplyRun $now.AddMinutes(-1) 3 '' '1h')
-    Write-CapRecord (Get-DecisionRecordPath $fixture.SessionId) $now.AddMinutes(-2)
+    Write-CapRecord $fixture.DecisionPath $now.AddMinutes(-2)
     Set-StubCheckSays $fixture $says
     return $fixture
 }
@@ -1292,8 +1557,8 @@ Test-Case 'watch run: a decision record that cannot be written hides no report: 
     $now = [DateTimeOffset]::Now
     $repeats = New-CheckedSession $now $BusyLine
     $comesBack = New-CheckedSession $now 'LIMIT STOP SERVER FINE | stub'
-    $null = Set-ReportedCheck (Get-DecisionRecordPath $comesBack.SessionId) $BusyLine
-    $records = @($repeats, $comesBack) | ForEach-Object { Get-Item -LiteralPath (Get-DecisionRecordPath $_.SessionId) }
+    $null = Set-ReportedCheck $comesBack.DecisionPath $BusyLine
+    $records = @($repeats, $comesBack) | ForEach-Object { Get-Item -LiteralPath $_.DecisionPath }
     $records | ForEach-Object { $_.IsReadOnly = $true }
     try {
         foreach ($attempt in 1, 2) {
@@ -1335,7 +1600,7 @@ function New-ServerCopy {
     New-Item -ItemType Directory -Force $skill | Out-Null
     Copy-Item -LiteralPath $ScriptsRoot -Destination (Join-Path $skill 'scripts') -Recurse
     Copy-Item -LiteralPath (Join-Path $ScriptsRoot '..\lib') -Destination (Join-Path $skill 'lib') -Recurse
-    $settings = New-TestConfig @{ 'limitStop.pipePrefix' = "limit-scripts-tests-$([guid]::NewGuid().ToString('N').Substring(0, 8))"; 'limitStop.logFile' = (Join-Path $skill 'limit-stop.log'); 'limitStop.processCheckSeconds' = 1 }
+    $settings = New-TestConfig @{ 'limitStop.pipePrefix' = "limit-scripts-tests-$([guid]::NewGuid().ToString('N').Substring(0, 8))"; 'teamState.folder' = (Join-Path $skill 'state'); 'limitStop.processCheckSeconds' = 1 }
     Copy-Item -LiteralPath $settings -Destination (Join-Path $skill 'orchestration.config.json')
     return Join-Path $skill 'scripts\limit-stop-server.mjs'
 }
@@ -1352,7 +1617,7 @@ Test-Case 'watch run: with the real limit-stop server it stays quiet while the s
     $servers = [Collections.Generic.List[int]]::new()
     try {
         foreach ($fixture in @($killed, $stopped)) {
-            Write-CapRecord (Get-DecisionRecordPath $fixture.SessionId) $now
+            Write-CapRecord $fixture.DecisionPath $now
             $started = @(& node $server start --session $fixture.SessionId --window context-cap --claude-pid "$($claude.Id)")
             $found = [regex]::Match($started[-1], '^LIMIT STOP SERVER STARTED \| process (\d+) \|')
             Assert-True $found.Success "the real server started: $started"
@@ -1402,7 +1667,7 @@ Test-Case 'watch run: below the threshold nothing is decided and the watch stays
     try {
         $run = Invoke-Script $Watch (Get-WatchArguments $fixture $config $reading $standIn.Id) 30
         Assert-Equal 0 $run.Lines.Count "quiet: $($run.Lines)"
-        Assert-True (-not (Test-Path (Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).decision.json"))) 'no decision file'
+        Assert-True (-not (Test-Path $fixture.DecisionPath)) 'no decision file'
     }
     finally { Stop-Process -Id $standIn.Id -ErrorAction SilentlyContinue }
 }
@@ -1415,7 +1680,7 @@ Test-Case 'watch run: without -WarnTokens the warning size is contextCaps.main.w
         $run = Invoke-Script $Watch (Get-WatchArguments $fixture (New-TestConfig @{ 'contextCaps.main.warn' = 300000 }) $NoReading $standIn.Id) 30
         Assert-True ($run.Lines[0] -cmatch '^SESSION NEAR CAP \| the context is at 400k tokens .*\(warning size 300k\)') "first line: $($run.Lines)"
         # The first run put the cap hand-over on record, which would keep the second quiet.
-        Remove-Item -LiteralPath (Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$($fixture.SessionId).decision.json")
+        Remove-Item -LiteralPath $fixture.DecisionPath
         $passed = Invoke-Script $Watch ((Get-WatchArguments $fixture $config $NoReading $standIn.Id) + @('-WarnTokens', '390000')) 30
         Assert-True ($passed.Lines[0] -cmatch '\(warning size 390k\)') "a passed -WarnTokens wins: $($passed.Lines)"
     }
@@ -1429,21 +1694,83 @@ Test-Case 'watch run: WATCH FAILED names a missing usageAndContextWatch key' {
     Assert-True ($run.Lines[-1] -cmatch "^WATCH FAILED \| .*no key 'usageAndContextWatch\.retryMinutes'") "last line: $($run.Lines[-1])"
 }
 
-Test-Case 'watch run: the usage reading comes from usageLimits.stateFile, with %NAME% expanded' {
+Test-Case 'watch run: the usage reading comes from usageLimits.stateFile under teamState.folder, with %NAME% filled in in the root' {
     $now = [DateTimeOffset]::Now
     $fixture = New-FixtureSession @(New-ReplyRun $now.AddMinutes(-1) 3 '' '1h')
     $folder = Join-Path $WorkRoot "watch-home-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
-    New-Item -ItemType Directory -Force $folder | Out-Null
+    New-Item -ItemType Directory -Force (Join-Path $folder 'team\usage-reading') | Out-Null
     # Checked an hour from now: the reading is fresh and the session wrote before it, so no probe can be due.
-    Copy-Item -LiteralPath (New-ReadingFile $now.AddHours(1) 96 $now.AddMinutes(50) 40 $now.AddDays(3)) -Destination (Join-Path $folder 'usage.json')
+    Copy-Item -LiteralPath (New-ReadingFile $now.AddHours(1) 96 $now.AddMinutes(50) 40 $now.AddDays(3)) -Destination (Join-Path $folder 'team\usage-reading\usage-limits.json')
     $env:LIMIT_TESTS_HOME = $folder
     try {
         $arguments = @('-SessionId', $fixture.SessionId, '-ProjectsRoot', $fixture.ProjectsRoot, '-ClaudePid', '0', '-EverySeconds', '1',
-            '-ConfigPath', (New-TestConfig @{ 'usageLimits.stateFile' = '%LIMIT_TESTS_HOME%\usage.json' }), '-StopServerScript', $StubServer)
+            '-ConfigPath', (New-TestConfig @{ 'teamState.folder' = '%LIMIT_TESTS_HOME%\team' }), '-StopServerScript', $StubServer)
         $run = Invoke-Script $Watch $arguments
-        Assert-True (($run.Lines -join "`n") -cmatch '(?m)^LIMIT NEAR \| HAND OVER \| five-hour at 96% ') "the reading in the expanded file was read: $($run.Lines)"
+        Assert-True (($run.Lines -join "`n") -cmatch '(?m)^LIMIT NEAR \| HAND OVER \| five-hour at 96% ') "the reading in <root>\usage-reading\usage-limits.json was read: $($run.Lines)"
     }
     finally { Remove-Item Env:\LIMIT_TESTS_HOME -ErrorAction SilentlyContinue }
+}
+
+Test-Case 'watch run: its marker and its limit decision live in usageAndContextWatch.recordFolder under teamState.folder, and the marker goes when it ends' {
+    $now = [DateTimeOffset]::Now
+    $fixture = New-FixtureSession @(New-ReplyRun $now.AddMinutes(-1) 3 '' '1h')
+    $root = Join-Path $WorkRoot "watch-root-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    $marker = Join-Path $root "watch-records\$($fixture.SessionId).txt"
+    $decision = Join-Path $root "watch-records\$($fixture.SessionId).decision.json"
+    $config = New-TestConfig @{ 'teamState.folder' = $root; 'usageAndContextWatch.recordFolder' = 'watch-records' }
+    # Past the threshold with every agent warm: the watch records resume and keeps watching.
+    $reading = New-ReadingFile $now 97 $now.AddMinutes(30) 50 $now.AddDays(3)
+    $standIn = Start-StandIn 40
+    try {
+        $started = Start-ScriptProcess $Watch (Get-WatchArguments $fixture $config $reading $standIn.Id)
+        $deadline = (Get-Date).AddSeconds(20)
+        while (-not (Test-Path -LiteralPath $decision) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 200 }
+        Assert-True (Test-Path -LiteralPath $decision) "the decision is recorded in <root>\watch-records (the watch has ended: $($started.Process.HasExited))"
+        Assert-Equal 'resume' (Get-Content -LiteralPath $decision -Raw | ConvertFrom-Json -AsHashtable).decision 'the decision'
+        Assert-Equal "$($started.Process.Id) $($started.Process.StartTime.Ticks)" (Get-Content -LiteralPath $marker -Raw) 'the marker names the running watch'
+        # The session's Claude Code process ends: the watch ends quietly at its next look.
+        Stop-Process -Id $standIn.Id
+        $run = Wait-ScriptProcess $started 20
+        Assert-True (-not $run.TimedOut) 'ended'
+        Assert-Equal 0 $run.Lines.Count "quiet: $($run.Lines)"
+        Assert-True (-not (Test-Path -LiteralPath $marker)) 'the marker is gone'
+        Assert-True (Test-Path -LiteralPath $decision) 'the decision stays'
+        Assert-Equal 0 @(Get-ChildItem -LiteralPath $TestTemp -Filter "*$($fixture.SessionId)*").Count 'nothing in the temp folder'
+        Assert-True (-not (Test-Path -LiteralPath (Join-Path $root 'usage-watch'))) 'nothing in the shipped record folder'
+    }
+    finally { Stop-Process -Id $standIn.Id -ErrorAction SilentlyContinue }
+}
+
+Test-Case 'watch run: a passed -RecordFolder wins over the setting' {
+    $now = [DateTimeOffset]::Now
+    $fixture = New-FixtureSession @((New-ReplyLine $now.AddMinutes(-1) '' -write1h 5000 -read 446000), (New-UserLine $now))
+    $passed = Join-Path $WorkRoot "watch-passed-records-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    $run = Invoke-Script $Watch ((Get-WatchArguments $fixture $config $NoReading) + @('-RecordFolder', $passed))
+    Assert-True ($run.Lines[0] -cmatch '^SESSION NEAR CAP \|') "first line: $($run.Lines)"
+    $record = Get-Content -LiteralPath (Join-Path $passed "$($fixture.SessionId).decision.json") -Raw | ConvertFrom-Json -AsHashtable
+    Assert-Equal 'hand-over|context-cap' "$($record.decision)|$($record.window)" 'the cap hand-over, in the passed folder'
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $passed "$($fixture.SessionId).txt"))) 'its marker is gone after the end'
+    Assert-True (-not (Test-Path -LiteralPath $fixture.DecisionPath)) 'nothing in the record folder of the settings'
+}
+
+Test-Case 'watch run: WATCH FAILED when usageAndContextWatch.recordFolder is missing or climbs out, in the words of lib\config.mjs' {
+    $fixture = New-FixtureSession @(New-ReplyLine ([DateTimeOffset]::Now) '' -write1h 10)
+    foreach ($case in @(@{ Value = $null; Says = "orchestration.config.json has no setting 'usageAndContextWatch.recordFolder'" },
+            @{ Value = '..\records'; Says = "orchestration.config.json setting 'usageAndContextWatch.recordFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: ""..\\records""" })) {
+        $run = Invoke-Script $Watch (Get-WatchArguments $fixture (New-TestConfig @{ 'usageAndContextWatch.recordFolder' = $case.Value }) $NoReading)
+        Assert-Equal 1 $run.ExitCode "exit code ($($case.Value))"
+        Assert-Equal "WATCH FAILED | $($case.Says)" $run.Lines[-1] 'the last line'
+    }
+    Assert-True (-not (Test-Path -LiteralPath $fixture.MarkerPath)) 'no marker'
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path (Split-Path -Parent $TestStateRoot) 'records'))) 'no folder beside the root'
+}
+
+Test-Case 'tests: every script a case starts runs in the work folder, with USERPROFILE, TEMP and TMP in it, and so does code called here' {
+    $printer = Join-Path $WorkRoot 'print-environment.ps1'
+    Write-Lines $printer @('"$env:USERPROFILE|$env:TEMP|$env:TMP|$((Get-Location).Path)"')
+    $run = Invoke-Script $printer @()
+    Assert-Equal "$TestHome|$TestTemp|$TestTemp|$TestCwd" ($run.Lines -join '') 'what the script sees'
+    Assert-Equal (Join-Path $TestTemp '') ([IO.Path]::GetTempPath()) 'the temp folder of code called here'
 }
 
 # --- schedule-relaunch.ps1 ---------------------------------------------------------------------------------------
@@ -1652,29 +1979,59 @@ Test-Case 'start: a missing relaunch key is logged and nothing starts' {
     Assert-True ((Get-Content -LiteralPath $log -Raw) -cmatch "not started: .*no key 'relaunch\.notifySeconds'") "logged: $(Get-Content -LiteralPath $log -Raw)"
 }
 
-Test-Case 'start: without -LogPath the log is relaunch.logFile, with %NAME% expanded' {
+Test-Case 'start: without -LogPath the log is relaunch.logFile under teamState.folder, with %NAME% filled in in the root' {
     $folder = Join-Path $WorkRoot "start-home-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
     $project = Join-Path $WorkRoot "NoWindowDemo$([guid]::NewGuid().ToString('N').Substring(0, 6))"
     New-Item -ItemType Directory -Force $project | Out-Null
     $env:LIMIT_TESTS_HOME = $folder
     try {
-        $config = New-TestConfig @{ 'relaunch.logFile' = '%LIMIT_TESTS_HOME%\logs\relaunch.log' }
+        $config = New-TestConfig @{ 'teamState.folder' = '%LIMIT_TESTS_HOME%\team' }
         $run = Invoke-Script $Start @('-ProjectDir', $project, '-Prompt', 'Read C:\x\HANDOVER_CLAUDE.md and carry on.', '-DryRun', '-ConfigPath', $config)
         Assert-Equal 0 $run.ExitCode "exit code ($($run.Lines))"
-        $log = Join-Path $folder 'logs\relaunch.log'
-        Assert-True ((Test-Path -LiteralPath $log) -and @(Get-Content -LiteralPath $log).Count -ge 4) "logged to the expanded file: $log"
-        $unset = New-TestConfig @{ 'relaunch.logFile' = '%LIMIT_TESTS_NOT_SET_9F2%\relaunch.log' }
-        $bad = Invoke-Script $Start @('-ProjectDir', $project, '-Prompt', 'x', '-DryRun', '-ConfigPath', $unset)
-        Assert-Equal 1 $bad.ExitCode 'an unset variable stops it'
-        Assert-True (($bad.Lines -join ' ') -cmatch '^START NOT RUN \| .*relaunch\.logFile.*%LIMIT_TESTS_NOT_SET_9F2%') "names the key and the variable: $($bad.Lines)"
+        $log = Join-Path $folder 'team\logs\relaunch.log'
+        Assert-True ((Test-Path -LiteralPath $log) -and @(Get-Content -LiteralPath $log).Count -ge 4) "logged to <root>\logs\relaunch.log: $log"
+        $elsewhere = @(Get-ChildItem -LiteralPath $TestHome, $TestTemp, $TestCwd -Recurse -Force -Filter 'relaunch.log' | ForEach-Object FullName)
+        Assert-Equal 0 $elsewhere.Count "no relaunch.log in the home, the temp folder or the working folder: $elsewhere"
     }
     finally { Remove-Item Env:\LIMIT_TESTS_HOME -ErrorAction SilentlyContinue }
+}
+
+Test-Case 'start: a broken teamState.folder or relaunch.logFile is START NOT RUN in the words of lib\config.mjs, and nothing is logged' {
+    $project = Join-Path $WorkRoot "NoWindowDemo$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    New-Item -ItemType Directory -Force $project | Out-Null
+    $file = 'orchestration.config.json'
+    $broken = @(
+        @(@{ 'teamState.folder' = '%LIMIT_TESTS_NOT_SET_9F2%\team' }, "$file setting 'teamState.folder' names %LIMIT_TESTS_NOT_SET_9F2%, which is not set"),
+        @(@{ 'relaunch.logFile' = '..\relaunch.log' }, "$file setting 'relaunch.logFile' must be a path under 'teamState.folder' but has a '.' or '..' part: ""..\\relaunch.log"""),
+        @(@{ 'relaunch.logFile' = '%TEMP%\relaunch.log' }, "$file setting 'relaunch.logFile' must be a path under 'teamState.folder' but has one of * ? "" < > | %: ""%TEMP%\\relaunch.log"""),
+        @(@{ 'relaunch.logFile' = $null }, "$file has no setting 'relaunch.logFile'"))
+    foreach ($pair in $broken) {
+        $root = Join-Path $WorkRoot "start-root-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+        $changes = if ($pair[0].ContainsKey('teamState.folder')) { $pair[0] } else { @{ 'teamState.folder' = $root } + $pair[0] }
+        $run = Invoke-Script $Start @('-ProjectDir', $project, '-Prompt', 'x', '-DryRun', '-ConfigPath', (New-TestConfig $changes))
+        Assert-Equal 1 $run.ExitCode "exit code ($($run.Lines))"
+        Assert-Equal "START NOT RUN | no log to write: $($pair[1])" ($run.Lines -join ' | ') 'the one line'
+        Assert-True (-not (Test-Path -LiteralPath $root)) "nothing written under the root: $root"
+    }
+}
+
+Test-Case 'start: a passed -LogPath wins over relaunch.logFile, which is then not needed' {
+    $project = Join-Path $WorkRoot "NoWindowDemo$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    New-Item -ItemType Directory -Force $project | Out-Null
+    foreach ($changes in @{}, @{ 'relaunch.logFile' = $null }) {
+        $root = Join-Path $WorkRoot "start-root-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+        $log = Join-Path $WorkRoot "relaunch-given-$([guid]::NewGuid().ToString('N').Substring(0, 6)).log"
+        $run = Invoke-Script $Start @('-ProjectDir', $project, '-Prompt', 'Read C:\x\HANDOVER_CLAUDE.md and carry on.', '-DryRun', '-LogPath', $log,
+            '-ConfigPath', (New-TestConfig (@{ 'teamState.folder' = $root } + $changes)))
+        Assert-Equal 0 $run.ExitCode "exit code ($($run.Lines))"
+        Assert-True ((Test-Path -LiteralPath $log) -and @(Get-Content -LiteralPath $log).Count -ge 4) "logged to the given file: $log"
+        Assert-True (-not (Test-Path -LiteralPath $root)) "nothing written under the root: $root"
+    }
 }
 
 # --- run-heavy.ps1 -----------------------------------------------------------------------------------------------
 
 "run-heavy.ps1"
-$Heavy = Join-Path $ScriptsRoot 'run-heavy.ps1'
 Import-ScriptFunctions $Heavy @{ Command = 'unused' }
 
 Test-Case 'heavy: slots, free-memory floor and wait come from runHeavy unless passed' {
@@ -1697,11 +2054,70 @@ Test-Case 'heavy run: a missing runHeavy key is HEAVY COMMAND NOT RUN naming it,
     Assert-True (-not (Test-Path -LiteralPath $flag)) 'the command did not run'
 }
 
-# Two slots, so a run of this suite through run-heavy.ps1 (which holds slot 1) still finds one free.
-Test-Case 'heavy run: the slot count comes from the settings and the command exit code passes through' {
-    $run = Invoke-Script $Heavy @('-Command', 'exit 3', '-ConfigPath', (New-TestConfig @{ 'runHeavy.slots' = 2; 'runHeavy.minFreeMB' = 1; 'runHeavy.waitMinutes' = 1 })) 90
+Test-Case 'heavy: the holder folder is runHeavy.holderFolder under teamState.folder unless -HolderFolder is passed, and a slot''s holder file is slot-<n>.txt in it' {
+    $config = Read-OrchestrationConfig (New-TestConfig @{})
+    Assert-Equal (Join-Path $TestStateRoot 'heavy-commands') (Get-HeavySettings $config 'test.json' @{}).HolderFolder 'from the settings'
+    $given = Join-Path $WorkRoot 'given holder folder'
+    Assert-Equal $given (Get-HeavySettings $config 'test.json' @{ HolderFolder = $given }).HolderFolder 'a passed folder wins'
+    $broken = Read-OrchestrationConfig (New-TestConfig @{ 'runHeavy.holderFolder' = '..\heavy' })
+    Assert-Equal $given (Get-HeavySettings $broken 'test.json' @{ HolderFolder = $given }).HolderFolder 'a passed folder needs no valid setting'
+    Assert-Throws { Get-HeavySettings $broken 'test.json' @{} } "^orchestration\.config\.json setting 'runHeavy\.holderFolder' must be a path under 'teamState\.folder' but has a '\.' or '\.\.' part: ""\.\.\\\\heavy""$" 'a setting that climbs out'
+    # Get-HolderFile reads $HolderFolder from the scope it is called in, as the script's main part sets it.
+    $HolderFolder = $given
+    Assert-Equal "$given\slot-1.txt" (Get-HolderFile 1) 'slot 1'
+    Assert-Equal "$given\slot-12.txt" (Get-HolderFile 12) 'slot 12'
+}
+
+# -WaitMinutes 0 gives up before the first try for a slot, so these runs create no named mutex and take no slot; they
+# print HEAVY COMMAND NOT RUN with each slot's holder line, read from the holder folder.
+Test-Case 'heavy run: the holder lines come from <root>\heavy-commands, or from a passed -HolderFolder, and no slot is taken' {
+    $root = Join-Path $WorkRoot "heavy-root-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    $config = New-TestConfig @{ 'teamState.folder' = $root }
+    $given = Join-Path $WorkRoot "heavy-given-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    New-Item -ItemType Directory -Force (Join-Path $root 'heavy-commands'), $given | Out-Null
+    Set-Content -LiteralPath (Join-Path $root 'heavy-commands\slot-1.txt') -Value 'process 4242 since 10:00:00 in C:\Repos\Demo: npm test'
+    Set-Content -LiteralPath (Join-Path $given 'slot-1.txt') -Value 'process 77 since 11:00:00 in C:\Repos\OtherDemo: dotnet build'
+    $flag = Join-Path $WorkRoot "heavy-ran-$([guid]::NewGuid().ToString('N').Substring(0, 6)).txt"
+    $command = "Set-Content -LiteralPath '$flag' -Value x"
+    $run = Invoke-Script $Heavy @('-Command', $command, '-ConfigPath', $config, '-Slots', '1', '-WaitMinutes', '0')
+    Assert-Equal 124 $run.ExitCode "exit code ($($run.Lines))"
+    Assert-Equal 'HEAVY COMMAND NOT RUN | no slot came free in 0 minutes|  slot 1: process 4242 since 10:00:00 in C:\Repos\Demo: npm test' ($run.Lines -join '|') 'from the settings'
+    $passed = Invoke-Script $Heavy @('-Command', $command, '-ConfigPath', $config, '-Slots', '1', '-WaitMinutes', '0', '-HolderFolder', $given)
+    Assert-Equal 'HEAVY COMMAND NOT RUN | no slot came free in 0 minutes|  slot 1: process 77 since 11:00:00 in C:\Repos\OtherDemo: dotnet build' ($passed.Lines -join '|') 'from the passed folder'
+    Assert-True (-not (Test-Path -LiteralPath $flag)) 'the command did not run'
+}
+
+Test-Case 'heavy run: a broken runHeavy.holderFolder or teamState.folder is HEAVY COMMAND NOT RUN in the words of lib\config.mjs, and the command does not run' {
+    $file = 'orchestration.config.json'
+    $broken = @(
+        @(@{ 'runHeavy.holderFolder' = '..\heavy' }, "$file setting 'runHeavy.holderFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: ""..\\heavy"""),
+        @(@{ 'runHeavy.holderFolder' = '%TEMP%' }, "$file setting 'runHeavy.holderFolder' must be a path under 'teamState.folder' but has one of * ? "" < > | %: ""%TEMP%"""),
+        @(@{ 'runHeavy.holderFolder' = $null }, "$file has no setting 'runHeavy.holderFolder'"),
+        @(@{ 'teamState.folder' = 'team-state' }, "$file setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not ""team-state"""))
+    foreach ($pair in $broken) {
+        $flag = Join-Path $WorkRoot "heavy-ran-$([guid]::NewGuid().ToString('N').Substring(0, 6)).txt"
+        # -WaitMinutes 0: code that let the setting through would give up at once (exit 124) instead of taking a slot.
+        $run = Invoke-Script $Heavy @('-Command', "Set-Content -LiteralPath '$flag' -Value x", '-ConfigPath', (New-TestConfig $pair[0]), '-WaitMinutes', '0')
+        Assert-Equal 1 $run.ExitCode "exit code ($($run.Lines))"
+        Assert-Equal "HEAVY COMMAND NOT RUN | $($pair[1])" ($run.Lines -join '|') 'the one line'
+        Assert-True (-not (Test-Path -LiteralPath $flag)) 'the command did not run'
+    }
+}
+
+# Two slots, so a run of this suite through run-heavy.ps1 (which holds slot 1) still finds one free. The command copies
+# the holder files it finds under the root while it runs, so the case sees where the holder file was written.
+Test-Case 'heavy run: the slot count comes from the settings, the command exit code passes through, and the holder file is <root>\heavy-commands\slot-<n>.txt while it runs' {
+    $root = Join-Path $WorkRoot "heavy-run-root-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    $seen = Join-Path $WorkRoot "heavy-seen-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
+    New-Item -ItemType Directory -Force $seen | Out-Null
+    $config = New-TestConfig @{ 'teamState.folder' = $root; 'runHeavy.slots' = 2; 'runHeavy.minFreeMB' = 1; 'runHeavy.waitMinutes' = 1 }
+    $run = Invoke-Script $Heavy @('-Command', "Copy-Item -Path '$root\heavy-commands\slot-*.txt' -Destination '$seen'; exit 3", '-ConfigPath', $config) 90
     Assert-Equal 3 $run.ExitCode "exit code ($($run.Lines))"
-    Assert-True ($run.Lines[-1] -cmatch '^HEAVY COMMAND DONE \| exit 3 \|.* of 2$') "last line: $($run.Lines)"
+    Assert-True ($run.Lines[-1] -cmatch '^HEAVY COMMAND DONE \| exit 3 \|.* slot (\d) of 2$') "last line: $($run.Lines)"
+    $slot = $Matches[1]
+    Assert-Equal "slot-$slot.txt" (@(Get-ChildItem -LiteralPath $seen -Name) -join ',') 'the command saw its own slot''s holder file'
+    Assert-True ((Get-Content -LiteralPath (Join-Path $seen "slot-$slot.txt") -Raw) -cmatch '^process \d+ since \d\d:\d\d:\d\d in .*: Copy-Item') 'what the holder file says'
+    Assert-Equal 0 @(Get-ChildItem -LiteralPath (Join-Path $root 'heavy-commands') -Force).Count 'the holder file is gone after the run'
 }
 
 # Takes a minute: the floor cannot be met, so the script waits out runHeavy.waitMinutes.
@@ -1807,8 +2223,6 @@ function Get-MisspelledCalls {
     $emptyProjects = Join-Path $WorkRoot "projects-empty-$([guid]::NewGuid().ToString('N').Substring(0, 6))"
     New-Item -ItemType Directory -Force $emptyProjects | Out-Null
     $session = [guid]::NewGuid().ToString()
-    $script:CleanUp.Add((Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$session.txt"))
-    $script:CleanUp.Add((Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$session.decision.json"))
     $calls = [ordered]@{
         'run-heavy.ps1'               = @{ Misspelled = @('-MinFreMB', '1'); Arguments = @('-Command', 'exit 0', '-ConfigPath', $noConfig) }
         'schedule-relaunch.ps1'       = @{ Misspelled = @('-DryRunn'); Arguments = @('-ProjectDir', $noFolder, '-HandoverPath', (Join-Path $noFolder 'HANDOVER_CLAUDE.md'), '-At', 'now', '-ConfigPath', $noConfig) }
@@ -1926,7 +2340,6 @@ Test-Case 'watch: its call of usage-probe.ps1 passes only parameters the probe h
 
 # --- Teardown ----------------------------------------------------------------------------------------------------
 
-foreach ($path in $script:CleanUp) { Remove-Item -LiteralPath $path -ErrorAction SilentlyContinue }
 # Windows finishes deleting a file a moment after the call returns, so a folder can still look full when its own turn
 # comes ("The directory is not empty"); a second pass removes what the first left.
 foreach ($pass in 1, 2) {

@@ -1,0 +1,196 @@
+paths under teamState.folder
+  ok    paths under teamState.folder: lib\config.mjs answers every case of the table as written (the table is S1's rule)
+  FAIL  paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs :: usage-probe.ps1: differences on 50: no root section: expected <error|orchestration.config.json has no setting 'teamState.folder'>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a null root: expected <error|orchestration.config.json has no setting 'teamState.folder'>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || the root section in another case: expected <error|orchestration.config.json has no setting 'teamState.folder'>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a number for the root: expected <error|orchestration.config.json setting 'teamState.folder' must be a path, not 5>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || an empty root: expected <error|orchestration.config.json setting 'teamState.folder' must be a path, not "">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a list for the root: expected <error|orchestration.config.json setting 'teamState.folder' must be a path, not ["C:\\team"]>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a root naming a variable that is not set: expected <error|orchestration.config.json setting 'teamState.folder' names %LIMIT_TESTS_NOT_SET_9F2%, which is not set>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a relative root: expected <error|orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "team\\state">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a UNC root: expected <error|orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "\\\\server\\share\\team">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a drive-relative root: expected <error|orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "C:team">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a root with forward slashes: expected <error|orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "C:/team">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a root relative once its variable is filled in: expected <error|orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "rel-9f2\\team">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a root from a variable: expected <path|C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\work\state-home\team\usage-reading\usage-limits.json>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a root with a doubled separator, . and .. parts, a / and a trailing separator: expected <path|C:\a\b\d\e\x>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a root that climbs above its drive: expected <path|C:\b\x>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a bare drive root: expected <path|C:\x>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || no such setting: expected <error|orchestration.config.json has no setting 'usageLimits.stateFile'>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || no such section: expected <error|orchestration.config.json has no setting 'usageAndContextWatch.recordFolder'>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a null setting: expected <error|orchestration.config.json has no setting 'usageLimits.stateFile'>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a number: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be text, a path under 'teamState.folder', not 7>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a list: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be text, a path under 'teamState.folder', not ["a"]>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a boolean: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be text, a path under 'teamState.folder', not true>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || empty: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but is empty: "">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a drive: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has a drive or a ':': "C:\\x">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a colon: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has a drive or a ':': "a:b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a colon before a /: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has a drive or a ':': "C:/x">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a leading \: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "\\x">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a trailing \: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "x\\">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a leading / before the / rule: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "/x">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a leading \\ before the empty part: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "\\\\a">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a /: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has a '/'; parts are joined by '\': "a/b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a *: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has one of * ? " < > |: "a*b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a ?: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has one of * ? " < > |: "a?b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a ": expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has one of * ? " < > |: "a\"b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a <: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has one of * ? " < > |: "a<b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a >: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has one of * ? " < > |: "a>b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a |: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has one of * ? " < > |: "a|b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || an empty part: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has an empty part: "a\\\\b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || an empty part before a .. part: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has an empty part: "a\\\\..">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a . alone: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has a '.' or '..' part: ".">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a leading .. part: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has a '.' or '..' part: "..\\x">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a . part: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has a '.' or '..' part: "a\\.\\b">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a trailing .. part: expected <error|orchestration.config.json setting 'usageLimits.stateFile' must be a path under 'teamState.folder' but has a '.' or '..' part: "a\\..">, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || the usage reading: expected <path|C:\team\usage-reading\usage-limits.json>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || the probe folder: expected <path|C:\team\usage-probe>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || the record folder: expected <path|C:\team\usage-watch>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || names ending in dots and spaces, kept as they are: expected <path|C:\team\a.\b..c\d >, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a %NAME% in the child, kept as it is: expected <path|C:\team\%TEMP%\x>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || multibyte names: expected <path|C:\team\zespół\ślad.json>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || a trailing \ followed by a lone LF does not end in \: expected <path|C:\team\a\
+>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.>: expected <0>, got <50> (line 74)
+  FAIL  paths under teamState.folder: the shipped settings put the reading, the probe's folder and the watch's records where the layout says (D-39) :: usage-probe.ps1: usageLimits.stateFile: expected <path|C:\Users\demo\.claude\state\software-developer-agent\usage-reading\usage-limits.json>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || usageLimits.probeWorkingFolder: expected <path|C:\Users\demo\.claude\state\software-developer-agent\usage-probe>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.> || usageAndContextWatch.recordFolder: expected <path|C:\Users\demo\.claude\state\software-developer-agent\usage-watch>, got <error|The term 'Get-StatePath' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.>: expected <0>, got <3> (line 74)
+usage-probe.ps1
+  ok    probe: reads both windows of the first rate_limit_event line
+  ok    probe: a missing window is null, a 0 is 0 percent, no event is no reading
+  ok    probe: the JSON line has the contract shape and invariant numbers
+  ok    probe: writes the reading atomically and leaves no temp file
+  ok    probe: the child environment cannot bind to the calling session
+  ok    probe: arguments follow the measured command with the effort, with or without session persistence
+  ok    probe: the fallback deletes only the probe transcript written after the start
+  FAIL  probe: a missing settings key is an error naming the key :: reason names the key: USAGE PROBE FAILED | C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\work\config-21401d50.json has no key 'usageLimits.probeWorkingFolder'.: was false (line 79)
+  ok    probe: a fresh reading is younger than the fresh age; 0 never serves one, not even from the future
+  ok    probe run: prints the reading and writes the same line to the state file
+  ok    probe run: passes the configured model and effort to claude
+  ok    probe run: a reading that cannot be written is a failure, not a silent success
+  ok    probe run: no rate_limit_event is exit 1 with a reason
+  ok    probe: a claude that cannot start is exit 1 with a reason, nothing written
+  ok    probe run: a reading younger than stateFreshMinutes is printed as it is and claude is not called; -FreshMinutes 0 calls
+  FAIL  probe run: without -StatePath and -WorkingFolder the reading goes to <root>\usage-reading\usage-limits.json and claude runs in <root>\usage-probe :: Exception calling "ReadAllText" with "1" argument(s): "Could not find a part of the path 'C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\work\probe-home-c9d9ab\team\usage-reading\usage-limits.json'." (line 656)
+  ok    probe run: a passed -StatePath and -WorkingFolder win over the settings, which are then not needed
+  ok    probe: the transcript folder of the working folder under .claude is the name Claude Code gives it
+watch-usage-and-context.ps1 (functions)
+  ok    watch: cache state takes the newest reply with usage and 1h only from the last 20
+  ok    watch: session agents leave out ignored types and workflow agents, and keep agents without meta
+  ok    watch: session agents leave out an agent whose meta says finished: true, and only that
+  ok    watch: a finished warm worker does not turn resume into hand over; the same worker unfinished does
+  ok    watch: tripped window - below, one, missing, both takes the later reset
+  ok    watch: probe interval - far, near, failed attempt, no reading
+  ok    watch: no probe while nothing was written since the last reading, near a threshold or far from it
+  ok    watch: the probe may serve a reading up to stateFreshMinutes old, near a threshold only up to the near interval
+  ok    watch: last activity is the newest write of the session or any of its agents, workflow agents included
+  FAIL  watch: settings come from the config unless passed as a parameter :: the state file, under teamState.folder: expected <C:\team-root\r\usage.json>, got <r\usage.json> (line 74)
+  ok    config: a wake after a reset and every relaunch wait one minute, a wake after a server error ten, each with its why (the user, 2026-10-25, D-0006)
+
+Name                           Value
+----                           -----
+WarnTokens                     450000
+RetryMinutes                   10
+UsageStatePath                 usage-reading\usage-limits.json
+TailMegabytes                  4
+EverySeconds                   60
+WakeOnErrors                   {rate_limit, server_error}
+CacheLookbackReplies           20
+ResetMarginMinutes             1
+  FAIL  watch: a root naming a variable that is not set, or a record folder that climbs out, is an error in the words of lib\config.mjs :: an unset variable in the root: did not throw (line 88)
+  ok    watch: the probe is run with the settings file, the state file and the fresh age
+  ok    watch: decision resume when every warm agent outlives reset plus margin
+  ok    watch: decision hand over names only the agent that goes cold first
+  ok    watch: an expiry exactly at reset plus margin counts as going cold
+  ok    watch: flips resume to hand over when a cold agent works again, and never back
+  ok    watch: decision record round trip
+  ok    watch: the cap record is a hand-over with no window reset, read back as one, and no usage hand-over
+  ok    watch: the reported check line is kept in the decision record, read back and removed, and the rest of the record stays as it was
+  ok    watch: a server that did not start is told as LIMIT STOP SERVER FAILED, with the lib's fallback word for word
+  ok    watch: stop decision - only for the usage limit, the record or a cold agent makes it cold
+  ok    watch: wake time - a limit message with no readable reset waits for a later reset on record
+  ok    watch: stop decision - a reset on record from before the stop does not stand in for the reset
+  ok    watch: a moment on another day than now is printed with its date
+watch-usage-and-context.ps1 (runs)
+  ok    watch run: WATCH FAILED when the transcript is missing
+  ok    watch run: WATCH FAILED names a missing settings key
+  FAIL  watch run: WATCH ALREADY RUNNING when a live watch holds the marker :: exit code: expected <0>, got <-1> (line 74)
+  FAIL  watch run: SESSION NEAR CAP still ends the watch first, and its record is the cap hand-over, not a usage decision :: Cannot find path 'C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\work\team-state\usage-watch\44c38a21-2058-4768-a006-cd8693bec33e.decision.json' because it does not exist. (line 1093)
+  FAIL  watch run: at SESSION NEAR CAP it records the cap hand-over, starts the limit-stop server for the context cap with its Claude Code pid, then says what to do :: the cap hand-over was on record before the server started: expected <true>, got <false> (line 74)
+  ok    watch run: the relaunch command SESSION NEAR CAP prints runs, and starts the next chat relaunch.afterCapMinutes from now
+  ok    watch run: the wake after a server error waits usageAndContextWatch.retryMinutes, after a named reset usageAndContextWatch.resetMarginMinutes
+  ok    watch run: at SESSION NEAR CAP a server that did not start is told as FAILED before the fallback; without a Claude Code pid none is passed
+  ok    watch run: at SESSION NEAR CAP a server the hook started first counts as running
+  ok    watch run: SESSION RESUMED after a limit stop when every agent stays warm
+  ok    watch run: SESSION RESET COLD after a limit stop when a worker went cold
+  FAIL  watch run: a limit message with no readable reset and a later reset on record stays quiet until that reset :: quiet: SESSION RESUMED | rate_limit stopped this session at 11:45 ("You've hit your weekly limit · resets Oct 31, 7am (Europe/Warsaw)"); it is now 11:56. Carry on where the work stopped, resume every agent that was cut off, and start this watch again.: expected <0>, got <1> (line 74)
+  FAIL  watch run: restarted after LIMIT NEAR, a limit stop during the hand-over ends in SESSION RESET COLD after the reset :: line: SESSION RESUMED | rate_limit stopped this session at 11:51 ("You've hit your session limit · resets 11:55am"); it is now 11:56. Carry on where the work stopped, resume every agent that was cut off, and start this watch again.: was false (line 79)
+  ok    watch run: SESSION RESUMED after a server error even with a cold worker
+  FAIL  watch run: LIMIT NEAR hand over names the worker, not the searcher, the cold lead or the workflow agent :: Cannot find path 'C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\work\team-state\usage-watch\c21643a5-07b8-42b7-8375-b85e81978810.decision.json' because it does not exist. (line 1285)
+  ok    watch run: at LIMIT NEAR it starts the limit-stop server for its session, window, percent and reset, and gives the leads no deadline
+  ok    watch run: when the limit-stop server does not start, it is told as FAILED, and only then the fallback
+  ok    watch run: the limitStop settings the watch read before run K are not needed any more
+  FAIL  watch run: resume is recorded quietly, then flips to hand over when a cold lead works again :: Cannot find path 'C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\work\team-state\usage-watch\7c5c8208-ecef-4659-8019-8db9e4a0d824.decision.json' because it does not exist. (line 1360)
+  ok    watch run: a hand-over on record is never taken back and never repeated
+  FAIL  watch run: restarted during a hand-over it stays quiet over the warning size and past the threshold, and checks the limit-stop server each look :: cap hand-over: quiet: SESSION NEAR CAP | the context is at 451k tokens at 11:57 (warning size 450k). Finish the edit in progress, write the hand-over, schedule the next chat and end the session. LIMIT STOP SERVER STARTED | process 4242 | pipe stub Start this watch again now: the hand-over on record keeps it quiet, and it wakes you if the limit-stop server fails or, if the limit stops the session first, after the reset. The limit-stop server tells every agent of this session to stop at its next tool call: send no stop message. Wait for LEAD STOPPED from every running lead, with no deadline. Then write the hand-over, listing every lead's hand-off, and run & 'C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\orchestrate-agents\scripts\schedule-relaunch.ps1' -ProjectDir <project folder> -HandoverPath <hand-over file> -ContextCap, which starts a new chat with Read <hand-over> and carry on, and in the same step stop the limit-stop server: node 'C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\work\stub-limit-stop-server.mjs' stop --session 46e1d05e-3500-4a94-939c-a2b7332cb392; then end the session. The context-guard hook may say SESSION NEAR CAP and STOP FOR LIMIT too; they mean the same.: expected <0>, got <3> (line 74)
+  FAIL  watch run: a check that says FAILED ends the watch with that line and one more :: exit code ( ): expected <0>, got <-1> (line 74)
+  FAIL  watch run: a check that cannot check ends the watch, saying so :: LIMIT STOP SERVER NOT CHECKED | its log C:\x\limit-stop.log cannot be read: EBUSY: exit code ( ): expected <0>, got <-1> (line 74)
+  FAIL  watch run: started again while the check still says what a watch reported, it stays quiet and keeps checking :: cannot check: the first watch reports it: expected <LIMIT STOP SERVER NOT CHECKED | its log C:\x\limit-stop.log cannot be read: EBUSY|The Usage and context watch cannot tell whether the limit-stop server still works. Start this watch again now: it checks again at each look and says no more of this until the cause changes, or clears and comes back.>, got <> (line 74)
+  FAIL  watch run: started again after a reported check, it speaks again when the line changes, or when it clears and comes back :: a changed line is reported: expected <LIMIT STOP SERVER NOT CHECKED | its log C:\x\limit-stop.log cannot be read: EPERM|The Usage and context watch cannot tell whether the limit-stop server still works. Start this watch again now: it checks again at each look and says no more of this until the cause changes, or clears and comes back.>, got <> (line 74)
+  FAIL  watch run: a decision record that cannot be written hides no report: the line comes again, and a comeback after FINE is told :: run 1: reported: : was false (line 79)
+  ok    watch run: no check of the limit-stop server while the limit stops the session
+  FAIL  watch run: with the real limit-stop server it stays quiet while the server runs or was stopped, and tells its death once :: the watch ended after the server died (): was false (line 79)
+  ok    watch run: below the threshold nothing is decided and the watch stays quiet
+  FAIL  watch run: without -WarnTokens the warning size is contextCaps.main.warn :: Cannot find path 'C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\red\work\team-state\usage-watch\b2137501-97f2-4da3-adbd-64eb45ce179a.decision.json' because it does not exist. (line 1636)
+  ok    watch run: WATCH FAILED names a missing usageAndContextWatch key
+  FAIL  watch run: the usage reading comes from usageLimits.stateFile under teamState.folder, with %NAME% filled in in the root :: the reading in <root>\usage-reading\usage-limits.json was read: : was false (line 79)
+  FAIL  watch run: its marker and its limit decision live in usageAndContextWatch.recordFolder under teamState.folder, and the marker goes when it ends :: the decision is recorded in <root>\watch-records (the watch has ended: False): was false (line 79)
+  FAIL  watch run: a passed -RecordFolder wins over the setting :: first line: : was false (line 79)
+  FAIL  watch run: WATCH FAILED when usageAndContextWatch.recordFolder is missing or climbs out, in the words of lib\config.mjs :: exit code (): expected <1>, got <-1> (line 74)
+  ok    tests: every script a case starts runs in the work folder, with USERPROFILE, TEMP and TMP in it, and so does code called here
+schedule-relaunch.ps1
+  ok    relaunch: the run time is At plus margin, now or a recent past runs soon, older is refused
+  ok    relaunch: task name uses the folder name and the run minute
+  ok    relaunch: arguments survive the Windows command line unchanged
+  ok    relaunch: -DryRun registers nothing and says what it would run
+  ok    relaunch: the task description names the cause, and the task is registered with it
+  ok    relaunch: -At now waits usageLimits.relaunchMarginMinutes and passes no -ContextCap; -ContextCap goes without -At and needs its key
+  ok    relaunch: refuses a missing hand-over and a missing project folder
+  ok    relaunch: how far back -At may be comes from relaunch.maxPastHours, and every relaunch key is required
+start-session-in-vscode.ps1
+  ok    start: a window title names the folder as a whole part, never as a substring
+  ok    start: the open link escapes the prompt
+        code: C:\Users\user\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd
+        window: pid=8548 title=Handover document 2026-1… - software-developer-agent - Visual Studio Code names xpp-agent=False
+  ok    start: finds the code command and lists VS Code windows (read only)
+  ok    start: the link is opened only with the project window in front, else a notice names the folder and the prompt
+  ok    start: the notices say why the chat starts: the limit has reset, or the session handed over at its context cap
+  ok    start: every notification of the main part opens with the cause or is the plan's notice
+        2026-10-27 12:02:15  start: project C:\Repos\My projects\xpp-agent, prompt 'Read C:\x\HANDOVER_CLAUDE.md and carry on.' (dry run: nothing is run, focused, opened or pressed)
+        2026-10-27 12:02:15  step 1: would run C:\Users\user\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd "C:\Repos\My projects\xpp-agent" and wait 5 s
+        2026-10-27 12:02:15  step 2: 1 VS Code window(s); the one of xpp-agent: none; in front: False
+        2026-10-27 12:02:15  step 3: would open nothing, as the window of xpp-agent is not in front now (a real run may bring it forward in steps 1 and 2), and would show: Claude: the limit has reset, but the window of xpp-agent was not in front. Open a new Claude chat there and send: Read C:\x\HANDOVER_CLAUDE.md and carry on.
+  ok    start: -DryRun touches nothing on screen and logs every step
+  ok    start: -DryRun with no window of the project in front would open nothing and show the prompt
+  ok    start: a missing relaunch key is logged and nothing starts
+  ok    start: without -LogPath the log is relaunch.logFile, with %NAME% expanded
+run-heavy.ps1
+  ok    heavy: slots, free-memory floor and wait come from runHeavy unless passed
+  ok    heavy run: a missing runHeavy key is HEAVY COMMAND NOT RUN naming it, and the command does not run
+  ok    heavy run: the slot count comes from the settings and the command exit code passes through
+  ok    heavy run: the free-memory floor comes from the settings
+watch-agent-size-and-stall.ps1
+  ok    agent size and stall watch: the warning size is contextCaps.<type>.warn, the default entry for a type not listed
+  ok    agent size and stall watch run: warns at the warning size of its agent type; a passed -WarnTokens wins; a missing key fails
+  ok    agent size and stall watch: the agent type comes from the meta file; no file, no field or an empty one is default; an unreadable one is not known yet
+  ok    agent size and stall watch run: without -AgentType the type comes from the meta file; -AgentType overrides it; with neither, default
+every script (parameter names)
+  ok    every script: a misspelled parameter fails before the script runs a line (D-0007)
+  ok    relaunch: beside an otherwise valid dry run, a misspelled parameter registers nothing and prints nothing (D-0007)
+  ok    every script: its param block declares [CmdletBinding()] (D-0007)
+  ok    forwarders: an old file name gives the output and exit code of its new script, for as long as it is left
+  ok    relaunch: the task's argument line binds to the real start script, after a usage limit and after the context cap
+  ok    watch: its call of usage-probe.ps1 passes only parameters the probe has
+
+89 passed, 25 failed

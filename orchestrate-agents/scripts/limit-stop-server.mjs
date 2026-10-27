@@ -36,7 +36,7 @@ import { spawn } from 'node:child_process';
 import net from 'node:net';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { loadConfig, requireNumberSetting, requirePathSetting, requireSetting, skillDirOf } from '../lib/config.mjs';
+import { loadConfig, requireNumberSetting, requireSetting, requireStatePath, skillDirOf } from '../lib/config.mjs';
 import {
     AGENT_ID_PATTERN, appendLimitStopLog, askLimitStop, assertLogWritable, capRelaunchCommand, describeServer, findServerFailure, limitStopPipePath, LOG,
     logSettings, MAX_LINE_BYTES, pipeSettings, PROCESS_ID_PATTERN, readSessionLog, serverFailedLine, serverStopCommand,
@@ -123,7 +123,7 @@ function readSetup(args) {
         connectTimeoutMs,
         startCheckMs: requireNumberSetting(config, 'limitStop.startCheckSeconds') * 1000,
         processCheckMs: requireNumberSetting(config, 'limitStop.processCheckSeconds') * 1000,
-        logFile: requirePathSetting(config, 'limitStop.logFile'),
+        logFile: requireStatePath(config, 'limitStop.logFile'),
         leadTypes: requireTypeList(config, 'limitStop.leadAgentTypes'),
         helperTypes: requireTypeList(config, 'usageLimits.ignoreAgentTypes'),
     };

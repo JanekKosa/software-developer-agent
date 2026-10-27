@@ -1,0 +1,80 @@
+✔ a child setting is a path under the root, one part or several (2.5456ms)
+✔ the root takes each %NAME% from the environment (1.0373ms)
+✔ a root that is missing, not text, names an unset variable, or is not absolute is an error naming teamState.folder (1.3893ms)
+✔ a child setting that is missing is an error naming it (0.7872ms)
+✖ each refused child value is an error naming the setting and what is wrong with it (1.9366ms)
+✖ a % in a child is refused, so a %NAME% there is neither filled in nor kept as a folder named %NAME% (1.5987ms)
+✖ the % keeps its place in the order of the rules: after the drive, the edges and the /, before the empty and the dot parts (0.7249ms)
+✔ names that only look odd stay under the root (2.0571ms)
+✔ the shipped settings: one root under the user profile, and the three children of this run under it (2.4218ms)
+✔ the shipped root under a scratch USERPROFILE is the folder the test helper names (5.6426ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 7
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 439.6533
+
+✖ failing tests:
+
+test at ..\..\..\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\s3a-red\orchestrate-agents\tests\lib\state-path.test.mjs:82:1
+✖ each refused child value is an error naming the setting and what is wrong with it (1.9366ms)
+  AssertionError [ERR_ASSERTION]: "a*b"
+      at Object.<anonymous> (file:///C:/Users/user/AppData/Local/Temp/claude/c--Repos-My-projects-software-developer-agent/56c67d3d-b3c0-43be-a82c-b3a9cdc23274/scratchpad/s3a-red/orchestrate-agents/tests/lib/state-path.test.mjs:106:20)
+      at expectedException (node:assert:578:17)
+      at expectsError (node:assert:703:21)
+      at strict.throws (node:assert:759:3)
+      at TestContext.<anonymous> (file:///C:/Users/user/AppData/Local/Temp/claude/c--Repos-My-projects-software-developer-agent/56c67d3d-b3c0-43be-a82c-b3a9cdc23274/scratchpad/s3a-red/orchestrate-agents/tests/lib/state-path.test.mjs:104:16)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: `orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > |: "a*b"`,
+    expected: /has one of \* \? " < > \| %:/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at ..\..\..\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\s3a-red\orchestrate-agents\tests\lib\state-path.test.mjs:113:1
+✖ a % in a child is refused, so a %NAME% there is neither filled in nor kept as a folder named %NAME% (1.5987ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception: %TEMP%\x
+      at TestContext.<anonymous> (file:///C:/Users/user/AppData/Local/Temp/claude/c--Repos-My-projects-software-developer-agent/56c67d3d-b3c0-43be-a82c-b3a9cdc23274/scratchpad/s3a-red/orchestrate-agents/tests/lib/state-path.test.mjs:116:16)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { message: `orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "%TEMP%\\\\x"` },
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at ..\..\..\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\s3a-red\orchestrate-agents\tests\lib\state-path.test.mjs:124:1
+✖ the % keeps its place in the order of the rules: after the drive, the edges and the /, before the empty and the dot parts (0.7249ms)
+  AssertionError [ERR_ASSERTION]: "%\\\\x"
+      at Object.<anonymous> (file:///C:/Users/user/AppData/Local/Temp/claude/c--Repos-My-projects-software-developer-agent/56c67d3d-b3c0-43be-a82c-b3a9cdc23274/scratchpad/s3a-red/orchestrate-agents/tests/lib/state-path.test.mjs:135:20)
+      at expectedException (node:assert:578:17)
+      at expectsError (node:assert:703:21)
+      at strict.throws (node:assert:759:3)
+      at TestContext.<anonymous> (file:///C:/Users/user/AppData/Local/Temp/claude/c--Repos-My-projects-software-developer-agent/56c67d3d-b3c0-43be-a82c-b3a9cdc23274/scratchpad/s3a-red/orchestrate-agents/tests/lib/state-path.test.mjs:134:16)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: `orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has an empty part: "%\\\\\\\\x"`,
+    expected: /has one of \* \? " < > \| %:/,
+    operator: 'match',
+    diff: 'simple'
+  }

@@ -1,0 +1,13 @@
+USERPROFILE: C:\Users\user
+  start-session-in-vscode.ps1 | relaunch.logFile | C:\Users\user\.claude\state\software-developer-agent\logs\relaunch.log | same
+  start-session-in-vscode.ps1 | runHeavy.holderFolder | C:\Users\user\.claude\state\software-developer-agent\heavy-commands | same
+  run-heavy.ps1 | relaunch.logFile | C:\Users\user\.claude\state\software-developer-agent\logs\relaunch.log | same
+  run-heavy.ps1 | runHeavy.holderFolder | C:\Users\user\.claude\state\software-developer-agent\heavy-commands | same
+  config.mjs | relaunch.logFile | C:\Users\user\.claude\state\software-developer-agent\logs\relaunch.log | same
+  config.mjs | runHeavy.holderFolder | C:\Users\user\.claude\state\software-developer-agent\heavy-commands | same
+RESOLVE | 0 differences on 2 settings (6 answers)
+real root exists after resolving: False
+  Get-RequiredSetting : 4 copies, 368/368/368/368 characters
+  Get-StatePathFault : 4 copies, 597/597/597/597 characters
+  Get-StatePath : 4 copies, 1780/1780/1780/1780 characters
+COPIES | 4 copies, 0 differences

@@ -1,0 +1,20 @@
+{
+  "kind": "question",
+  "blocking": false,
+  "urgency": "medium",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "Today install.ps1 only makes the folder links. Five entries in Claude Code's settings file are added by hand: the two team hooks (the size warning and the decision reminder), the switch that stops Claude Code carrying on by itself at the usage limit, and the two lines that tell Claude Code where the Decisions pane is and switch it on. The README says the install leaves the settings alone on purpose. On a new PC the team does not work until those five are there.",
+  "example": "With A, a new laptop needs: clone, run install.ps1, restart VS Code. With C, the same plus copying five entries from the README into the settings file by hand, where one typo silences a hook.",
+  "options": [
+    "A: install.ps1 adds exactly these five, keeps everything else in the file, saves a backup first, shows what it would change when run with -WhatIf, and changes nothing on a second run (part of one run).",
+    "B: install.ps1 only checks the settings and prints the exact entries that are missing, for you to paste (part of one run).",
+    "C: as now: the README lists them (no cost)."
+  ],
+  "recommendation": "A, because the goal is clone, install and it works, and the backup and -WhatIf keep the settings file safe. On this PC the main session decides whether to run it.",
+  "meanwhile": "Work goes on assuming A. No worker writes to this PC's settings: the tests use a scratch copy.",
+  "evidence": [
+    "C:\\Repos\\My projects\\software-developer-agent\\README.md",
+    "C:\\Repos\\My projects\\software-developer-agent\\scripts\\install.ps1"
+  ]
+}

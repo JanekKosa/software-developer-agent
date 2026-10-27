@@ -40,17 +40,17 @@ hand-off, say that instead (it was cut off by the limit, not stopped), and name 
 > user's words, and carry on.
 
 An answer the user typed in the chat: record it first, so the register and the lead agree:
-`node 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\register.mjs' answer --id D-<id> --answer <words> --handed-over`.
+`node "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\register.mjs" answer --id D-<id> --answer <words> --handed-over`.
 An answer given in the Decisions pane is in the answers log already, and reaches you once, from the Decision
 answers watch or the prompt hook. Pass the words (`--answer`, and below `--summary` and `--text`) in a single-quoted
 here-string, as `SKILL.md` shows for `--answer`; in double quotes PowerShell changes them.
 
 Once you know whether the answer settles the entry, close it or follow it up:
 
-- `node 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\register.mjs' close --id D-<id> --outcome <answered|accepted|overruled|fixed|wont-fix> --summary <text>`:
+- `node "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\register.mjs" close --id D-<id> --outcome <answered|accepted|overruled|fixed|wont-fix> --summary <text>`:
   the script copies the user's last answer into the entry as its Final answer; your summary states the decision,
   with that final answer in it.
-- `node 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\register.mjs' follow-up --id D-<id> --text <text>`:
+- `node "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\register.mjs" follow-up --id D-<id> --text <text>`:
   it sends the entry back to the user. A follow-up explains, elaborates or talks about the decision further, in as
   many lines as it needs; it never changes the entry's options. Changed options are a new child entry: `add` with
   `"parent": "D-<id>"`, numbered `D-<id>-1`.

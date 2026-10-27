@@ -1,0 +1,43 @@
+{
+  "name": "decisions-pane",
+  "version": "0.1.0",
+  "description": "A pane in the Claude chat that lists the decisions the agent team's register waits for you on, each with its urgency, context, a pick list or a text box, and a Submit button that records your answer in the register.",
+  "author": {
+    "name": "JanekKosa"
+  },
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "registerScript": {
+      "type": "string",
+      "title": "Register script",
+      "description": "The agent team's register.mjs, which records each answer. A leading ~ is your home folder. Its orchestration.config.json (two folders up) names the register files. Only the register of the chat's own repo is shown.",
+      "default": "~/.claude/skills/orchestrate-agents/scripts/register.mjs"
+    },
+    "nodePath": {
+      "type": "string",
+      "title": "Node",
+      "description": "The node program that runs the register script: a name on the PATH, or a full path.",
+      "default": "node"
+    },
+    "pollMs": {
+      "type": "number",
+      "title": "Register refresh (ms)",
+      "description": "How often the registers are read for new or changed decisions, in milliseconds. At least 500.",
+      "default": 2000,
+      "min": 500
+    },
+    "autoOpen": {
+      "type": "boolean",
+      "title": "Open the pane when a decision waits",
+      "description": "Opens the Decisions pane by itself when a decision waits for you. Once you close it, it stays closed until a decision it did not show arrives, or until you run /decisions-pane.",
+      "default": true
+    },
+    "paneRows": {
+      "type": "number",
+      "title": "Pane height (lines)",
+      "description": "How tall the pane asks to be above the prompt; a taller list scrolls. The size you drag it to wins.",
+      "default": 20,
+      "min": 5
+    }
+  }
+}

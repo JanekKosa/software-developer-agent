@@ -1,6 +1,6 @@
 ---
 name: orchestrate-agents
-description: How to run a large piece of work as the main orchestrator in Claude Code - the main session talks to the user and starts one task lead per task; each lead plans its task, starts its own workers, answers them and checks every result; workers build and test one piece and report only to their lead; cheap searchers find and quote. Covers the lines leads end their turns with, the decision register that carries every question, initiative and issue to the user, the context-guard hook that tells each agent its size, the usage-limit choice between resuming warm and handing over to a relaunched session, workflows in ultracode, and commits after checked work. Use whenever work will take more than two or three agent runs, a plan of several tasks is to be carried out, a session must outlast one agent's context, or the user says "orchestrate", "use leads", "deploy agents", "run it with subagents", "continue the plan" or "you be the main orchestrator".
+description: How to run a large piece of work as the main orchestrator in Claude Code - the main session talks to the user and starts one task lead per task; each lead plans its task, starts its own workers, answers them and checks every result; workers build and test one piece and report only to their lead; cheap searchers find and quote. Covers the lines leads end their turns with, the decision register that carries every question, initiative and issue to the user, the context-guard hook that tells each agent its size, the usage-limit choice between resuming warm and handing over to a relaunched session, workflows in ultracode, and commits after checked work. Use only in a chat the user switched the team on for with /software-developer-agent, which loads it. In any other chat, do not load it and do not start the team, whatever the request says: an ordinary chat gets nothing of the team (the user, 2026-10-26, D-32).
 ---
 
 # Orchestrating agents: main session, task leads, workers
@@ -16,7 +16,7 @@ user <-> main session <-> task leads (task-lead) <-> workers (software-developer
          relays to user     searchers, decide          may start searchers          never analyse
 ```
 
-Below, `<orch>` is this skill's folder, `C:\Repos\My projects\software-developer-agent\orchestrate-agents`. The
+Below, `<orch>` is this skill's folder, `~\.claude\software-developer-agent\orchestrate-agents`. The
 agents are in `..\agents\` of the same repo.
 
 ## The roles
@@ -44,7 +44,7 @@ agents are in `..\agents\` of the same repo.
 | A subagent with running children does not finish until they have. | A lead's lines reach you only when its workers are done. |
 | `SendMessage` to a finished agent resumes it, and it reports back to whoever resumed it. | A lead answers its worker without you. |
 | A subagent's `SendMessage` to `main` waits for your next turn; it does not wake you. | Leads send non-waking notes (`REGISTERED`); waking lines end their turn. |
-| `omitClaudeMd: true` drops every `CLAUDE.md` from an agent's start. | Leads and workers read the project's own files themselves; this machine's traps come from the `machine-pitfalls` skill. |
+| `omitClaudeMd: true` drops every `CLAUDE.md` from an agent's start. | Leads and workers read the project's own files themselves; the traps come from the `windows-pitfalls` skill (any Windows PC) and the `machine-pitfalls` skill (this PC's own). |
 | `experimental: { cacheTtl: 1h }` gives a subagent a 1-hour cache instead of 5 minutes. | Leads and workers set it: their turns are often far apart. |
 | Hooks fire inside subagents, with the agent's id and type. | The context-guard hook tells each agent its size. |
 | Only the main session has the `Workflow` tool. | Leads ask you to run workflows. |
@@ -52,20 +52,30 @@ agents are in `..\agents\` of the same repo.
 
 ## Starting work
 
+The team runs only in a chat the user switched on: "i dont want the agent architecture to run for all main chats i
+want the ability to activate it when i start a new chat and need somethign developed" (the user, 2026-10-26). The user
+switches a chat on by typing `/software-developer-agent` (D-33). That command first runs
+`node "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\team-on.mjs"`, which prints
+`AGENT TEAM ON | session <id> | <marker>` and writes the chat's marker under
+`%USERPROFILE%\.claude\state\software-developer-agent\team-on\` (setting `agentTeam.onFolder`, a folder under
+`teamState.folder`). Until then the two hooks say nothing in this chat or its agents. Then it does steps 1 and 2
+below, and loads this skill. Never switch a chat on yourself because a request sounds like team work: say the user can
+start a chat with `/software-developer-agent` instead.
+
 Start each watch with the PowerShell tool and `run_in_background`, with exactly the description its step gives:
 that description is the name the user sees in the task list, and the user named each watch for what it does ("each
 watch within the agent should be anmed differently with a name of what it does so that i know what each is for", the
 user, 2026-10-26, D-16).
 
 1. Start the **Usage and context watch**: description `Usage and context watch`, command
-   `& 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-usage-and-context.ps1'`.
+   `& "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\watch-usage-and-context.ps1"`.
    It watches your usage limits and your context size, and wakes you when you are idle. It needs no arguments. Note
    its task id. Start it again every time it ends, except after `SESSION RESET COLD`, which leads straight to a
    hand-over from the files. After `LIMIT NEAR` and `SESSION NEAR CAP` start it again at once too: the hand-over on
    record keeps it quiet, and it wakes you if the limit-stop server fails. Stop it with `TaskStop` once the relaunch
    is scheduled (`references/usage-limits.md`).
 2. Start the **Decision answers watch**, from your own repo: description `Decision answers watch`, command
-   `& 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-decision-answers.ps1'`.
+   `& "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\watch-decision-answers.ps1"`.
    It hands you the answers the user gave in the Decisions pane. It needs no arguments and reads only the register
    of the repo it starts in (D-14). Note its task id. It hands over every answer that waits at its start, every 30
    minutes (`decisionAnswersWatch.everyMinutes`; the user: "lets keep that but increase the default period to every
@@ -120,7 +130,11 @@ waits on it or it gets costly to undo within hours; `medium`: needed before its 
 tiny example, options with costs, a recommendation, and what happens meanwhile. Ids are `D-<n>`, counting up; a
 child of an entry is numbered under it, so `D-2-5` is the fifth child of `D-2`. Older registers wrote `D-0007`;
 every command takes that spelling too, and `migrate` rewrites it. Leads add entries with `add` (the fields are in
-`agents\task-lead.md` section 8); you add your own the same way (Relaying, below).
+`agents\task-lead.md` section 8); you add your own the same way (Relaying, below). Every entry, yours too, is
+readable at a glance and never a block of text (the user, 2026-10-27, D-40): short sentences, one short line per
+option, and an idea with parts written as a list of points (`what`, `example`, `recommendation` and `meanwhile` each
+take one, its headline first), which the register stores and the Decisions pane shows one point per line; section 8
+of `agents\task-lead.md` has a sample entry as the pane shows it.
 
 **How an answer reaches you.** The user answers in the Decisions pane or in the chat, and both are first-class (the
 user, 2026-10-26, D-18: "i should alos be able to answer deciosins in the main chat not only in the decisions
@@ -206,8 +220,10 @@ command fail to parse, and nothing is written: then save the words with the Writ
 and `$text` as the block shows.
 
 `--root <dir>` points at another repo; by default the repo of the working folder. In the repos
-`register.commitInRepos` names (the user's own, `C:\Repos\My projects\*`) the register is committed; in any other
-repo every add puts the register's own files in `.git\info\exclude`, which only this machine sees.
+`register.commitInRepos` names the register is committed; in any other repo every add puts the register's own
+files in `.git\info\exclude`, which only this machine sees. The list is this PC's own: it is read from the PC settings
+file (`<teamState.folder>\pc-settings.json`, which the init script creates), and without one it is the folder the repo
+lies in, followed by `\*` (`D:\Work\*` for a clone at `D:\Work\software-developer-agent`).
 
 `migrate` moves a register written by an older version to today's layout and prints one line per file it changed,
 or one line that says nothing needed changing. It folds an old `ANSWERED_DECISIONS_CLAUDE.md` into the answers log
@@ -237,6 +253,7 @@ per invoice? Please answer it in the Decisions pane soon; the import waits on it
 - The report of a whole task, or an explanation of how a delivered feature works, follows `explain-clearly`'s
   elaborate form (terms first, a diagram and one running example, then points), as an HTML explainer page when it
   runs past a screen. Any decision it holds goes to the register, not into the chat (Relaying, above).
+  `explain-clearly` and `report-changes` are skills of this repo, linked into the skills folders like `team-rules`.
 
 ## Sizes
 

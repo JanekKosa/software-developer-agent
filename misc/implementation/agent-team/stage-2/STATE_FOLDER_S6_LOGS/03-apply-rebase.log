@@ -1,0 +1,15 @@
+WROTE | lib\decision-register.mjs | live bytes | copy now 52815B1907DCBDFD4FD3587E6502E792B35B734C18C83C71179B744680ED0848
+WROTE | scripts\register.mjs | live bytes | copy now 78F2F7488D140DBE624F0AC5799BE3F1D9E803CEB5FD5388FC0744A6C6AFEFFD
+WROTE | tests\lib\decision-register.test.mjs | live bytes | copy now 55D26641C7E4DC03ADB49F668A2B9CCD1FFA52842E124054AEC5E2DBC641FEA3
+WROTE | tests\scripts\register.test.mjs | live bytes | copy now DFC3CCE61B2898A9D2FA9995B1E5430097FE7EA9652DCC61A6AC6B24DCE96C35
+WROTE | tests\lib\decision-register-points.test.mjs | live bytes | copy now BC01FEF4447CFA81CBAE34653831E3DAA282129DA422E5282E3E8CD9D9213E2D
+WROTE | SKILL.md | merged | copy now DF45CE043A6AFBA4B56553164A82AF9E64AF69860A707A2EEB69AF51C7BFE32C
+WROTE | tests\hooks\decision-reminder.test.mjs | merged | copy now 457BBC64D79C098930F59DF73AD165ECEB69C9253C75292D31065F26EE407DB2
+BASE LINE | lib\decision-register.mjs | FCD0B6B2DBCA -> 52815B1907DC
+BASE LINE | tests\lib\decision-register-points.test.mjs | added at line 40
+BASE LINE | tests\scripts\register.test.mjs | 51438D232D40 -> DFC3CCE61B28
+BASE LINE | tests\hooks\decision-reminder.test.mjs | AB854D69AEC4 -> 0460BD3BF491
+BASE LINE | tests\lib\decision-register.test.mjs | BCB782CBBB86 -> 55D26641C7E4
+BASE LINE | SKILL.md | C874A19663B2 -> 0DA1B4564C17
+BASE LINE | scripts\register.mjs | 8EA8D3D48520 -> 78F2F7488D14
+BASE LIST | 49 lines, last: # re-based on live 2026-10-27 14:00:22: 7 files

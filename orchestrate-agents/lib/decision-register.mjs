@@ -27,6 +27,7 @@ import { requireNumberSetting, requireSetting } from './config.mjs';
 import { acquireLock } from './file-lock.mjs';
 import { ensureExcludeLine, excludeFilePath, findRepoRoot, matchesPathPattern } from './git-repo.mjs';
 import { formatLocalMinute } from './local-time.mjs';
+import { commitInRepos } from './pc-settings.mjs';
 import { detectEol, joinLines, readText, splitLines, tempFileName, writeTextAtomic } from './text-file.mjs';
 
 const LOCK_FILE_NAME = '.lock';
@@ -53,6 +54,11 @@ const ANSWERED_PREFIX = '- Answered: ';
 const FOLLOW_UP_PREFIX = '- Follow up: ';
 const FINAL_ANSWER_PREFIX = '- Final answer: ';
 const RESOLVED_PREFIX = '- Resolved: ';
+// The start of a point's line under its field (the contract of 2026-10-27): what, example, recommendation and meanwhile
+// given as a list of points keep the first point on the field's line and each further point on a line that starts so,
+// and the options all do, under '- Options:'. Such a line never starts like a field or a heading, so every reader that
+// takes a field's first line reads an entry in points as before.
+const POINT_PREFIX = '  - ';
 const NEW_FILE_EOL = '\r\n';
 // An answer line of an older register's answered file, or of an entry of the middle layout, '- Answered: 2026-10-24
 // 10:00: "<words on one line>"': the words are everything between the first quote after the time and the last quote
@@ -80,9 +86,11 @@ const LOG_TIME_FIELDS = ['handedOverAt', 'processedAt'];
 export const HANDOVER_INSTRUCTION = 'For each answer: pass it, in the user\'s words, to the lead it concerns; then close the entry with a summary that includes the final answer (register.mjs close --id <id> --outcome <outcome> --summary $summary), or follow it up (register.mjs follow-up --id <id> --text $text); set $summary and $text in a single-quoted here-string, never in double quotes.';
 
 // Field name -> what it must hold. Every field is required except those in OPTIONAL_FIELDS; no other is accepted.
+// 'points' is a non-empty text or a list of one or more points, 'pointList' a list of one or more points (a point is
+// a string that is not blank once pointText has dropped its list mark), 'list' a list of one or more non-empty texts.
 const ENTRY_FIELDS = {
-    kind: 'kind', blocking: 'boolean', urgency: 'urgency', raisedBy: 'text', task: 'text', what: 'text',
-    example: 'text', options: 'list', recommendation: 'text', meanwhile: 'text', evidence: 'list',
+    kind: 'kind', blocking: 'boolean', urgency: 'urgency', raisedBy: 'text', task: 'text', what: 'points',
+    example: 'points', options: 'pointList', recommendation: 'points', meanwhile: 'points', evidence: 'list',
 };
 const OPTIONAL_FIELDS = { parent: 'id' };
 
@@ -108,7 +116,8 @@ export class UsageError extends Error {}
 /**
  * Works out where the register of a folder lives.
  * @param {string} startDir the working folder (or --root); its repo root holds the register
- * @param {object} config the whole settings object (register.* is read)
+ * @param {object} config the whole settings object (register.* is read, and teamState.folder and pcSettings.file to
+ *   find this PC's settings file, which holds register.commitInRepos: lib/pc-settings.mjs)
  * @returns {{root: string, gitDir: string|null, folderPath: string, openPath: string, answeredPath: string,
  *   resolvedPath: string, answersLogPath: string, lockPath: string, lockWaitMs: number, lockStaleMs: number,
  *   excludeLines: string[], commitInRepo: boolean}} the paths (answeredPath is an older register's answered file,
@@ -121,10 +130,7 @@ export function registerLocation(startDir, config) {
     const answeredFile = requireSetting(config, 'register.answeredFile');
     const resolvedFile = requireSetting(config, 'register.resolvedFile');
     const answersLogFile = requireSetting(config, 'register.answersLogFile');
-    const patterns = requireSetting(config, 'register.commitInRepos');
-    if (!Array.isArray(patterns)) {
-        throw new Error("orchestration.config.json setting 'register.commitInRepos' must be a list");
-    }
+    const patterns = commitInRepos(config);
     const lockWaitSeconds = requireNumberSetting(config, 'register.lockWaitSeconds');
     const lockStaleSeconds = requireNumberSetting(config, 'register.lockStaleSeconds');
     const { root, gitDir } = findRepoRoot(startDir);
@@ -261,6 +267,12 @@ export function validateEntry(entry) {
         if (rule === 'text' && !isFilledText(value)) {
             throw new UsageError(`field ${name} must be non-empty text`);
         }
+        if (rule === 'points' && !(isFilledText(value) || isPointList(value))) {
+            throw new UsageError(`field ${name} must be non-empty text or a list of one or more non-empty points`);
+        }
+        if (rule === 'pointList' && !isPointList(value)) {
+            throw new UsageError(`field ${name} must be a list of one or more non-empty texts`);
+        }
         if (rule === 'list' && !(Array.isArray(value) && value.length > 0 && value.every(isFilledText))) {
             throw new UsageError(`field ${name} must be a list of one or more non-empty texts`);
         }
@@ -271,27 +283,68 @@ export function validateEntry(entry) {
 }
 
 /**
- * Lays out an entry as register lines. Every line break inside a text becomes one space; nothing else changes.
+ * Lays out an entry as register lines. A text becomes one line, every line break inside it one space. What, example,
+ * recommendation and meanwhile given as a list of points keep their first point on the field's line and put each
+ * further point on a line of its own under it (see fieldLines); the options go one per line under '- Options:', each
+ * with a full stop unless it ends with '.', '!' or '?'. A point or an option loses what pointText drops.
  * @param {string} id the entry id, for example 'D-7'
  * @param {object} entry a validated entry
  * @param {Date} now when it was raised
  * @returns {string[]} the heading and the field lines
  */
 export function formatEntryLines(id, entry, now) {
-    const options = entry.options.map(oneLine).map((option) => (/[.!?]$/.test(option) ? option : `${option}.`));
+    const options = entry.options.map(pointText).map((option) => (/[.!?]$/.test(option) ? option : `${option}.`));
     return [
         `## ${id} ${DOT} ${entry.kind} ${DOT} ${entry.blocking ? 'blocking' : 'not-blocking'}`,
         `${STATUS_PREFIX}${WAITING_FOR_USER}`,
         `${URGENCY_PREFIX}${entry.urgency}`,
         `- Raised: ${formatLocalMinute(now)} by ${oneLine(entry.raisedBy)}`,
         `- Task: ${oneLine(entry.task)}`,
-        `${WHAT_PREFIX}${oneLine(entry.what)}`,
-        `- Example: ${oneLine(entry.example)}`,
-        `- Options: ${options.join(' ')}`,
-        `- Recommendation: ${oneLine(entry.recommendation)}`,
-        `- Meanwhile: ${oneLine(entry.meanwhile)}`,
+        ...fieldLines(WHAT_PREFIX, entry.what),
+        ...fieldLines('- Example: ', entry.example),
+        '- Options:',
+        ...options.map((option) => `${POINT_PREFIX}${option}`),
+        ...fieldLines('- Recommendation: ', entry.recommendation),
+        ...fieldLines('- Meanwhile: ', entry.meanwhile),
         `- Evidence: ${entry.evidence.map(oneLine).join(', ')}`,
     ];
+}
+
+/**
+ * Lays out one field that takes a text or a list of points: a text on the field's line, as one line; a list with its
+ * first point on the field's line and each further point on a line of its own under it, after POINT_PREFIX. A list of
+ * one point is therefore one line, like a text.
+ * @param {string} prefix the field's line start, such as '- What: '
+ * @param {string|string[]} value a validated text or list of points
+ * @returns {string[]} the field's lines
+ */
+function fieldLines(prefix, value) {
+    if (typeof value === 'string') {
+        return [`${prefix}${oneLine(value)}`];
+    }
+    const [first, ...rest] = value.map(pointText);
+    return [`${prefix}${first}`, ...rest.map((point) => `${POINT_PREFIX}${point}`)];
+}
+
+/**
+ * Gives a point as the register writes it: every line break turned into one space, then one leading '- ' or '* ' (a
+ * list mark typed with the point) dropped, so the point is not marked twice.
+ * @param {string} point a point or an option as given
+ * @returns {string} the point on one line, without its own list mark
+ */
+function pointText(point) {
+    return oneLine(point).replace(/^[-*] /, '');
+}
+
+/**
+ * Says whether a value is a list of one or more points, each a string that still holds something other than spaces
+ * once pointText has dropped its line breaks and its list mark.
+ * @param {*} value any value
+ * @returns {boolean} true for a non-empty list of non-blank points
+ */
+function isPointList(value) {
+    return Array.isArray(value) && value.length > 0
+        && value.every((point) => typeof point === 'string' && isFilledText(pointText(point)));
 }
 
 /**

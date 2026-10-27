@@ -1,0 +1,26 @@
+{
+  "kind": "initiative",
+  "blocking": false,
+  "urgency": "low",
+  "raisedBy": "lead self-contained (worker run S1)",
+  "task": "Agent team: works from this repo alone",
+  "what": [
+    "New traps reach the notes through the main session; agents never edit the notes themselves.",
+    "An agent that loses time on a trap writes it in its report, marked \"any Windows PC\" or \"this PC only\".",
+    "The main session then adds it to windows-pitfalls (in the agent repo) or to this PC's machine-pitfalls."
+  ],
+  "example": "A worker finds that a script fails when a folder name has a space; its report says \"trap: ... (any Windows PC)\", and the main session adds one line to windows-pitfalls.",
+  "options": [
+    "A: keep it: the main session adds each trap (no cost; one short step for the main session now and then)",
+    "B: agents add traps to the notes themselves (no main-session step; several agents may edit the same live notes at once)"
+  ],
+  "recommendation": [
+    "A, because both notes are loaded live by every agent.",
+    "One writer keeps them tidy and free of clashes."
+  ],
+  "meanwhile": "Work goes on with A; it is already written into the team's shared rules.",
+  "evidence": [
+    "C:\\Repos\\My projects\\software-developer-agent\\team-rules\\SKILL.md",
+    "C:\\Repos\\My projects\\software-developer-agent\\misc\\implementation\\agent-team\\stage-2\\SELF_CONTAINED_S1_REPORT_CLAUDE.md"
+  ]
+}

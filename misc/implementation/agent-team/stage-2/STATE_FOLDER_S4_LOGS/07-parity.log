@@ -1,0 +1,97 @@
+== 1. same path: staged config, USERPROFILE=C:\Users\user, 3 real session ids
+same | 53c478ca-5bfb-48d8-9697-2bf478d648b8 | pane C:\Users\user\.claude\state\software-developer-agent\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+same | 56c67d3d-b3c0-43be-a82c-b3a9cdc23274 | pane C:\Users\user\.claude\state\software-developer-agent\team-on\56c67d3d-b3c0-43be-a82c-b3a9cdc23274 | node C:\Users\user\.claude\state\software-developer-agent\team-on\56c67d3d-b3c0-43be-a82c-b3a9cdc23274
+same | bf7022c6-e279-4ccd-81b9-ef9cadd8ee4f | pane C:\Users\user\.claude\state\software-developer-agent\team-on\bf7022c6-e279-4ccd-81b9-ef9cadd8ee4f | node C:\Users\user\.claude\state\software-developer-agent\team-on\bf7022c6-e279-4ccd-81b9-ef9cadd8ee4f
+RESULT 1: 0 differences on 3
+== 2. refused: 60, accepted: 22
+agree | refused | child undefined | pane null | node orchestration.config.json has no setting 'agentTeam.onFolder'
+agree | refused | child null | pane null | node orchestration.config.json has no setting 'agentTeam.onFolder'
+agree | refused | child 42 | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be text, a path under 'teamState.folder', not 42
+agree | refused | child ["team-on"] | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be text, a path under 'teamState.folder', not ["team-on"]
+agree | refused | child "" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but is empty: ""
+agree | refused | child "C:" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a drive or a ':': "C:"
+agree | refused | child "C:\\x" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a drive or a ':': "C:\\x"
+agree | refused | child "C:\\team-on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a drive or a ':': "C:\\team-on"
+agree | refused | child "a:b" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a drive or a ':': "a:b"
+agree | refused | child "team:on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a drive or a ':': "team:on"
+agree | refused | child "\\team-on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "\\team-on"
+agree | refused | child "team-on\\" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "team-on\\"
+agree | refused | child "/team-on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "/team-on"
+agree | refused | child "team-on/" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "team-on/"
+agree | refused | child "\\\\server\\share" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but starts or ends with '\' or '/': "\\\\server\\share"
+agree | refused | child "team/on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a '/'; parts are joined by '\': "team/on"
+agree | refused | child "team*" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "team*"
+agree | refused | child "team?" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "team?"
+agree | refused | child "\"team\"" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "\"team\""
+agree | refused | child "<team>" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "<team>"
+agree | refused | child "team|on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "team|on"
+agree | refused | child "%TEMP%\\x" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "%TEMP%\\x"
+agree | refused | child "%TEMP%\\team-on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "%TEMP%\\team-on"
+agree | refused | child "team%" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "team%"
+agree | refused | child "team%on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has one of * ? " < > | %: "team%on"
+agree | refused | child "a\\\\b" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has an empty part: "a\\\\b"
+agree | refused | child "state\\\\team-on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has an empty part: "state\\\\team-on"
+agree | refused | child "." | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: "."
+agree | refused | child ".." | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: ".."
+agree | refused | child "a\\.\\b" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: "a\\.\\b"
+agree | refused | child "state\\.\\team-on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: "state\\.\\team-on"
+agree | refused | child "a\\.." | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: "a\\.."
+agree | refused | child "state\\..\\team-on" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: "state\\..\\team-on"
+agree | refused | child "..\\..\\Windows" | pane null | node orchestration.config.json setting 'agentTeam.onFolder' must be a path under 'teamState.folder' but has a '.' or '..' part: "..\\..\\Windows"
+agree | refused | root undefined | pane null | node orchestration.config.json has no setting 'teamState.folder'
+agree | refused | root 42 | pane null | node orchestration.config.json setting 'teamState.folder' must be a path, not 42
+agree | refused | root "" | pane null | node orchestration.config.json setting 'teamState.folder' must be a path, not ""
+agree | refused | root "state\\team" | pane null | node orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "state\\team"
+agree | refused | root "\\state" | pane null | node orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "\\state"
+agree | refused | root "\\\\server\\share\\state" | pane null | node orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "\\\\server\\share\\state"
+agree | refused | root "C:state" | pane null | node orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "C:state"
+agree | refused | root "C:/state" | pane null | node orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "C:/state"
+agree | refused | root "CC:\\x" | pane null | node orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "CC:\\x"
+agree | refused | root "1:\\x" | pane null | node orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not "1:\\x"
+agree | refused | root "C:\\state\\%S4_NEVER_SET%" | pane null | node orchestration.config.json setting 'teamState.folder' names %S4_NEVER_SET%, which is not set
+agree | refused | root "%S4_NEVER_SET%\\x" | pane null | node orchestration.config.json setting 'teamState.folder' names %S4_NEVER_SET%, which is not set
+agree | refused | no teamState section | pane null | node orchestration.config.json has no setting 'teamState.folder'
+agree | refused | session id undefined | pane null | node session id undefined is not a plain id
+agree | refused | session id null | pane null | node session id null is not a plain id
+agree | refused | session id 42 | pane null | node session id 42 is not a plain id
+agree | refused | session id "" | pane null | node session id "" is not a plain id
+agree | refused | session id "." | pane null | node session id "." is not a plain id
+agree | refused | session id ".." | pane null | node session id ".." is not a plain id
+agree | refused | session id "a\\b" | pane null | node session id "a\\b" is not a plain id
+agree | refused | session id "a/b" | pane null | node session id "a/b" is not a plain id
+agree | refused | session id "a b" | pane null | node session id "a b" is not a plain id
+agree | refused | session id "C:" | pane null | node session id "C:" is not a plain id
+agree | refused | session id "a_b" | pane null | node session id "a_b" is not a plain id
+agree | refused | session id "ab\n" | pane null | node session id "ab\n" is not a plain id
+agree | refused | session id "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" | pane null | node session id "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" is not a plain id
+agree | accepted | child "team-on" | pane C:\Users\user\.claude\state\software-developer-agent\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | child "team on.v2" | pane C:\Users\user\.claude\state\software-developer-agent\team on.v2\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\team on.v2\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | child "switch\\team on" | pane C:\Users\user\.claude\state\software-developer-agent\switch\team on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\switch\team on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | child "state\\team-on" | pane C:\Users\user\.claude\state\software-developer-agent\state\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\state\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | child "a\\b\\c" | pane C:\Users\user\.claude\state\software-developer-agent\a\b\c\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\a\b\c\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | child "..." | pane C:\Users\user\.claude\state\software-developer-agent\...\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\...\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | child "a\\...\\b" | pane C:\Users\user\.claude\state\software-developer-agent\a\...\b\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\a\...\b\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | child "team." | pane C:\Users\user\.claude\state\software-developer-agent\team.\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\team.\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | child "_x" | pane C:\Users\user\.claude\state\software-developer-agent\_x\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\.claude\state\software-developer-agent\_x\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "D:\\team state\\" | pane D:\team state\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node D:\team state\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\" | pane C:\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "c:\\x" | pane c:\x\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node c:\x\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\a\\\\b" | pane C:\a\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\a\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\a/b" | pane C:\a\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\a\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\a\\.\\b" | pane C:\a\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\a\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\a\\..\\b" | pane C:\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\a\\..\\..\\b" | pane C:\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\b\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\a\\.." | pane C:\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\a:b\\c" | pane C:\a:b\c\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\a:b\c\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "%USERPROFILE%\\x\\..\\y" | pane C:\Users\user\y\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\Users\user\y\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | root "C:\\x\\%USERPROFILE%" | pane C:\x\C:\Users\user\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8 | node C:\x\C:\Users\user\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+agree | accepted | session id of 128 | pane C:\Users\user\.claude\state\software-developer-agent\team-on\a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-ab | node C:\Users\user\.claude\state\software-developer-agent\team-on\a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-a1-ab
+RESULT 2: 82 of 82 agree; disagreements: []
+== 2b. known differences (the pane can read USERPROFILE only)
+root "%LOCALAPPDATA%\\state" | pane null | node C:\Users\user\AppData\Local\state\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+root "%userprofile%\\state" | pane null | node C:\Users\user\state\team-on\53c478ca-5bfb-48d8-9697-2bf478d648b8
+== 3. live config
+no marker | 53c478ca-5bfb-48d8-9697-2bf478d648b8 | pane null | node orchestration.config.json has no setting 'teamState.folder'
+no marker | 56c67d3d-b3c0-43be-a82c-b3a9cdc23274 | pane null | node orchestration.config.json has no setting 'teamState.folder'
+no marker | bf7022c6-e279-4ccd-81b9-ef9cadd8ee4f | pane null | node orchestration.config.json has no setting 'teamState.folder'
+RESULT 3: 3 of 3 give no marker with the live config

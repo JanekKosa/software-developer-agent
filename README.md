@@ -8,6 +8,8 @@ A small agent team for Claude Code, the skill that runs it, and the coding skill
   what the user must decide.
 - `code-searcher`: the searcher. Finds and quotes on a cheap fast model; never analyses.
 - `orchestrate-agents`: the skill the main session follows to run the team, with its hooks and scripts.
+- `/software-developer-agent` (`team-switch/`): the command that switches the team on for one chat. Without it a chat
+  is an ordinary chat: no watches, no Decisions pane, and the team's hooks stay silent (the user, 2026-10-26, D-32, D-33 and D-34).
 - `team-rules`: the rules the lead and the worker share (the user's guardrails, reading the project's `CLAUDE.md`
   files, the clock, the progress file, plain reports, the report block, messages), preloaded by both.
 
@@ -25,7 +27,8 @@ orchestrate-agents/SKILL.md        the main session's protocol (loaded as the sk
 orchestrate-agents/references/     message templates, the lead brief template, the usage-limit steps, lessons
 orchestrate-agents/orchestration.config.json   every setting of the hooks and scripts, each with its reason
 orchestrate-agents/hooks/          context-guard.mjs (PostToolUse), decision-reminder.mjs (UserPromptSubmit)
-orchestrate-agents/scripts/        register.mjs, the three watches (watch-usage-and-context.ps1,
+team-switch/SKILL.md               /software-developer-agent: switches the team on for one chat
+orchestrate-agents/scripts/        team-on.mjs (writes the chat's switched-on marker), register.mjs, the three watches (watch-usage-and-context.ps1,
                                    watch-decision-answers.ps1, watch-agent-size-and-stall.ps1), usage-probe.ps1,
                                    schedule-relaunch.ps1, start-session-in-vscode.ps1, run-heavy.ps1,
                                    limit-stop-server.mjs
@@ -39,7 +42,7 @@ scripts/install.ps1                links agents/ and the two skills
 
 ## How it is wired
 
-- `scripts/install.ps1` creates five directory junctions. It is safe to run twice, and it stops without changing
+- `scripts/install.ps1` creates six directory junctions. It is safe to run twice, and it stops without changing
   anything when a real folder is in the way:
   - `~/.claude/agents/software-developer-agent` -> `agents/`. Claude Code scans `~/.claude/agents` recursively, so
     the three agents are available in every project. A new or changed agent file is picked up at the next Claude
@@ -48,6 +51,10 @@ scripts/install.ps1                links agents/ and the two skills
     Claude Code and GitHub Copilot both load the skill.
   - `~/.claude/skills/team-rules` and `~/.copilot/skills/team-rules` -> `team-rules/`. The lead and the worker
     preload it by name, so it must be installed before they start.
+  - `~/.claude/skills/software-developer-agent` -> `team-switch/`, the `/software-developer-agent` command. It runs
+    `orchestrate-agents/scripts/team-on.mjs`, which writes the chat's marker under
+    `%USERPROFILE%\.claude\state\software-developer-agent\team-on\`; the two hooks and the Decisions pane do nothing in
+    a session without one. Claude Code only: the watches it starts are Claude Code's.
 - The vendored skills under `skills/` are **not** linked. They stay private to the worker: it reads them by path, so
   other sessions do not see 17 more skill descriptions and do not start following rules written for a worker. The
   worker's file names that path (`C:\Repos\My projects\software-developer-agent\skills\`); moving the repo means

@@ -1,5 +1,6 @@
 // Tests of hooks/context-guard.mjs run as a real child process with PostToolUse input on stdin, against scratch
-// transcripts and a scratch marker folder (TEMP points into the test's scratch folder).
+// transcripts and a scratch state root (the skill copy's teamState.folder; TEMP points into the test's scratch folder
+// too, so nothing reaches the real state or temp folder).
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -18,22 +19,25 @@ const TEST_MAIN_CAPS = { cap: 100000, warn: 50000 };
 
 /**
  * Builds a scratch world: a skill copy with test caps (a test agent type, the default, software-developer, and a
- * note key that holds no caps), a project folder with a main transcript, and a temp folder for the markers.
+ * note key that holds no caps), a project folder with a main transcript, and a scratch state root (teamState.folder)
+ * for the markers and the log, whose children keep their shipped names: team-on, context-guard, logs\limit-stop.log.
  * @param {import('node:test').TestContext} t test context, for cleanup
  * @param {(config: object) => void} [adjust] further changes to the copy's settings
- * @returns {{hook: string, server: string, prefix: string, project: string, mainTranscript: string, env: object, markerDir: string, temp: string}} the world
+ * @returns {{teamOnMarker: string, hook: string, server: string, prefix: string, project: string, mainTranscript: string, env: object, log: string, markerDir: string, root: string, temp: string}} the world
  */
 function makeWorld(t, adjust = () => {}) {
     const base = makeScratchDir('guard');
     t.after(() => removeScratchDir(base));
     // A pipe prefix of this test's own, so the hook never asks the limit-stop server of a real session.
     const prefix = `oa-test-guard-${process.pid}-${Math.random().toString(36).slice(2, 10)}`;
+    const root = path.join(base, 'state');
     const skill = makeSkillCopy(base, (config) => {
         Object.assign(config.contextCaps, {
             'probe-type': TEST_CAPS, default: TEST_DEFAULT_CAPS, 'software-developer': TEST_DEVELOPER_CAPS, _why: 'a note, not caps', main: TEST_MAIN_CAPS,
         });
+        config.teamState = { ...config.teamState, folder: root };
         // processCheckSeconds 1: a server a test leaves behind ends within a second of the test run (CLAUDE_PID below).
-        config.limitStop = { ...config.limitStop, pipePrefix: prefix, connectTimeoutMs: 300, logFile: path.join(base, 'limit-stop.log'), logTailKB: 64, processCheckSeconds: 1, startCheckSeconds: 10 };
+        config.limitStop = { ...config.limitStop, pipePrefix: prefix, connectTimeoutMs: 300, logTailKB: 64, processCheckSeconds: 1, startCheckSeconds: 10 };
         adjust(config);
     });
     const project = path.join(base, 'projects', 'c--Repos-Demo');
@@ -42,7 +46,12 @@ function makeWorld(t, adjust = () => {}) {
     fs.writeFileSync(mainTranscript, '');
     const temp = path.join(base, 'temp');
     fs.mkdirSync(temp);
+    // The session is switched on, as /software-developer-agent does; a test of an ordinary chat deletes the marker.
+    const teamOnMarker = path.join(root, 'team-on', SESSION);
+    fs.mkdirSync(path.dirname(teamOnMarker), { recursive: true });
+    fs.writeFileSync(teamOnMarker, '2026-10-26T22:00:00.000Z');
     return {
+        teamOnMarker,
         hook: path.join(skill, 'hooks', 'context-guard.mjs'),
         server: path.join(skill, 'scripts', 'limit-stop-server.mjs'),
         prefix,
@@ -51,8 +60,9 @@ function makeWorld(t, adjust = () => {}) {
         // CLAUDE_PID is this test process: the test's own shell carries the real session's Claude Code id, which no
         // test may pass on, and a server the hook starts then ends with the test run.
         env: { TEMP: temp, TMP: temp, CLAUDE_PID: String(process.pid) },
-        log: path.join(base, 'limit-stop.log'),
-        markerDir: path.join(temp, 'claude-context-guard'),
+        log: path.join(root, 'logs', 'limit-stop.log'),
+        markerDir: path.join(root, 'context-guard'),
+        root,
         temp,
     };
 }
@@ -127,6 +137,33 @@ test('below warn nothing is sent', async (t) => {
     const agent = 'a1111111111111111';
     appendUsage(path.join(world.project, SESSION, 'subagents', `agent-${agent}.jsonl`), 49999);
     assert.equal((await fire(world, { agent_id: agent, agent_type: 'probe-type' })).context, '');
+});
+
+test('a session the team is not switched on for: nothing for its agents or its main session past every size, and nothing written (D-32)', async (t) => {
+    const world = makeWorld(t);
+    fs.rmSync(world.teamOnMarker);
+    const agent = 'a1212121212121212';
+    appendUsage(path.join(world.project, SESSION, 'subagents', `agent-${agent}.jsonl`), 99000);
+    appendUsage(world.mainTranscript, 99000);
+    for (const fields of [{ agent_id: agent, agent_type: 'probe-type' }, {}]) {
+        const { context, run } = await fire(world, fields);
+        assert.deepEqual([context, run.stderr], ['', ''], JSON.stringify(fields));
+    }
+    // No size marker, and no limit-stop server started for the main session past its warn size (it would log).
+    assert.equal(fs.existsSync(world.markerDir), false);
+    assert.equal(fs.existsSync(world.log), false);
+});
+
+test('a session switched on later is guarded from then on', async (t) => {
+    const world = makeWorld(t);
+    const marker = fs.readFileSync(world.teamOnMarker, 'utf8');
+    fs.rmSync(world.teamOnMarker);
+    const agent = 'a1313131313131313';
+    const fields = { agent_id: agent, agent_type: 'probe-type' };
+    appendUsage(path.join(world.project, SESSION, 'subagents', `agent-${agent}.jsonl`), 60000);
+    assert.equal((await fire(world, fields)).context, '');
+    fs.writeFileSync(world.teamOnMarker, marker);
+    assert.equal((await fire(world, fields)).context, WARN_60);
 });
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -264,13 +301,42 @@ test('run time of a typical call (a 2 MB transcript, below warn)', async (t) => 
 // Settings (contextGuard in orchestration.config.json)
 // ---------------------------------------------------------------------------------------------------------------
 
-test('the marker folder comes from the settings', async (t) => {
-    const world = makeWorld(t, (config) => { config.contextGuard.markerFolder = 'other-guard-markers'; });
+test('the marker and its lock lie in <teamState.folder>\\context-guard, and nothing in the temp folder', async (t) => {
+    const world = makeWorld(t);
+    const agent = 'ad0d0d0d0d0d0d0d0';
+    appendUsage(path.join(world.project, SESSION, 'subagents', `agent-${agent}.jsonl`), 60000);
+    assert.equal((await fire(world, { agent_id: agent, agent_type: 'probe-type' })).context, WARN_60);
+    assert.deepEqual(fs.readdirSync(path.join(world.root, 'context-guard')), [`${agent}.json`], 'the marker; the lock is gone again');
+    assert.deepEqual(fs.readdirSync(world.root).sort(), ['context-guard', 'team-on']);
+    assert.deepEqual(fs.readdirSync(world.temp), [], 'nothing in the temp folder');
+});
+
+test('the marker folder comes from the settings, as a path under the root', async (t) => {
+    const world = makeWorld(t, (config) => { config.contextGuard.markerFolder = 'other\\guard markers'; });
     const agent = 'ad1d1d1d1d1d1d1d1';
     appendUsage(path.join(world.project, SESSION, 'subagents', `agent-${agent}.jsonl`), 60000);
     assert.equal((await fire(world, { agent_id: agent, agent_type: 'probe-type' })).context, WARN_60);
-    assert.ok(fs.existsSync(path.join(world.temp, 'other-guard-markers', `${agent}.json`)), 'marker in the configured folder');
+    assert.ok(fs.existsSync(path.join(world.root, 'other', 'guard markers', `${agent}.json`)), 'marker in the configured folder');
     assert.equal(fs.existsSync(world.markerDir), false, 'nothing in the default folder');
+});
+
+test('a refused marker folder or a root that is not absolute: nothing on stdout, exit 0, stderr names the setting, nothing written', async (t) => {
+    const cases = [
+        ['contextGuard.markerFolder', (config) => { config.contextGuard.markerFolder = '..\\escape'; }],
+        ['contextGuard.markerFolder', (config) => { config.contextGuard.markerFolder = 'C:\\elsewhere'; }],
+        ['contextGuard.markerFolder', (config) => { config.contextGuard.markerFolder = 'a/b'; }],
+        ['teamState.folder', (config) => { config.teamState.folder = 'relative\\state'; }],
+    ];
+    for (const [name, adjust] of cases) {
+        const world = makeWorld(t, adjust);
+        const agent = 'ad5d5d5d5d5d5d5d5';
+        appendUsage(path.join(world.project, SESSION, 'subagents', `agent-${agent}.jsonl`), 60000);
+        const run = await runNode(world.hook, [], { input: toolInput(world, { agent_id: agent, agent_type: 'probe-type' }), env: world.env, cwd: world.temp });
+        assert.deepEqual([run.code, run.stdout], [0, ''], name);
+        assert.match(run.stderr, new RegExp(`'${name.replace('.', '\\.')}'`), name);
+        assert.equal(fs.existsSync(world.markerDir), false, name);
+        assert.deepEqual(fs.readdirSync(world.temp), [], name);
+    }
 });
 
 test('only the configured tail of the transcript is read', async (t) => {
@@ -476,7 +542,7 @@ test('an agent id the server would refuse is never sent: no query, no FAILED lin
 
 test('a log that cannot be written: the agent hears that the main session may not hear of it, and stderr says why', async (t) => {
     const world = makeWorld(t);
-    fs.mkdirSync(world.log);
+    fs.mkdirSync(world.log, { recursive: true });
     await fakeServer(t, world, SESSION, () => 'garbage\n');
     const agent = 'ae4e4e4e4e4e4e4e6';
     appendUsage(path.join(world.project, SESSION, 'subagents', `agent-${agent}.jsonl`), 60000);
@@ -532,11 +598,10 @@ test('a missing or wrong limitStop setting: the size message still comes, and st
     }
 });
 
-test('an unsafe session id is never put in a pipe name: no query, one stderr line, the size part as before', async (t) => {
+test('an unsafe session id counts as not switched on: no query, no marker path built from it, nothing said', async (t) => {
     const world = makeWorld(t);
     const run = await runNode(world.hook, [], { input: toolInput(world, { agent_id: 'ae8e8e8e8e8e8e8e8', session_id: '..\\..\\x' }), env: world.env });
-    assert.deepEqual([run.code, run.stdout], [0, '']);
-    assert.match(run.stderr, /limit stop: session id/);
+    assert.deepEqual([run.code, run.stdout, run.stderr], [0, '', '']);
 });
 
 test('end to end with the real server: a worker gets its text; an agent of another session gets nothing', async (t) => {
@@ -553,6 +618,8 @@ test('end to end with the real server: a worker gets its text; an agent of anoth
     const { context } = await fire(world, { agent_id: agent, agent_type: 'software-developer' });
     assert.match(context, /^STOP FOR LIMIT \| the weekly usage limit is at 98% and resets at .* Stop building: .*WORKER STOPPED \| <run> \| hand-off: <progress file>\. Your lead starts your successor from it\.$/);
     const otherSession = '0b0b0b0b-0000-0000-0000-000000000000';
+    // The other session is switched on too, so it is the pipe name, not the switch, that keeps this stop from it.
+    fs.writeFileSync(path.join(path.dirname(world.teamOnMarker), otherSession), '2026-10-26T22:00:00.000Z');
     const otherProject = path.join(world.project, otherSession, 'subagents');
     appendUsage(path.join(otherProject, `agent-${agent}.jsonl`), 20000);
     const other = await fire(world, { agent_id: agent, agent_type: 'software-developer', session_id: otherSession, transcript_path: path.join(world.project, `${otherSession}.jsonl`) });
@@ -739,6 +806,15 @@ test('the main session hears at its next tool call that the server is gone, with
     assert.deepEqual([(await fire(world, {})).context, (await fire(world, {})).context], ['', ''], 'told once');
 });
 
+test('a failure line in <teamState.folder>\\logs\\limit-stop.log, written by hand, reaches the main session', async (t) => {
+    const world = makeWorld(t);
+    fs.mkdirSync(path.join(world.root, 'logs'));
+    fs.writeFileSync(path.join(world.root, 'logs', 'limit-stop.log'), `2026-10-27 10:00:00 | ${SESSION} | error for agent a9 (task-lead): the answer is not JSON\n`);
+    appendUsage(world.mainTranscript, 20000);
+    assert.match((await fire(world, {})).context, mainFailedPattern(escaped('agent a9 (task-lead) got an error from it: the answer is not JSON')));
+    assert.deepEqual(fs.readdirSync(world.temp), [], 'nothing in the temp folder');
+});
+
 test('an agent\'s logged error reaches the main session at its next tool call, once', async (t) => {
     const world = makeWorld(t);
     await fakeServer(t, world, SESSION, (request) => (JSON.parse(request).role === 'main' ? `${JSON.stringify({ stop: '' })}\n` : 'garbage\n'));
@@ -767,6 +843,7 @@ test('a log that cannot be read: the main session\'s own failure still reaches i
     const world = makeWorld(t);
     // A log the user may append to but not read (a directory reads as empty and a path under a file as missing on
     // Windows, measured 2026-10-25, so only a denied read gives a read error).
+    fs.mkdirSync(path.dirname(world.log), { recursive: true });
     fs.writeFileSync(world.log, '');
     const user = `${process.env.USERDOMAIN}\\${process.env.USERNAME}`;
     const deny = spawnSync('icacls', [world.log, '/deny', `${user}:(RD)`], { windowsHide: true, encoding: 'utf8' });
@@ -803,6 +880,7 @@ test('another session\'s lines tell the main session nothing, even when its id h
     const world = makeWorld(t);
     const stamp = '2026-10-25 21:00:00';
     const others = [`${SESSION.slice(0, -1)}0`, `${SESSION}-copy`];
+    fs.mkdirSync(path.dirname(world.log), { recursive: true });
     fs.writeFileSync(world.log, others.flatMap((other) => [
         `${stamp} | ${other} | listening on \\\\.\\pipe\\x-${other} (pid 4242): the weekly limit at 98% resets 22:00; watching the session's Claude Code process 1`,
         `${stamp} | ${other} | error for agent a1 (task-lead): the answer is not JSON`,
@@ -877,10 +955,9 @@ test('the hook passes CLAUDE_PID on to the server it starts, and starts none for
     }
 });
 
-test('an unsafe session id from the main session: nothing said, no marker, exit 0', async (t) => {
+test('an unsafe session id from the main session counts as not switched on: nothing said, no marker, exit 0', async (t) => {
     const world = makeWorld(t);
     appendUsage(world.mainTranscript, 60000);
     const run = await runNode(world.hook, [], { input: toolInput(world, { session_id: '..\\..\\x' }), env: world.env });
-    assert.deepEqual([run.code, run.stdout, fs.existsSync(world.markerDir)], [0, '', false]);
-    assert.match(run.stderr, /session id/);
+    assert.deepEqual([run.code, run.stdout, run.stderr, fs.existsSync(world.markerDir)], [0, '', '', false]);
 });

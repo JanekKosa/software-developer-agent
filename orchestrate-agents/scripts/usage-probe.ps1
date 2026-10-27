@@ -21,10 +21,10 @@ param(
     # The orchestration settings: the probe model and effort, the state file, the working folder, the timeout and
     # the fresh age.
     [string]$ConfigPath = (Join-Path $PSScriptRoot '..\orchestration.config.json'),
-    # Where the reading is written. Default: usageLimits.stateFile. watch-usage-and-context.ps1 passes its own state
-    # path here.
+    # Where the reading is written. Default: usageLimits.stateFile, under teamState.folder. watch-usage-and-context.ps1
+    # passes its own state path here.
     [string]$StatePath,
-    # The empty folder the call runs in. Default: usageLimits.probeWorkingFolder.
+    # The empty folder the call runs in. Default: usageLimits.probeWorkingFolder, under teamState.folder.
     [string]$WorkingFolder,
     # The claude executable. Empty: the one on PATH.
     [string]$ClaudePath = '',
@@ -60,15 +60,69 @@ function Get-ConfigValue($config, [string]$key, [string]$path) {
     return , $node
 }
 
-# A path from the settings with each %NAME% replaced by that environment variable. A variable that is not set is an
-# error naming the key and the variable, so a path never keeps a literal %NAME%.
-function Expand-ConfigPath([string]$value, [string]$key, [string]$path) {
-    foreach ($found in [regex]::Matches($value, '%([^%]+)%')) {
+# One setting by its dotted key, read the way lib\config.mjs requireSetting reads it: a part that is missing, spelled
+# in another case, or null is an error in that function's words, so this script and the Node code say the same.
+function Get-RequiredSetting($config, [string]$key) {
+    $node = $config
+    foreach ($part in $key.Split('.')) {
+        if ($node -isnot [Collections.IDictionary] -or -not ($node.Keys -ccontains $part) -or $null -eq $node[$part]) {
+            throw "orchestration.config.json has no setting '$key'"
+        }
+        $node = $node[$part]
+    }
+    return , $node
+}
+
+# Why a path under teamState.folder is refused, or $null when it is not: the first rule of lib\config.mjs
+# STATE_PATH_RULES it breaks, in that order and in those words. '\z' stands for JavaScript's '$': .NET's '$' also
+# matches before a final line feed.
+function Get-StatePathFault([string]$value) {
+    $parts = $value.Split('\')
+    if ($value -ceq '') { return 'is empty' }
+    if ($value.Contains(':')) { return "has a drive or a ':'" }
+    if ($value -cmatch '^[\\/]|[\\/]\z') { return "starts or ends with '\' or '/'" }
+    if ($value.Contains('/')) { return "has a '/'; parts are joined by '\'" }
+    if ($value -cmatch '[*?"<>|%]') { return 'has one of * ? " < > | %' }
+    if ($parts -ccontains '') { return 'has an empty part' }
+    if ($parts -ccontains '.' -or $parts -ccontains '..') { return "has a '.' or '..' part" }
+    return $null
+}
+
+# The absolute path of a file or folder of the team's own from its setting: the root teamState.folder (each %NAME%
+# filled in from the environment, then absolute: a drive letter, ':' and '\') joined with the setting, one or more
+# plain names joined by '\', so it never points outside the root. A copy of lib\config.mjs requireStatePath: the same
+# checks in the same order, refused in the same words. The join tidies the root as Node's path.join does (doubled
+# separators, '/', '.' and '..' parts); [IO.Path]::GetFullPath would also drop the trailing dots and spaces of a name,
+# and Join-Path fails on a drive that does not exist.
+function Get-StatePath($config, [string]$key) {
+    $root = Get-RequiredSetting $config 'teamState.folder'
+    if ($root -isnot [string] -or $root -ceq '') {
+        throw "orchestration.config.json setting 'teamState.folder' must be a path, not $(ConvertTo-Json -InputObject $root -Compress -Depth 10)"
+    }
+    foreach ($found in [regex]::Matches($root, '%([^%]+)%')) {
         if (-not [Environment]::GetEnvironmentVariable($found.Groups[1].Value)) {
-            throw "$path key '$key' names $($found.Value), which is not set."
+            throw "orchestration.config.json setting 'teamState.folder' names $($found.Value), which is not set"
         }
     }
-    return [Environment]::ExpandEnvironmentVariables($value)
+    $root = [regex]::Replace($root, '%([^%]+)%', { param($found) [Environment]::GetEnvironmentVariable($found.Groups[1].Value) })
+    if ($root -cnotmatch '^[A-Za-z]:\\') {
+        throw "orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not $(ConvertTo-Json -InputObject $root -Compress)"
+    }
+    $value = Get-RequiredSetting $config $key
+    if ($value -isnot [string]) {
+        throw "orchestration.config.json setting '$key' must be text, a path under 'teamState.folder', not $(ConvertTo-Json -InputObject $value -Compress -Depth 10)"
+    }
+    $fault = Get-StatePathFault $value
+    if ($fault) {
+        throw "orchestration.config.json setting '$key' must be a path under 'teamState.folder' but ${fault}: $(ConvertTo-Json -InputObject $value -Compress)"
+    }
+    $names = [Collections.Generic.List[string]]::new()
+    foreach ($name in $root.Substring(3) -csplit '[\\/]') {
+        if ($name -ceq '..') { if ($names.Count -gt 0) { $names.RemoveAt($names.Count - 1) } }
+        elseif ($name -cne '' -and $name -cne '.') { $names.Add($name) }
+    }
+    $names.Add($value)
+    return $root.Substring(0, 3) + ($names -join '\')
 }
 
 # --- The call ----------------------------------------------------------------------------------------------------
@@ -205,12 +259,8 @@ try {
     $config = Read-OrchestrationConfig $ConfigPath
     $model = Get-ConfigValue $config 'usageLimits.probeModel' $ConfigPath
     $effort = Get-ConfigValue $config 'usageLimits.probeEffort' $ConfigPath
-    if (-not $PSBoundParameters.ContainsKey('StatePath')) {
-        $StatePath = Expand-ConfigPath (Get-ConfigValue $config 'usageLimits.stateFile' $ConfigPath) 'usageLimits.stateFile' $ConfigPath
-    }
-    if (-not $PSBoundParameters.ContainsKey('WorkingFolder')) {
-        $WorkingFolder = Expand-ConfigPath (Get-ConfigValue $config 'usageLimits.probeWorkingFolder' $ConfigPath) 'usageLimits.probeWorkingFolder' $ConfigPath
-    }
+    if (-not $PSBoundParameters.ContainsKey('StatePath')) { $StatePath = Get-StatePath $config 'usageLimits.stateFile' }
+    if (-not $PSBoundParameters.ContainsKey('WorkingFolder')) { $WorkingFolder = Get-StatePath $config 'usageLimits.probeWorkingFolder' }
     if (-not $PSBoundParameters.ContainsKey('TimeoutSeconds')) { $TimeoutSeconds = Get-ConfigValue $config 'usageLimits.probeTimeoutSeconds' $ConfigPath }
     if (-not $PSBoundParameters.ContainsKey('FreshMinutes')) { $FreshMinutes = Get-ConfigValue $config 'usageLimits.stateFreshMinutes' $ConfigPath }
 }

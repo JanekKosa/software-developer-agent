@@ -1,15 +1,35 @@
 // End-to-end tests of scripts/register.mjs run as a real child process: round trips, hostile text, exit codes,
 // line endings, concurrent writers, the lock, and .git/info/exclude in matching and non-matching repos.
 
-import { test } from 'node:test';
+import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-    SKILL_DIR, findGit, makeScratchDir, makeSkillCopy, removeScratchDir, runGit, runNode,
+    SKILL_DIR, findGit, makeScratchDir, makeSkillCopy, removeScratchDir, runGit, runNode as runChild, stateRootUnderHome,
 } from '../helpers/scratch.mjs';
 
 const REAL_SCRIPT = path.join(SKILL_DIR, 'scripts', 'register.mjs');
+
+// Every script here runs with a scratch home as its USERPROFILE, whose PC settings file says no repo commits the
+// register. The real script then never reads this PC's own settings, and a scratch repo under %TEMP% is a client repo
+// wherever the skill folder lies (the default, the folder beside the repo, may hold %TEMP%). A skill copy has its own
+// state folder and ignores the home.
+const HOME = makeScratchDir('reg-home');
+after(() => removeScratchDir(HOME));
+fs.mkdirSync(stateRootUnderHome(HOME), { recursive: true });
+fs.writeFileSync(path.join(stateRootUnderHome(HOME), 'pc-settings.json'), '{ "register": { "commitInRepos": [] } }');
+
+/**
+ * Runs a script as a child process with the scratch home as its USERPROFILE (runNode of the helpers otherwise).
+ * @param {string} script absolute path of the .mjs file
+ * @param {string[]} args arguments after the script
+ * @param {{cwd?: string, input?: string, env?: object}} [options] as for the helpers' runNode
+ * @returns {Promise<{code: number, stdout: string, stderr: string, ms: number}>} as for the helpers' runNode
+ */
+function runNode(script, args, options = {}) {
+    return runChild(script, args, { ...options, env: { USERPROFILE: HOME, ...options.env } });
+}
 const DOT = String.fromCodePoint(0xb7);
 const gitExe = findGit();
 const HOSTILE = '\u2018single\u2019 \u201cdouble\u201d "plain" & %PATH% $env:TEMP `n za\u017c\u00f3\u0142\u0107 \u{1f600} \u4e2d\u6587 <b>|';
@@ -318,7 +338,7 @@ test('follow-up and keep-open keep a text of several lines through the real scri
     assert.equal(keep.code, 0, keep.stderr);
     await answerAndClose(REAL_SCRIPT, work, 'D-1', 'answered', 'Sure.', 'A.');
     const resolved = fs.readFileSync(path.join(work, 'decisions', 'RESOLVED_DECISIONS_CLAUDE.md'), 'utf8');
-    assert.match(resolved, new RegExp(`- Options: A: wait \\(none\\)\\. B: go \\(1 hour\\)\\.\\r\\n[\\s\\S]*\\r\\n${block}- Follow up: .*: Sure\\?\\r\\n  \\r\\n  A waits\\.\\r\\n- Final answer: .*: "Sure\\."\\r\\n- Summary: A\\.\\r\\n- Resolved: .*, answered\\r\\n$`));
+    assert.match(resolved, new RegExp(`- Options:\\r\\n  - A: wait \\(none\\)\\.\\r\\n  - B: go \\(1 hour\\)\\.\\r\\n[\\s\\S]*\\r\\n${block}- Follow up: .*: Sure\\?\\r\\n  \\r\\n  A waits\\.\\r\\n- Final answer: .*: "Sure\\."\\r\\n- Summary: A\\.\\r\\n- Resolved: .*, answered\\r\\n$`));
     assert.deepEqual(idsOf(resolved), ['D-1']);
 });
 
@@ -765,10 +785,104 @@ test('a client repo whose register predates the answers log gets its exclude lin
     assert.equal(runGit(gitExe, ['status', '--porcelain', '--untracked-files=all'], repo), '');
 });
 
+/**
+ * Makes a git repo, with its folders, and gives its info/exclude file.
+ * @param {string} dir the repo folder
+ * @returns {string} path of .git\info\exclude
+ */
+function makeGitRepo(dir) {
+    fs.mkdirSync(dir, { recursive: true });
+    runGit(gitExe, ['init', '-q'], dir);
+    return path.join(dir, '.git', 'info', 'exclude');
+}
+
+/**
+ * Whether an add through a register script left a repo's info/exclude as it was (the repo commits the register) or
+ * wrote the register's lines into it (the register stays out of git).
+ * @param {string} script the register script
+ * @param {string} repo a repo made by makeGitRepo
+ * @param {string} file an entry file
+ * @param {object} [env] extra environment for the script
+ * @returns {Promise<{commits: boolean, stderr: string}>} the outcome and what the script wrote to stderr
+ */
+async function addAndSeeWhetherCommitted(script, repo, file, env = {}) {
+    const exclude = path.join(repo, '.git', 'info', 'exclude');
+    const before = fs.readFileSync(exclude);
+    const run = await runNode(script, ['add', '--file', file], { cwd: repo, env });
+    assert.equal(run.code, 0, run.stderr);
+    return { commits: fs.readFileSync(exclude).equals(before), stderr: run.stderr };
+}
+
+test('without a PC settings file the repos beside the repo commit the register, others do not, and the old setting is not read', { skip: gitExe ? false : 'no working git found' }, async (t) => {
+    const base = makeScratchDir('pcdefault');
+    t.after(() => removeScratchDir(base));
+    const other = path.join(base, 'OtherDemo');
+    // The copy lies in <base>\Apps\sda, so the default is <base>\Apps\*; the old setting would let OtherDemo commit.
+    const skill = makeSkillCopy(path.join(base, 'Apps', 'sda'), (config) => { config.register.commitInRepos = [path.join(base, 'Other*')]; });
+    const script = path.join(skill, 'scripts', 'register.mjs');
+    const demo = path.join(base, 'Apps', 'Demo');
+    makeGitRepo(demo);
+    makeGitRepo(other);
+    const file = writeEntryFile(base, entry());
+    assert.deepEqual(await addAndSeeWhetherCommitted(script, demo, file), { commits: true, stderr: '' });
+    assert.deepEqual(await addAndSeeWhetherCommitted(script, other, file), { commits: false, stderr: '' });
+});
+
+test('a PC settings file that is not valid JSON is named on stderr and the default applies', { skip: gitExe ? false : 'no working git found' }, async (t) => {
+    const base = makeScratchDir('pcbroken');
+    t.after(() => removeScratchDir(base));
+    const skill = makeSkillCopy(path.join(base, 'Apps', 'sda'));
+    const settingsFile = path.join(base, 'Apps', 'sda', 'state', 'pc-settings.json');
+    fs.mkdirSync(path.dirname(settingsFile), { recursive: true });
+    fs.writeFileSync(settingsFile, '{ "register": { "commitInRepos": [] ');
+    const demo = path.join(base, 'Apps', 'Demo');
+    makeGitRepo(demo);
+    const seen = await addAndSeeWhetherCommitted(path.join(skill, 'scripts', 'register.mjs'), demo, writeEntryFile(base, entry()));
+    assert.equal(seen.commits, true, 'the default, not the broken file\'s empty list');
+    assert.equal(seen.stderr, `PC SETTINGS NOT USED | ${settingsFile} is not valid JSON (${jsonError('{ "register": { "commitInRepos": [] ')}). register.commitInRepos is the default: ${path.join(base, 'Apps', '*')}. Fix the file or delete it.\n`);
+});
+
+test('a skill folder reached through a junction takes its default from the real parent folder', { skip: gitExe ? false : 'no working git found' }, async (t) => {
+    const base = makeScratchDir('pclink');
+    t.after(() => removeScratchDir(base));
+    const skill = makeSkillCopy(path.join(base, 'Apps', 'sda'));
+    const link = path.join(base, 'Link');
+    fs.symlinkSync(path.join(base, 'Apps', 'sda'), link, 'junction');
+    try {
+        assert.equal(fs.existsSync(path.join(link, path.basename(skill), 'scripts', 'register.mjs')), true);
+        const other = path.join(base, 'OtherDemo');
+        makeGitRepo(other);
+        // Node keeps the junction in the script's own path only with these options; without them it resolves it itself.
+        const env = { NODE_OPTIONS: '--preserve-symlinks --preserve-symlinks-main' };
+        const seen = await addAndSeeWhetherCommitted(path.join(link, 'orchestrate-agents', 'scripts', 'register.mjs'), other, writeEntryFile(base, entry()), env);
+        assert.deepEqual(seen, { commits: false, stderr: '' }, 'the default is <base>\\Apps\\*, not <base>\\*');
+    } finally {
+        // Removes the link only, never what it points at.
+        fs.rmdirSync(link);
+    }
+});
+
+/**
+ * The message JSON.parse gives for a text, as the script quotes it.
+ * @param {string} text text that is not valid JSON
+ * @returns {string} the parser's message
+ */
+function jsonError(text) {
+    try {
+        JSON.parse(text);
+    } catch (error) {
+        return error.message;
+    }
+    throw new Error('the text is valid JSON');
+}
+
 test('a matching repo never gets an exclude line, so git sees the register', { skip: gitExe ? false : 'no working git found' }, async (t) => {
     const base = makeScratchDir('own');
     t.after(() => removeScratchDir(base));
-    const skill = makeSkillCopy(base, (config) => { config.register.commitInRepos = [path.join(base, 'Mine', '*')]; });
+    const skill = makeSkillCopy(base);
+    const settingsFile = path.join(base, 'state', 'pc-settings.json');
+    fs.mkdirSync(path.dirname(settingsFile), { recursive: true });
+    fs.writeFileSync(settingsFile, JSON.stringify({ register: { commitInRepos: [path.join(base, 'Mine', '*')] } }));
     const script = path.join(skill, 'scripts', 'register.mjs');
     const repo = path.join(base, 'Mine', 'Demo');
     const other = path.join(base, 'Mine2', 'OtherDemo');

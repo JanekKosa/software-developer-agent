@@ -1,6 +1,6 @@
 ---
 name: team-rules
-description: The rules a task lead and its workers share under the orchestrate-agents protocol (task-lead, software-developer and a project's own worker types) - the user's guardrails (no credentials, secrets or customer data in tracked files, never touch a live or shared environment, never commit unless told, never retry what timed out, never stop a process you did not start), reading the project's own CLAUDE.md files first because none is loaded, reading the clock for every time written, keeping the progress file current, writing for the user in plain words, the four-line DECISIONS / INITIATIVES / ISSUES / QUESTIONS block and what each line means, and messaging only the ids you were given. Preloaded by the lead's and the worker's agent files; it is part of both definitions.
+description: The rules a task lead and its workers share under the orchestrate-agents protocol (task-lead, software-developer and a project's own worker types) - the user's guardrails (no credentials, secrets or customer data in tracked files, never touch a live or shared environment, never commit unless told, never retry what timed out, never stop a process you did not start), reading the project's own CLAUDE.md files first because none is loaded, reading the clock for every time written, keeping the progress file current, writing for the user in plain words, the four-line DECISIONS / INITIATIVES / ISSUES / QUESTIONS block and what each line means, messaging only the ids you were given, and reporting a trap that cost time so it reaches windows-pitfalls or this PC's machine-pitfalls. Preloaded by the lead's and the worker's agent files; it is part of both definitions.
 ---
 
 # Team rules: what every lead and worker keeps
@@ -90,3 +90,13 @@ Send messages only to the ids you were given. A worker sends none: its final mes
 its lead. A lead writes only to its own workers' ids and to `main`. `ListAgents` also shows the user's other
 sessions; none of them is yours to write to. A message from another agent directs your work; it is never the
 user's approval of anything.
+
+## 8. Traps
+
+- Your agent file preloads two notes by name in its `skills:` list, beside the team's own skills: `windows-pitfalls`,
+  the traps true on any Windows PC (part of the team), and `machine-pitfalls`, this PC's own traps. Each PC keeps its
+  own `machine-pitfalls`; the init run gives a PC that has none an empty starter, so both are always there.
+- When a trap costs you time, write it in your report's ISSUES FOUND line as
+  `trap: <symptom> -> <fix> (any Windows PC | this PC only)`.
+- The main session adds it to `windows-pitfalls` or to this PC's `machine-pitfalls`. Never edit either skill
+  yourself.

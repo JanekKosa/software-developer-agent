@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2023", "lib": ["es2023"], "types": [],
+    "module": "esnext", "moduleResolution": "bundler",
+    "strict": true, "noUncheckedIndexedAccess": true,
+    "noEmit": true, "skipLibCheck": true,
+    "jsx": "react", "jsxFactory": "h", "jsxFragmentFactory": "Fragment"
+  },
+  "include": [
+    "C:/Users/user/AppData/Local/Temp/claude/bundled-skills/2.1.310/9f73c3877ef25245c1f3bbe784b66fc3/plugin-authoring/types/claude-code.d.ts",
+    "C:/Repos/My projects/claude-code-extensions/decisions-pane/hooks",
+    "C:/Repos/My projects/claude-code-extensions/decisions-pane/types",
+    "C:/Repos/My projects/claude-code-extensions/decisions-pane/tests"
+  ]
+}

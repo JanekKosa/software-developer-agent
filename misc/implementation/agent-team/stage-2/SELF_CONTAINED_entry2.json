@@ -1,0 +1,20 @@
+{
+  "kind": "question",
+  "blocking": false,
+  "urgency": "medium",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "The worker loads report-changes when it starts (how to tell you what changed), and report-changes tells it to load explain-clearly too (how to explain in plain words, with a template for explainer pages). Both live in the xpp-agent repo, neither is about X++, and every chat on this PC uses them through links. For the agent repo to be complete they must be in it, moved or copied.",
+  "example": "With either option, the worker on a new laptop with only this repo loads both. With A, a later fix to explain-clearly is made once, here. With B it must be made in both repos, or the two copies start to differ.",
+  "options": [
+    "A: move them here: this repo is their only home, the links on this PC point here, and xpp-agent no longer holds them (one run, then the main session re-points four links: the two skills in Claude's and in Copilot's skills folders).",
+    "B: copy them here and keep xpp-agent's copies (the same run; two copies that drift apart unless someone keeps them in step by hand)."
+  ],
+  "recommendation": "A, because they are general skills, so their home is the general agent repo, and one copy cannot drift.",
+  "meanwhile": "Work goes on assuming A. Bringing them in is the same for both options; only the last step, removing them from xpp-agent, differs, and that step is the main session's.",
+  "evidence": [
+    "C:\\Repos\\My projects\\xpp-agent\\Docs\\Skills\\report-changes\\SKILL.md",
+    "C:\\Repos\\My projects\\xpp-agent\\Docs\\Skills\\explain-clearly\\SKILL.md",
+    "C:\\Repos\\My projects\\software-developer-agent\\agents\\software-developer.md"
+  ]
+}

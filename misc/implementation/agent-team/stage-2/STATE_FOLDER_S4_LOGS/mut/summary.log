@@ -1,0 +1,10 @@
+M0 none (the copy as is) | clean | pass 136 fail 0 | failing: 
+M1 root not expanded | caught | pass 73 fail 63 | failing: D1 D2 D3 D4 D5 D6 D7 D7b D8 D8b D8c D9 D10 D11 D12 D13 D13b D19 D20 D21 D22 D22c D22b D23 D24 D25 D26 D27 D28 D29 D30 D31 D32 D33 D34 D35 D36 D37 D14 D15 D16 D17 D18 P6 P7 O1 O2 O10 S1 S2 S3 S4b S5b S5c S6 S6d S8 S8b S8c S8d S8e S9 S11
+M2 unset variable let through | caught | pass 134 fail 2 | failing: O2 S6d
+M3 root not checked absolute | caught | pass 129 fail 7 | failing: O3 S6d
+M4 child colon rule off | caught | pass 132 fail 4 | failing: O5 S5
+M5 child percent off | caught | pass 133 fail 3 | failing: O5 S5
+M6 child empty part rule off | caught | pass 134 fail 2 | failing: O5 S5
+M7 child dot part rule off | caught | pass 131 fail 5 | failing: O5 S5
+M8 old TEMP folder as the root | caught | pass 63 fail 73 | failing: D1 D2 D3 D4 D5 D6 D7 D7b D8 D8b D8c D9 D10 D11 D12 D13 D13b D19 D20 D21 D22 D22c D22b D23 D24 D25 D26 D27 D28 D29 D30 D31 D32 D33 D34 D35 D36 D37 D14 D15 D16 D17 D18 P6 P7 S1 S2 S3 S4b S5b S5c S6 S6b S6c S6d S6e S6f S8 S8b S8c S8d S8e S9 S10 S11
+M9 session id pattern unchecked | caught | pass 125 fail 11 | failing: O7 S4

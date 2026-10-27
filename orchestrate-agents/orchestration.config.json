@@ -1,6 +1,16 @@
 {
   "_about": "Settings shared by the orchestration hooks and scripts. Every value has a _why beside it. Edit here, never in the scripts.",
 
+  "teamState": {
+    "folder": "%USERPROFILE%\\.claude\\state\\software-developer-agent",
+    "_whyFolder": "The one folder that holds every file the agent team writes for itself: the switch markers, the size guard's markers, the logs and the watches' records, each in a child folder of its own. Each of those settings (agentTeam.onFolder, contextGuard.markerFolder, limitStop.logFile, ...) is a path under this folder, so changing this one line moves all of them. The user, 2026-10-27 (D-36): \"move every team file now under %TEMP% (the switch markers, the size guard's markers, the watch's records) into one folder beside the team's logs ... so all of the team's state is in one place no cleanup touches\", and \"yes but create a parent dir for the developer agent, and then child dirs for each temp file type\"; earlier: \"well i want all temp files related to this agent in the same place\". %NAME% is an environment variable; filled in, the path must start with a drive letter, ':' and '\\'. The Decisions pane can fill in only %USERPROFILE%, %TEMP%, %TMP%, %LOCALAPPDATA% and %APPDATA%, so another variable here hides the pane (a plain path always works)."
+  },
+
+  "pcSettings": {
+    "file": "pc-settings.json",
+    "_whyFile": "This PC's own settings, a JSON object in a file under teamState.folder: the values that differ from PC to PC (today one, register.commitInRepos), kept out of this file so the repo is the same on every PC and git never sees them. The init script creates the file when it is missing and never overwrites it. A missing file or key gives the value's default; a file that cannot be read or is not valid JSON is named on stderr and the defaults apply. The user, 2026-10-27 (D-47): each PC's own values, such as where the user's own repos are, go into one settings file per PC that the init script (init.ps1, D-46) creates and git ignores."
+  },
+
   "contextCaps": {
     "_why": "Per agent type, in tokens. The hook tells an agent at 'warn' to stop building and start closing, and at 'stop' to stop now. Closing a worker run measured at about 25 tool calls (60-80 thousand tokens), so 'warn' sits that far below the cap. The user set the caps on 2026-10-25: workers 400k, leads 500k, main 500k.",
     "main": { "cap": 500000, "warn": 450000 },
@@ -23,13 +33,13 @@
     "_whyProbeModel": "Haiku 5.5, the user's choice (2026-10-25). The full id, because the alias haiku ran claude-haiku-4-5 (builder A, 2026-10-25). The probe only needs the reply's rate-limit line, not its text.",
     "probeEffort": "low",
     "_whyProbeEffort": "The user's choice (2026-10-25): Haiku 5.5 at low effort, always. Passed as --effort.",
-    "stateFile": "%USERPROFILE%\\.claude\\state\\usage-limits.json",
+    "stateFile": "usage-reading\\usage-limits.json",
     "stateFreshMinutes": 15,
-    "_whyStateFile": "Where the probe writes the numbers (%NAME% is an environment variable). stateFreshMinutes is how often the watch asks for new numbers while far from a threshold, and the probe calls the API only when the reading in this file is older than that, so several watches (one per open session) share one call instead of each making its own; near a threshold the age drops to probeNearEveryMinutes. A watch whose session and agents wrote nothing since the last reading does not probe at all. Each probe is one tiny Haiku call (about 7 thousand tokens, measured 2026-10-25). The user dropped the wrapper idea and the separate probeEveryMinutes on 2026-10-25.",
+    "_whyStateFile": "Where the probe writes the numbers, as a path under teamState.folder; every watch on this machine reads them there. stateFreshMinutes is how often the watch asks for new numbers while far from a threshold, and the probe calls the API only when the reading in this file is older than that, so several watches (one per open session) share one call instead of each making its own; near a threshold the age drops to probeNearEveryMinutes. A watch whose session and agents wrote nothing since the last reading does not probe at all. Each probe is one tiny Haiku call (about 7 thousand tokens, measured 2026-10-25). The user dropped the wrapper idea and the separate probeEveryMinutes on 2026-10-25.",
     "probeTimeoutSeconds": 120,
     "_whyProbeTimeoutSeconds": "How long the probe's call may take before it is stopped and the probe fails. A healthy call takes seconds.",
-    "probeWorkingFolder": "%TEMP%\\claude-usage-probe",
-    "_whyProbeWorkingFolder": "The empty folder the probe's call runs in, so no project's files or settings come with it (plan 8.1).",
+    "probeWorkingFolder": "usage-probe",
+    "_whyProbeWorkingFolder": "The empty folder the probe's call runs in, as a path under teamState.folder, so no project's files or settings come with it (plan 8.1). The call runs with CLAUDE.md files switched off, so the user's own CLAUDE.md in a folder above this one is not loaded either.",
     "resumeMarginMinutes": 10,
     "_whyResumeMarginMinutes": "Time the woken session needs after the reset to reach each agent before its cache runs out. An agent whose cache would expire within this margin after the reset counts as going cold.",
     "relaunchMarginMinutes": 1,
@@ -53,8 +63,8 @@
     "_whyMaxPastHours": "How far in the past schedule-relaunch.ps1 accepts -At (plan 8.3: more than a day back is refused). Further back, the caller passed a stale time.",
     "notifySeconds": 15,
     "_whyNotifySeconds": "How long the relaunch's notification stays in the tray, so the message can be read before it goes.",
-    "logFile": "%USERPROFILE%\\.claude\\state\\relaunch.log",
-    "_whyLogFile": "Where start-session-in-vscode.ps1 logs each step with the time (plan 8.4). %NAME% is an environment variable."
+    "logFile": "logs\\relaunch.log",
+    "_whyLogFile": "Where start-session-in-vscode.ps1 logs each step with the time (plan 8.4), as a path under teamState.folder, beside the limit-stop server's log."
   },
 
   "usageAndContextWatch": {
@@ -70,7 +80,9 @@
     "retryMinutes": 10,
     "_whyRetryMinutes": "How long after any other such error (a server error), or a limit message with no readable reset time, the watch wakes the session; such a limit stop waits instead for a later reset on record, when there is one. The user's choice (2026-10-25, D-0006): ten minutes, so an API that is still overloaded has time to recover; a session woken into the same error stops again, and no watch is left to wake it until the user writes.",
     "cacheLookbackReplies": 20,
-    "_whyCacheLookbackReplies": "How many of an agent's newest replies are searched for a write to the 1-hour cache (plan 8.2). One API reply is written as several records, so 20 records are the last few requests."
+    "_whyCacheLookbackReplies": "How many of an agent's newest replies are searched for a write to the 1-hour cache (plan 8.2). One API reply is written as several records, so 20 records are the last few requests.",
+    "recordFolder": "usage-watch",
+    "_whyRecordFolder": "Folder under teamState.folder where the watch keeps two files per session: its running mark (<session id>.txt, its process id and start time, so a second watch for the same session ends at once) and its limit decision (<session id>.decision.json, so a watch started again never takes a hand-over back and never announces it twice)."
   },
 
   "decisionAnswersWatch": {
@@ -90,7 +102,9 @@
     "minFreeMB": 600,
     "_whyMinFreeMB": "The free memory, in MB, a heavy command waits for before it starts. This machine has 700-1000 MB free while VS Code and a few agents run (measured 2026-10-25), so the old 1500 was never reached and every heavy command waited out its time and gave up. A test suite here peaks at about 250 MB.",
     "waitMinutes": 60,
-    "_whyWaitMinutes": "How long a heavy command waits for a slot and then for memory before it gives up with HEAVY COMMAND NOT RUN."
+    "_whyWaitMinutes": "How long a heavy command waits for a slot and then for memory before it gives up with HEAVY COMMAND NOT RUN.",
+    "holderFolder": "heavy-commands",
+    "_whyHolderFolder": "Folder under teamState.folder where run-heavy.ps1 keeps one small file per slot it holds (slot-1.txt, ...: the process, since when, the folder and the command), so a heavy command that has to wait can say what it waits for. The slot itself is a named lock, xpp-agent-heavy-command-slot-1, ..., whose name stays as it was, so an older run-heavy still takes turns with this one."
   },
 
   "limitStop": {
@@ -105,8 +119,8 @@
     "_whyStartCheckSeconds": "How long 'start' waits for the new server's pipe to answer before it says NOT STARTED and stops it, and 'stop' for the pipe to be gone. Node starts in well under a second; this machine under load has been seen several times slower.",
     "leadAgentTypes": ["task-lead"],
     "_whyLeadAgentTypes": "The agent types that get the lead's stop text. The helper types of usageLimits.ignoreAgentTypes get the helper's text (return what you found); every other type, workflow agents and unknown types included, gets the worker's.",
-    "logFile": "%USERPROFILE%\\.claude\\state\\limit-stop.log",
-    "_whyLogFile": "Where the server logs, one line each, when it listened, which agent it told and when it ended (like relaunch.log); the context guard and the Usage and context watch's check add a line for each query of theirs that failed, and one when they told the main session that the server failed. The main session's hook and the check read it to find a failure, since nothing else is left on disk. It never logs what an agent said. %NAME% is an environment variable.",
+    "logFile": "logs\\limit-stop.log",
+    "_whyLogFile": "Where the server logs, as a path under teamState.folder: one line each, when it listened, which agent it told and when it ended (like relaunch.log); the context guard and the Usage and context watch's check add a line for each query of theirs that failed, and one when they told the main session that the server failed. The main session's hook and the check read it to find a failure, since nothing else is left on disk. It never logs what an agent said.",
     "logTailKB": 256,
     "_whyLogTailKB": "How much of the end of the log the main session's hook (after every tool call) and the Usage and context watch's check read for the session's lines. A line is about 110 to 200 bytes and a hand-over writes one per agent told plus a few, so 256 KB holds the whole of the current hand-over and many before it, of every session; reading it takes about 1.4 ms (median of 20, 6 ms at most, measured 2026-10-25 on a 1 MB log)."
   },
@@ -114,10 +128,15 @@
   "contextGuard": {
     "transcriptTailKB": 512,
     "_whyTranscriptTailKB": "How much of the end of an agent's transcript the guard reads to find its newest usage record; 0 differences against whole-file reads on 149 real transcripts up to 3.3 MB (2026-10-25).",
-    "markerFolder": "claude-context-guard",
-    "_whyMarkerFolder": "Folder under %TEMP% that holds one marker per agent (the last level sent) and its lock.",
+    "markerFolder": "context-guard",
+    "_whyMarkerFolder": "Folder under teamState.folder that holds one marker per agent (the last level sent) and its lock.",
     "markerLockStaleSeconds": 60,
     "_whyMarkerLockStaleSeconds": "A guard run's marker lock older than this belongs to a crashed run and is broken. A live run holds it for milliseconds."
+  },
+
+  "agentTeam": {
+    "onFolder": "team-on",
+    "_whyOnFolder": "Folder under teamState.folder holding one marker per session switched on with /software-developer-agent (scripts/team-on.mjs). The two hooks and the Decisions pane do nothing in a session without one, so the team runs only in a chat the user switched on (the user, 2026-10-26: 'i dont want the agent architecture to run for all main chats')."
   },
 
   "register": {
@@ -132,8 +151,7 @@
     "_whyLock": "A writer waits this long for the register's lock; a lock older than lockStaleSeconds belongs to a crashed writer and is broken (plan 6.2). A write holds the lock for milliseconds.",
     "hookLockWaitSeconds": 2,
     "_whyHookLockWait": "The prompt hook hands the user's answers over under the register's lock, but a prompt must not hang lockWaitSeconds on a busy register (R2 task, 2026-10-26). It waits this long; a lock still held leaves the answers for the decision answers watch or the next prompt.",
-    "commitInRepos": ["C:\\Repos\\My projects\\*"],
-    "_whyCommitInRepos": "The user's own repos commit the register. In every other repo (client repos) the register's own files are added to .git/info/exclude on every add, which only this machine sees (user, 2026-10-25).",
+    "_whyCommitInRepos": "The user's own repos commit the register. In every other repo (client repos) the register's own files are added to .git/info/exclude on every add, which only this machine sees (user, 2026-10-25). Which repos are the user's own differs per PC, so the list (register.commitInRepos, wildcard patterns of repo folders) is not here: it is in this PC's own settings file (pcSettings.file). When that file or the key is missing, the list is the parent folder of this repo followed by \\*, the repo's folder with links resolved: a clone at D:\\Work\\software-developer-agent gives D:\\Work\\* (the user, 2026-10-27, D-47).",
     "_whyOwnRepoOnly": "Every reader of the register (the prompt reminder, the Decisions pane) reads only the register of the chat's own repo. No decision leaks between repos (the user, 2026-10-26, D-14: definitive). The earlier showInEveryChat setting (D-8) is gone."
   }
 }

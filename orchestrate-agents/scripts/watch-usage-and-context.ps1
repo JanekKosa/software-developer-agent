@@ -27,18 +27,20 @@
 #                          A watch started again does not report the same check line twice: only a changed line, or
 #                          the same one after a FINE check (the decision record keeps the line reported).
 # It ends without a word when the session's Claude Code process is gone (the chat was closed).
-# Start it in the background (the PowerShell tool with run_in_background) at the start of every main session, and
+# Start it in the background (the PowerShell tool with run_in_background) at the start of a chat the user switched the
+# agent team on for with /software-developer-agent (team-switch\SKILL.md), never in an ordinary chat, and
 # again each time it ends, except after a hand-over that ends the session. After LIMIT NEAR or SESSION NEAR CAP start
 # it again at once, before the hand-over: the hand-over on record keeps it quiet apart from checking the limit-stop
 # server at each look (limit-stop-server.mjs check), and if the limit stops the session before the hand-over is done,
 # it wakes the session after the reset. It reads transcripts only. It writes its own marker and its limit decision
-# (at the context cap, the cap hand-over) in the temp folder, starts the limit-stop server at a hand-over (the server
+# (at the context cap, the cap hand-over) in its record folder (usageAndContextWatch.recordFolder, under
+# teamState.folder), starts the limit-stop server at a hand-over (the server
 # has no end time: it ends when the main session stops it after the hand-over, or when the session's Claude Code
 # process is gone), and runs usage-probe.ps1 (which writes the shared usage reading) when that
 # reading is older than stateFreshMinutes (near a threshold, probeNearEveryMinutes) and the session or one of its
 # agents wrote since it was taken. Its settings are in orchestration.config.json; a parameter passed wins.
 #
-#   & 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-usage-and-context.ps1'
+#   & "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\watch-usage-and-context.ps1"
 #   with the task description "Usage and context watch", the name the user sees in the task list.
 #
 # It needs no arguments: Claude Code gives its shell the session id (CLAUDE_CODE_SESSION_ID) and its own process id
@@ -71,8 +73,11 @@ param(
     # the watch's own settings.
     [string]$ConfigPath = (Join-Path $PSScriptRoot '..\orchestration.config.json'),
     # The latest usage reading, which usage-probe.ps1 writes and every watch on this machine shares, since the limits
-    # are the account's, not the session's. Default: usageLimits.stateFile.
+    # are the account's, not the session's. Default: usageLimits.stateFile, under teamState.folder.
     [string]$UsageStatePath,
+    # The folder of the watch's own files for each session: its marker (<session id>.txt) and its limit decision
+    # (<session id>.decision.json). Default: usageAndContextWatch.recordFolder, under teamState.folder.
+    [string]$RecordFolder,
     # A usage reading to read instead of probing: the watch then never runs usage-probe.ps1. For tests.
     [string]$UsageReadingPath = '',
     # The lifetime of a cached context, in minutes: the API's 5-minute cache, which subagents get, and its 1-hour
@@ -233,15 +238,69 @@ function Get-ConfigValue($config, [string]$key, [string]$path) {
     return , $node
 }
 
-# A path from the settings with each %NAME% replaced by that environment variable. A variable that is not set is an
-# error naming the key and the variable, so a path never keeps a literal %NAME%.
-function Expand-ConfigPath([string]$value, [string]$key, [string]$path) {
-    foreach ($found in [regex]::Matches($value, '%([^%]+)%')) {
+# One setting by its dotted key, read the way lib\config.mjs requireSetting reads it: a part that is missing, spelled
+# in another case, or null is an error in that function's words, so this script and the Node code say the same.
+function Get-RequiredSetting($config, [string]$key) {
+    $node = $config
+    foreach ($part in $key.Split('.')) {
+        if ($node -isnot [Collections.IDictionary] -or -not ($node.Keys -ccontains $part) -or $null -eq $node[$part]) {
+            throw "orchestration.config.json has no setting '$key'"
+        }
+        $node = $node[$part]
+    }
+    return , $node
+}
+
+# Why a path under teamState.folder is refused, or $null when it is not: the first rule of lib\config.mjs
+# STATE_PATH_RULES it breaks, in that order and in those words. '\z' stands for JavaScript's '$': .NET's '$' also
+# matches before a final line feed.
+function Get-StatePathFault([string]$value) {
+    $parts = $value.Split('\')
+    if ($value -ceq '') { return 'is empty' }
+    if ($value.Contains(':')) { return "has a drive or a ':'" }
+    if ($value -cmatch '^[\\/]|[\\/]\z') { return "starts or ends with '\' or '/'" }
+    if ($value.Contains('/')) { return "has a '/'; parts are joined by '\'" }
+    if ($value -cmatch '[*?"<>|%]') { return 'has one of * ? " < > | %' }
+    if ($parts -ccontains '') { return 'has an empty part' }
+    if ($parts -ccontains '.' -or $parts -ccontains '..') { return "has a '.' or '..' part" }
+    return $null
+}
+
+# The absolute path of a file or folder of the team's own from its setting: the root teamState.folder (each %NAME%
+# filled in from the environment, then absolute: a drive letter, ':' and '\') joined with the setting, one or more
+# plain names joined by '\', so it never points outside the root. A copy of lib\config.mjs requireStatePath: the same
+# checks in the same order, refused in the same words. The join tidies the root as Node's path.join does (doubled
+# separators, '/', '.' and '..' parts); [IO.Path]::GetFullPath would also drop the trailing dots and spaces of a name,
+# and Join-Path fails on a drive that does not exist.
+function Get-StatePath($config, [string]$key) {
+    $root = Get-RequiredSetting $config 'teamState.folder'
+    if ($root -isnot [string] -or $root -ceq '') {
+        throw "orchestration.config.json setting 'teamState.folder' must be a path, not $(ConvertTo-Json -InputObject $root -Compress -Depth 10)"
+    }
+    foreach ($found in [regex]::Matches($root, '%([^%]+)%')) {
         if (-not [Environment]::GetEnvironmentVariable($found.Groups[1].Value)) {
-            throw "$path key '$key' names $($found.Value), which is not set."
+            throw "orchestration.config.json setting 'teamState.folder' names $($found.Value), which is not set"
         }
     }
-    return [Environment]::ExpandEnvironmentVariables($value)
+    $root = [regex]::Replace($root, '%([^%]+)%', { param($found) [Environment]::GetEnvironmentVariable($found.Groups[1].Value) })
+    if ($root -cnotmatch '^[A-Za-z]:\\') {
+        throw "orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not $(ConvertTo-Json -InputObject $root -Compress)"
+    }
+    $value = Get-RequiredSetting $config $key
+    if ($value -isnot [string]) {
+        throw "orchestration.config.json setting '$key' must be text, a path under 'teamState.folder', not $(ConvertTo-Json -InputObject $value -Compress -Depth 10)"
+    }
+    $fault = Get-StatePathFault $value
+    if ($fault) {
+        throw "orchestration.config.json setting '$key' must be a path under 'teamState.folder' but ${fault}: $(ConvertTo-Json -InputObject $value -Compress)"
+    }
+    $names = [Collections.Generic.List[string]]::new()
+    foreach ($name in $root.Substring(3) -csplit '[\\/]') {
+        if ($name -ceq '..') { if ($names.Count -gt 0) { $names.RemoveAt($names.Count - 1) } }
+        elseif ($name -cne '' -and $name -cne '.') { $names.Add($name) }
+    }
+    $names.Add($value)
+    return $root.Substring(0, 3) + ($names -join '\')
 }
 
 # The usage-limit settings the watch needs, by their names under usageLimits.
@@ -255,20 +314,20 @@ function Get-UsageLimitSettings($config, [string]$path) {
 }
 
 # The watch's own settings by parameter name: a parameter in $bound (the passed ones) as passed, else its key in the
-# settings, the state file with %NAME% expanded. A passed parameter's key is not needed.
+# settings, the state file and the record folder as absolute paths under teamState.folder (Get-StatePath). A passed
+# parameter's key is not needed.
 function Get-WatchSettings($config, [string]$path, $bound) {
     $keys = [ordered]@{
         WarnTokens = 'contextCaps.main.warn'; WakeOnErrors = 'usageAndContextWatch.wakeOnErrors'
         ResetMarginMinutes = 'usageAndContextWatch.resetMarginMinutes'; RetryMinutes = 'usageAndContextWatch.retryMinutes'
         EverySeconds = 'usageAndContextWatch.everySeconds'; TailMegabytes = 'usageAndContextWatch.tailMegabytes'
         CacheLookbackReplies = 'usageAndContextWatch.cacheLookbackReplies'; UsageStatePath = 'usageLimits.stateFile'
+        RecordFolder = 'usageAndContextWatch.recordFolder'
     }
     $settings = @{}
     foreach ($name in $keys.Keys) {
         if ($bound.ContainsKey($name)) { $settings[$name] = $bound[$name]; continue }
-        $value = Get-ConfigValue $config $keys[$name] $path
-        if ($name -eq 'UsageStatePath') { $value = Expand-ConfigPath $value $keys[$name] $path }
-        $settings[$name] = $value
+        $settings[$name] = if ($name -in 'UsageStatePath', 'RecordFolder') { Get-StatePath $config $keys[$name] } else { Get-ConfigValue $config $keys[$name] $path }
     }
     return $settings
 }
@@ -443,9 +502,10 @@ function Get-StopDecision($stop, [object[]]$agents, $record, [int]$marginMinutes
     return Get-LimitDecision $agents $reset $marginMinutes $stop.At $record
 }
 
-# The file that keeps the session's latest limit decision, so a restarted watch never takes a hand-over back.
-function Get-DecisionRecordPath([string]$session) {
-    return Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$session.decision.json"
+# The file in the record folder that keeps the session's latest limit decision, so a restarted watch never takes a
+# hand-over back.
+function Get-DecisionRecordPath([string]$folder, [string]$session) {
+    return Join-Path $folder "$session.decision.json"
 }
 
 # Writes the decision, the window that tripped and each counted agent's cache expiry.
@@ -633,9 +693,9 @@ function Format-NearCapSteps([string]$serverLine, [string]$scriptsFolder, [strin
 
 # --- Keeping to one watch per session ----------------------------------------------------------------------------
 
-# The marker file that names the watch running for the session: its process id and start time.
-function Get-WatchMarkerPath([string]$session) {
-    return Join-Path ([IO.Path]::GetTempPath()) "claude-session-watch-$session.txt"
+# The marker file in the record folder that names the watch running for the session: its process id and start time.
+function Get-WatchMarkerPath([string]$folder, [string]$session) {
+    return Join-Path $folder "$session.txt"
 }
 
 # The process id of another watch still running for the session, or $null. A marker left by a watch that was
@@ -667,20 +727,21 @@ try {
     $config = Read-OrchestrationConfig $ConfigPath
     $limits = Get-UsageLimitSettings $config $ConfigPath
     $settings = Get-WatchSettings $config $ConfigPath $PSBoundParameters
+    New-Item -ItemType Directory -Force $settings.RecordFolder -ErrorAction Stop | Out-Null
 }
 catch {
     "WATCH FAILED | $($_.Exception.Message)"
     exit 1
 }
 $tailBytes = $settings.TailMegabytes * 1MB
-$decisionPath = Get-DecisionRecordPath $SessionId
+$decisionPath = Get-DecisionRecordPath $settings.RecordFolder $SessionId
 $readingPath = if ($UsageReadingPath) { $UsageReadingPath } else { $settings.UsageStatePath }
 $probe = Join-Path $PSScriptRoot 'usage-probe.ps1'
 $lastProbe = $null
 # True once this watch could not clear the reported check line from the record (Set-ReportedCheck).
 $clearFailed = $false
 $stopCommand =Format-StopCommand $StopServerScript $SessionId
-$marker = Get-WatchMarkerPath $SessionId
+$marker = Get-WatchMarkerPath $settings.RecordFolder $SessionId
 $other = Get-OtherWatch $marker
 if ($other) {
     "WATCH ALREADY RUNNING | process $other watches this session already; this second watch ends."

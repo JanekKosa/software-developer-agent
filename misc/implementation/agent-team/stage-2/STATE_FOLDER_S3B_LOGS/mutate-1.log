@@ -1,0 +1,51 @@
+PASS  dry run prints the whole plan and writes nothing
+PASS  apply copies exactly the planned files, keeps their times and leaves the rest
+PASS  apply copies the config first, the libraries next and the gate lib\agent-team.mjs last
+PASS  a second apply finds everything the same and writes nothing
+PASS  an identical file already in the new place is SAME and the rest is copied
+PASS  refuses a code conflict: live and staged both changed one file
+PASS  refuses a base file missing from the staged copy
+PASS  refuses a new staged file that live already has with other content
+PASS  refuses while a limit-stop server listens
+PASS  refuses while a watch runs with an old mark
+PASS  refuses while a watch runs with a new mark
+PASS  a mark whose process is gone or started at another time is no running watch
+PASS  refuses when a new-place file differs from the old file it would receive
+PASS  refuses a staged setting that is not a plain path under the root
+PASS  refuses a base list line that is not path, tab, hash
+PASS  refuses -Apply and -RemoveOld together
+PASS  names every reason at once, and the dry run refuses too
+PASS  never copies a name that fails the session id check
+PASS  runs as a child process with the exit codes the main session sees
+PASS  RemoveOld before the switch-over refuses and deletes nothing
+PASS  RemoveOld deletes only identical old copies and keeps the rest with the reason
+PASS  trim cuts a copy of the real log back to its first 841 bytes
+PASS  trim keeps a real line written after the test lines, and one between them
+PASS  trim refuses when the first 841 bytes are not the real ones and changes nothing
+PASS  trim of a log that is already 841 bytes does nothing
+PASS  trim refuses a log shorter than 841 bytes
+CASES | 26 of 26 passed
+CAUGHT    refusal 1 skipped: a code conflict is not refused (by 5: refuses a code conflict: live and staged both changed one file)
+CAUGHT    staged deletion not a conflict (by 1: refuses a base file missing from the staged copy)
+CAUGHT    refusal 2 skipped: an open pipe is not refused (by 2: refuses while a limit-stop server listens)
+CAUGHT    refusal 3 skipped: a running watch is not refused (by 3: refuses while a watch runs with an old mark)
+CAUGHT    refusal 3 weakened: the start time is not compared (by 1: a mark whose process is gone or started at another time is no running watch)
+CAUGHT    refusal 4 skipped: a differing new file is not refused (by 1: refuses when a new-place file differs from the old file it would receive)
+CAUGHT    .lock files copied (by 7: dry run prints the whole plan and writes nothing)
+CAUGHT    .txt watch marks copied (by 8: dry run prints the whole plan and writes nothing)
+CAUGHT    slot holders copied (by 7: dry run prints the whole plan and writes nothing)
+CAUGHT    session id check skipped (by 1: never copies a name that fails the session id check)
+CAUGHT    write time not kept (by 7: apply copies exactly the planned files, keeps their times and leaves the rest)
+CAUGHT    dry run writes (by 4: dry run prints the whole plan and writes nothing)
+CAUGHT    identical files rewritten instead of SAME (by 2: a second apply finds everything the same and writes nothing)
+CAUGHT    code order: the gate not last (by 1: apply copies the config first, the libraries next and the gate lib\agent-team.mjs last)
+CAUGHT    code order: the config not first (by 1: apply copies the config first, the libraries next and the gate lib\agent-team.mjs last)
+CAUGHT    staged change copied over a live edit (L != B) (by 3: refuses a code conflict: live and staged both changed one file)
+CAUGHT    RemoveOld deletes a differing file (by 1: RemoveOld deletes only identical old copies and keeps the rest with the reason)
+CAUGHT    RemoveOld removes a folder that is not empty (by 1: RemoveOld deletes only identical old copies and keeps the rest with the reason)
+CAUGHT    RemoveOld runs before the switch-over (by 1: RemoveOld before the switch-over refuses and deletes nothing)
+CAUGHT    trim: hash not checked (by 1: trim refuses when the first 841 bytes are not the real ones and changes nothing)
+CAUGHT    trim: test lines not removed (by 2: trim cuts a copy of the real log back to its first 841 bytes)
+CAUGHT    trim: later real lines dropped (by 1: trim keeps a real line written after the test lines, and one between them)
+MUTANTS | 22 of 22 caught
+CLEANUP | run folder removed: True; helper processes started and stopped by id: 13816

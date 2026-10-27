@@ -1,0 +1,26 @@
+D C:\Repos\My projects\claude-code-extensions\decisions-pane\.claude-plugin
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\.claude-plugin\plugin.json 1814 639286155746571054 6F320AF59670DBA28DCF3159EFA74726508D516BB35CE5A4236CC6442430A984
+D C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\decision-state.ts 9782 639286356495110587 1AB74E10363364D0E6A7AC3E278A3171B0293CEBDE3FC6FBDB732574D108DE39
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\decisions.ts 21947 639286995465897064 D6341AFCD5C9790A998BC69CE803C8553733F4AFD4F5EF345B47B7B3DF98F0C4
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\hooks.json 34 639286087509597080 D842D789476D67282D0F04B7E5FDC68A3D981CCEC65DD79CFA2D11EED13FB828
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\pane-control.ts 3929 639286086907875332 B915984F6F37BB33DF6A1DF09BA54D193DF87A51FF02AB183E1018A19F071F80
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\pane.tsx 18190 639286995744228045 51D331191D3C1D31B34C6A0B3301A4F7ED3987ECE78C3AEC56187328AC5BCD86
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\poll.ts 3803 639286845963202037 028098C1ED036140AE34ACB05059DEC3E0D7C0C8A107AA1AADEAA6F6BCB6368A
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\register.tsx 983 639286087962846676 0C2335703C81793DE6A3019CF4359FB839C19F21415BB4754286117B915CE20E
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\registers.ts 14077 639286846557631193 605DDF803EAF7C2C41C1957491C5311D7F9CF438230378D6BCC5768F70682B20
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\settings.ts 1117 639286086191455552 E2841EE72991804AFE1D71E54F7511BA5E77ECEAFD4F63307FEE5E8DC5E286EE
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\team-on.ts 6342 639286997095915692 64A96B1285DAA67C556BCDC57F198E8319A730B65475C4DA4E2E4E6864BE5FC7
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\hooks\team-switch.ts 2600 639286996979929664 974644B9199BA662A2501B52D533CB8A256C29B18B3965B69D9C66B46FB825EE
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\README.md 11285 639286999748280297 EA786ECAD4F80BD2F2B50F32713EC15F73A8EFE0E59332E36CCAA49A29D7CD61
+D C:\Repos\My projects\claude-code-extensions\decisions-pane\tests
+D C:\Repos\My projects\claude-code-extensions\decisions-pane\tests\hooks
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\tests\hooks\decisions.test.ts 3779 639286303678123276 AD64FC8F554313D060834EC1A0B940C1321AF45A96ACA72F7827BFCB18C08D2A
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\tests\hooks\pane.test.ts 34840 639286846626239351 421851E5C251E97C1827C56C69B4FDD8255780442ED78A1C85A0458104BBF422
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\tests\hooks\points.test.ts 10598 639286994098352254 B47C47E7CAE3A23AE7DFF832F5517CFE5510E6687F2AC0B0939AD4EFF6630936
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\tests\hooks\team-on.test.ts 8347 639287008350772544 6FA2DD3475651E958EE830F50ED8F39B2D93251F95CE7CEB2CC3DFFE5147AC7F
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\tests\hooks\team-switch.test.ts 16648 639286997400795105 48672A27BB7A0FFE2CCCADEB828EE00385D7CA479A2E034F5637301F75CC6A37
+D C:\Repos\My projects\claude-code-extensions\decisions-pane\tests\support
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\tests\support\register-world.ts 22076 639286993871141129 AE684FC54AD13E11C4F91538C0D7633566B049AE1E28371E197C728CAF89A380
+D C:\Repos\My projects\claude-code-extensions\decisions-pane\types
+F C:\Repos\My projects\claude-code-extensions\decisions-pane\types\index.d.ts 4383 639286297144797167 983B57D5F852AD9796569232F4C3B032CC020AF6BD1324B35F222C0AE69F51C5

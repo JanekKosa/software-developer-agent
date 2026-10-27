@@ -93,7 +93,7 @@ export function ensureExcludeLine(excludePath, line) {
  * Matches a whole path against a wildcard pattern the way PowerShell's -like does: `*` is any run of characters
  * (separators included), `?` is one character, case is ignored. Slashes and backslashes are treated as the same.
  * @param {string} filePath the path to test
- * @param {string} pattern the wildcard pattern, for example 'C:\Repos\My projects\*'
+ * @param {string} pattern the wildcard pattern, for example 'D:\Work\*'
  * @returns {boolean} true when the whole path matches
  */
 export function matchesPathPattern(filePath, pattern) {

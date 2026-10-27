@@ -34,18 +34,18 @@ tool's `description` is the watch's name, the one the user sees in the task list
 
 - The **Usage and context watch**, `scripts\watch-usage-and-context.ps1`, which the main session starts first, at
   its beginning, with the description `Usage and context watch`:
-  `& 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-usage-and-context.ps1'` (no
+  `& "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\watch-usage-and-context.ps1"` (no
   arguments). Besides the context size, it reads the usage percentages from the file `usageLimits.stateFile` names
-  (`%USERPROFILE%\.claude\state\usage-limits.json`) and runs `scripts\usage-probe.ps1` (one tiny Haiku call, about
-  7 thousand tokens) when that reading is older than `stateFreshMinutes` (15), or `probeNearEveryMinutes` (3) within
-  `probeNearWithinPercent` (10) points of a threshold, and only when the session or one of its agents wrote since
-  the reading was taken: an idle session spends nothing, so a weekly reading at 97% does not cost a probe every 3
-  minutes for days. The probe calls the API only when the file's reading is older than that same age, so the
-  watches of several open sessions share one call.
+  (`%USERPROFILE%\.claude\state\software-developer-agent\usage-reading\usage-limits.json`) and runs
+  `scripts\usage-probe.ps1` (one tiny Haiku call, about 7 thousand tokens) when that reading is older than
+  `stateFreshMinutes` (15), or `probeNearEveryMinutes` (3) within `probeNearWithinPercent` (10) points of a
+  threshold, and only when the session or one of its agents wrote since the reading was taken: an idle session
+  spends nothing, so a weekly reading at 97% does not cost a probe every 3 minutes for days. The probe calls the API
+  only when the file's reading is older than that same age, so the watches of several open sessions share one call.
 - The **Decision answers watch**, `scripts\watch-decision-answers.ps1`, which the main session also starts at its
   beginning, from its own repo (it reads only that repo's decision register), with the description
   `Decision answers watch`:
-  `& 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\watch-decision-answers.ps1'`. It
+  `& "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\watch-decision-answers.ps1"`. It
   hands the user's new answers to the main session and plays no part in the limits; this page names it because
   every hand-over stops it too (step 7).
 - The third, the **Agent size and stall watch** (`scripts\watch-agent-size-and-stall.ps1`), watches one agent and
@@ -93,7 +93,7 @@ Before it ended, the watch started the limit-stop server. Its line is one of:
   at its next tool call: the steps below, with no deadline; it means the same as the watch's lines. The server has
   no end time: it ends when you stop it in step 6, or once the session's Claude Code process is gone (checked every
   `limitStop.processCheckSeconds`, 60; the user's choice, 2026-10-25), and logs to the file `limitStop.logFile`
-  names (`%USERPROFILE%\.claude\state\limit-stop.log`).
+  names (`%USERPROFILE%\.claude\state\software-developer-agent\logs\limit-stop.log`).
 - `LIMIT STOP SERVER NOT STARTED | <why>`: no agent hears anything. The watch's next line tells you so, as
   `LIMIT STOP SERVER FAILED | <HH:mm:ss> | it did not start: <why>. Only now the fallback: ...` (see "When the
   limit-stop server fails", below): send `STOP FOR LIMIT` to every running lead (text in `start-messages.md`). A
@@ -124,8 +124,8 @@ Then:
    read first.
 6. Run the command the watch printed, with your project folder and hand-over file filled in, and in the same step
    stop the limit-stop server with the command printed after it:
-   `& 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\schedule-relaunch.ps1' -ProjectDir <project folder> -HandoverPath <hand-over file> -At <reset, ISO>`
-   and `node 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\limit-stop-server.mjs' stop --session <session id>`.
+   `& "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\schedule-relaunch.ps1" -ProjectDir <project folder> -HandoverPath <hand-over file> -At <reset, ISO>`
+   and `node "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\limit-stop-server.mjs" stop --session <session id>`.
    The relaunch's last line must start with `SCHEDULED` or `ALREADY SCHEDULED`; `RELAUNCH NOT SCHEDULED` means it
    did not, and the reason follows. Do not run it again; the user then starts the new chat by hand. The stop's line
    is `LIMIT STOP SERVER STOPPED` or `NOT RUNNING`; on `NOT STOPPED | <why>` do not retry: the server ends with the
@@ -158,8 +158,8 @@ at its next tool call, and the main session its own text, with no deadline. Then
 3. Wait for `LEAD STOPPED` from each running lead, with no deadline, as in step 3 above.
 4. Write the hand-over, listing each lead's hand-off (step 5 above), and run the command the texts print, with your
    project folder and hand-over file filled in, and in the same step the server's `stop` command they print:
-   `& 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\schedule-relaunch.ps1' -ProjectDir <project folder> -HandoverPath <hand-over file> -ContextCap`
-   and `node 'C:\Repos\My projects\software-developer-agent\orchestrate-agents\scripts\limit-stop-server.mjs' stop --session <session id>`.
+   `& "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\schedule-relaunch.ps1" -ProjectDir <project folder> -HandoverPath <hand-over file> -ContextCap`
+   and `node "$HOME\.claude\software-developer-agent\orchestrate-agents\scripts\limit-stop-server.mjs" stop --session <session id>`.
    It schedules the next chat `relaunch.afterCapMinutes` (1) from now, the same way as after a limit hand-over (the
    relaunch, below), and its last lines read as in step 6 above. Then stop both watches with `TaskStop` (step 7) and
    end your turn as in step 8.
@@ -229,7 +229,8 @@ cap (`-ContextCap`), a one-shot Windows scheduled task named
    that project and send the prompt, which it names.
 3. It presses Enter only when that window is still in front. Otherwise the prompt waits in the new chat and a
    Windows notification asks the user to press Enter.
-4. Every step is logged with the time to the file `relaunch.logFile` names (`%USERPROFILE%\.claude\state\relaunch.log`).
+4. Every step is logged with the time to the file `relaunch.logFile` names
+   (`%USERPROFILE%\.claude\state\software-developer-agent\logs\relaunch.log`).
 
 Its notifications say that the limit has reset, or, after a hand-over at the context cap, that the session has
 handed over at its context cap.

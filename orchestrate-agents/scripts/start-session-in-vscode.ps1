@@ -1,8 +1,8 @@
 # Starts a new Claude Code chat with a prompt in the VS Code window that has a project open, and sends it: the
 # relaunch after a hand-over at a usage limit, or at the main session's context cap with -ContextCap, which changes
 # only the cause its notifications name (a task from schedule-relaunch.ps1 runs it). Every step is logged with the
-# time to the log file (relaunch.logFile in orchestration.config.json, or -LogPath); when even that path cannot be
-# worked out, one line starting with START NOT RUN is printed instead:
+# time to the log file (relaunch.logFile in orchestration.config.json, a path under teamState.folder, or -LogPath);
+# when even that path cannot be worked out, one line starting with START NOT RUN is printed instead:
 #   1. Run 'code <folder>' (the code command beside the running VS Code, else the user install), so VS Code brings
 #      the window that has the folder open to the front, or opens one; wait focusWaitSeconds.
 #   2. Check the foreground window: VS Code's, with the folder's name in its title. If not, bring that window to the
@@ -35,7 +35,7 @@ param(
     [switch]$ContextCap,
     # The orchestration settings: the two waits, the log file and the notification time.
     [string]$ConfigPath = (Join-Path $PSScriptRoot '..\orchestration.config.json'),
-    # Where each step is logged. Default: relaunch.logFile.
+    # Where each step is logged, a full path. Default: relaunch.logFile under teamState.folder.
     [string]$LogPath,
     # How long the notification's tray icon stays. Default: relaunch.notifySeconds.
     [int]$NotifySeconds
@@ -59,15 +59,69 @@ function Get-ConfigValue($config, [string]$key, [string]$path) {
     return , $node
 }
 
-# A path from the settings with each %NAME% replaced by that environment variable. A variable that is not set is an
-# error naming the key and the variable, so a path never keeps a literal %NAME%.
-function Expand-ConfigPath([string]$value, [string]$key, [string]$path) {
-    foreach ($found in [regex]::Matches($value, '%([^%]+)%')) {
+# One setting by its dotted key, read the way lib\config.mjs requireSetting reads it: a part that is missing, spelled
+# in another case, or null is an error in that function's words, so this script and the Node code say the same.
+function Get-RequiredSetting($config, [string]$key) {
+    $node = $config
+    foreach ($part in $key.Split('.')) {
+        if ($node -isnot [Collections.IDictionary] -or -not ($node.Keys -ccontains $part) -or $null -eq $node[$part]) {
+            throw "orchestration.config.json has no setting '$key'"
+        }
+        $node = $node[$part]
+    }
+    return , $node
+}
+
+# Why a path under teamState.folder is refused, or $null when it is not: the first rule of lib\config.mjs
+# STATE_PATH_RULES it breaks, in that order and in those words. '\z' stands for JavaScript's '$': .NET's '$' also
+# matches before a final line feed.
+function Get-StatePathFault([string]$value) {
+    $parts = $value.Split('\')
+    if ($value -ceq '') { return 'is empty' }
+    if ($value.Contains(':')) { return "has a drive or a ':'" }
+    if ($value -cmatch '^[\\/]|[\\/]\z') { return "starts or ends with '\' or '/'" }
+    if ($value.Contains('/')) { return "has a '/'; parts are joined by '\'" }
+    if ($value -cmatch '[*?"<>|%]') { return 'has one of * ? " < > | %' }
+    if ($parts -ccontains '') { return 'has an empty part' }
+    if ($parts -ccontains '.' -or $parts -ccontains '..') { return "has a '.' or '..' part" }
+    return $null
+}
+
+# The absolute path of a file or folder of the team's own from its setting: the root teamState.folder (each %NAME%
+# filled in from the environment, then absolute: a drive letter, ':' and '\') joined with the setting, one or more
+# plain names joined by '\', so it never points outside the root. A copy of lib\config.mjs requireStatePath: the same
+# checks in the same order, refused in the same words. The join tidies the root as Node's path.join does (doubled
+# separators, '/', '.' and '..' parts); [IO.Path]::GetFullPath would also drop the trailing dots and spaces of a name,
+# and Join-Path fails on a drive that does not exist.
+function Get-StatePath($config, [string]$key) {
+    $root = Get-RequiredSetting $config 'teamState.folder'
+    if ($root -isnot [string] -or $root -ceq '') {
+        throw "orchestration.config.json setting 'teamState.folder' must be a path, not $(ConvertTo-Json -InputObject $root -Compress -Depth 10)"
+    }
+    foreach ($found in [regex]::Matches($root, '%([^%]+)%')) {
         if (-not [Environment]::GetEnvironmentVariable($found.Groups[1].Value)) {
-            throw "$path key '$key' names $($found.Value), which is not set."
+            throw "orchestration.config.json setting 'teamState.folder' names $($found.Value), which is not set"
         }
     }
-    return [Environment]::ExpandEnvironmentVariables($value)
+    $root = [regex]::Replace($root, '%([^%]+)%', { param($found) [Environment]::GetEnvironmentVariable($found.Groups[1].Value) })
+    if ($root -cnotmatch '^[A-Za-z]:\\') {
+        throw "orchestration.config.json setting 'teamState.folder' must be an absolute path (a drive letter, ':' and '\'), not $(ConvertTo-Json -InputObject $root -Compress)"
+    }
+    $value = Get-RequiredSetting $config $key
+    if ($value -isnot [string]) {
+        throw "orchestration.config.json setting '$key' must be text, a path under 'teamState.folder', not $(ConvertTo-Json -InputObject $value -Compress -Depth 10)"
+    }
+    $fault = Get-StatePathFault $value
+    if ($fault) {
+        throw "orchestration.config.json setting '$key' must be a path under 'teamState.folder' but ${fault}: $(ConvertTo-Json -InputObject $value -Compress)"
+    }
+    $names = [Collections.Generic.List[string]]::new()
+    foreach ($name in $root.Substring(3) -csplit '[\\/]') {
+        if ($name -ceq '..') { if ($names.Count -gt 0) { $names.RemoveAt($names.Count - 1) } }
+        elseif ($name -cne '' -and $name -cne '.') { $names.Add($name) }
+    }
+    $names.Add($value)
+    return $root.Substring(0, 3) + ($names -join '\')
 }
 
 # --- Windows -----------------------------------------------------------------------------------------------------
@@ -142,7 +196,7 @@ function Get-CodeWindows {
     }
 }
 
-# Whether a VS Code title names the folder as one of its ' - ' parts ('notes.md - xpp-agent - Visual Studio Code'),
+# Whether a VS Code title names the folder as one of its ' - ' parts ('notes.md - demo - Visual Studio Code'),
 # ignoring case and the unsaved-changes dot. A part that only contains the name does not count.
 function Test-TitleNamesFolder([string]$title, [string]$folderName) {
     if (-not $title -or -not $folderName) { return $false }
@@ -241,7 +295,7 @@ if ($MyInvocation.InvocationName -eq '.') { return }
 # The log file comes first: without it there is nowhere to log why nothing started.
 if (-not $PSBoundParameters.ContainsKey('LogPath')) {
     try {
-        $LogPath = Expand-ConfigPath (Get-ConfigValue (Read-OrchestrationConfig $ConfigPath) 'relaunch.logFile' $ConfigPath) 'relaunch.logFile' $ConfigPath
+        $LogPath = Get-StatePath (Read-OrchestrationConfig $ConfigPath) 'relaunch.logFile'
     }
     catch {
         "START NOT RUN | no log to write: $($_.Exception.Message)"

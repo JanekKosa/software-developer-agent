@@ -20,6 +20,17 @@
 // elaborates or talks about the decision further, $words the text to search for. Set each in a single-quoted
 // here-string, never in double quotes: in double quotes PowerShell runs $(...), drops $5 and makes `n a line break.
 //
+// add reads one entry from a JSON file: kind (question, initiative or issue), blocking (true or false), urgency (high,
+// medium or low), raisedBy, task, what, example, options, recommendation, meanwhile, evidence, and optionally parent
+// (D-7). raisedBy and task are one text each. what, example, recommendation and meanwhile are each one text (one
+// paragraph: its line breaks become spaces) or a list of points, the first point the headline, for example
+// "what": ["The import stops at the first bad row.", "500 rows: row 3 is bad, so 2 are imported."]: the first point
+// stays on the field's line and each further point goes on a line of its own under it ('  - <point>'). options is a
+// list, one option per point; each goes on a line of its own under '- Options:' and gets a full stop unless it ends
+// with '.', '!' or '?'. evidence is a list of paths, written on one line. A point's line breaks become spaces and a
+// leading '- ' or '* ' it was typed with is dropped. An empty list, a point that is blank or not a text, or a field of
+// another type exits 2 naming the field.
+//
 // answer --handed-over is for an answer the user typed in the chat: the main session already holds the words, so the
 // record counts as handed over at its answer time. Without it (an answer given in the Decisions pane) the answer waits
 // to be handed over. handover hands every answer that waits (neither handed over nor processed) to the main session

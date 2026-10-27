@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Explainer page template. Recipe: ../references/explainer-page.md.
+     Replace every [bracketed] placeholder, delete sections that would be empty, keep the order. -->
+<title>[Subject] Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: one reading column (~46rem); diagrams and tables use the column's full width and scroll sideways on phones.
+   Colours: --accent for structure, --good / --bad for the two meanings the subject has (approved / rejected,
+   before / after). Retune the five hues to the subject; keep the token names. */
+:root {
+  --bg: #f1f4f1;
+  --surface: #ffffff;
+  --ink: #17201b;
+  --muted: #56635b;
+  --line: #c9d2cb;
+  --accent: #1d5a44;
+  --good: #1d5a44;
+  --good-soft: #dbeae2;
+  --bad: #a85a0c;
+  --bad-soft: #fbead6;
+  --code-bg: #e6ebe7;
+
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Consolas", "Courier New", monospace;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.5rem;
+  --step-3: 2.1rem;
+  --step-4: 2.9rem;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101512;
+    --surface: #17201b;
+    --ink: #e4ebe6;
+    --muted: #9aa8a0;
+    --line: #2d3a33;
+    --accent: #6cc29b;
+    --good: #6cc29b;
+    --good-soft: #173027;
+    --bad: #f0a253;
+    --bad-soft: #3a2914;
+    --code-bg: #1f2a24;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101512;
+  --surface: #17201b;
+  --ink: #e4ebe6;
+  --muted: #9aa8a0;
+  --line: #2d3a33;
+  --accent: #6cc29b;
+  --good: #6cc29b;
+  --good-soft: #173027;
+  --bad: #f0a253;
+  --bad-soft: #3a2914;
+  --code-bg: #1f2a24;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 46rem; margin: 0 auto; padding-block: 3rem 4rem; display: grid; gap: 3.25rem; }
+section, header { display: grid; gap: 1rem; min-width: 0; }
+
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.12; text-wrap: balance; margin: 0; }
+h1 { font-size: var(--step-4); font-weight: 700; }
+h2 { font-size: var(--step-3); font-weight: 600; }
+h3 { font-size: var(--step-2); font-weight: 600; }
+p, ul, ol, dl, table, figure { margin: 0; }
+p { max-width: 65ch; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+.eyebrow { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: var(--step-1); max-width: 60ch; }
+.muted { color: var(--muted); }
+code, .id { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.05em 0.35em; border-radius: 3px; white-space: nowrap; }
+.val-good { color: var(--good); font-weight: 600; }
+.val-bad { color: var(--bad); font-weight: 600; }
+
+.glance { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem 1.4rem; display: grid; gap: 0.75rem; }
+.glance ul { padding-left: 1.2rem; display: grid; gap: 0.4rem; }
+
+.toc { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; list-style: none; }
+.toc a { display: inline-block; text-decoration: none; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 0.2rem 0.75rem; font-size: var(--step--1); background: var(--surface); }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+.terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.75rem; }
+.term { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; display: grid; gap: 0.35rem; align-content: start; min-width: 0; }
+.term dt { font-family: var(--font-display); font-weight: 600; font-size: var(--step-1); }
+.term dd { margin: 0; }
+.term .ex { color: var(--muted); font-size: var(--step--1); }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+caption { caption-side: top; text-align: left; padding: 0.7rem 0.8rem 0; font-size: var(--step--1); color: var(--muted); }
+th, td { text-align: left; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-weight: 500; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
+
+figure { display: grid; gap: 0.6rem; min-width: 0; }
+.diagram { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; color: var(--ink); }
+.diagram svg { display: block; width: 100%; height: auto; min-width: 640px; }
+figcaption { color: var(--muted); font-size: var(--step--1); max-width: 65ch; }
+.d-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.d-box-good { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.5; }
+.d-box-bad { fill: var(--bad-soft); stroke: var(--bad); stroke-width: 1.5; }
+.d-box-later { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.d-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; fill: currentColor; }
+.d-text { font-family: var(--font-body); font-size: 12.5px; fill: currentColor; }
+.d-mono { font-family: var(--font-mono); font-size: 12px; fill: currentColor; }
+.d-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; fill: var(--muted); }
+.d-note { font-family: var(--font-body); font-size: 12px; font-style: italic; fill: var(--muted); }
+.d-bad-text { font-family: var(--font-body); font-size: 12.5px; font-weight: 600; fill: var(--bad); }
+.d-arrow { stroke: currentColor; stroke-width: 1.6; fill: none; }
+.d-arrow-bad { stroke: var(--bad); stroke-width: 2.2; fill: none; }
+.d-arrow-dash { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.d-head { fill: currentColor; }
+.d-head-bad { fill: var(--bad); }
+.d-head-muted { fill: var(--muted); }
+
+.steps { list-style: none; padding: 0; display: grid; gap: 1.75rem; }
+.step { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0 1rem; }
+.step-num { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1; color: var(--accent); border-top: 3px solid var(--accent); padding-top: 0.45rem; }
+.step-body { display: grid; gap: 0.7rem; min-width: 0; }
+.step-body ul { padding-left: 1.2rem; display: grid; gap: 0.35rem; }
+.why { border-left: 3px solid var(--line); padding: 0.1rem 0 0.1rem 0.9rem; color: var(--muted); }
+.why strong { color: var(--ink); font-weight: 600; }
+.example { background: var(--bad-soft); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.purpose strong { color: var(--accent); font-weight: 600; }
+.substep { display: grid; gap: 0.6rem; min-width: 0; padding-top: 0.4rem; }
+h4 { font-family: var(--font-display); font-size: var(--step-1); font-weight: 600; line-height: 1.2; margin: 0; text-wrap: balance; }
+.sub-num { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 0.3rem; margin-right: 0.35rem; vertical-align: 0.15em; }
+.note { background: var(--surface); border: 1px dashed var(--muted); border-radius: var(--radius); padding: 0.75rem 1rem; }
+
+.chips { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; padding: 0; list-style: none; }
+.chip { font-family: var(--font-mono); font-size: 0.8rem; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 0.15rem 0.65rem; }
+.chip-on { border-color: var(--accent); color: var(--accent); }
+.chip-later { border-style: dashed; color: var(--muted); }
+.chip-sep { color: var(--muted); }
+
+.cases { display: grid; gap: 0.6rem; padding: 0; list-style: none; }
+.case { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 0.25rem 1.25rem; padding: 0.8rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.case b { font-weight: 600; }
+@media (max-width: 40rem) { .case { grid-template-columns: minmax(0, 1fr); } }
+.open { padding-left: 1.2rem; display: grid; gap: 0.5rem; }
+.flag { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bad); border: 1px solid var(--bad); border-radius: 3px; padding: 0 0.35rem; margin-right: 0.35rem; white-space: nowrap; }
+
+details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1rem; }
+details[open] { display: grid; gap: 0.8rem; }
+summary { cursor: pointer; font-weight: 600; }
+
+footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid var(--line); padding-top: 1rem; }
+
+@media (max-width: 30rem) {
+  h1 { font-size: 2.3rem; }
+  h2 { font-size: 1.8rem; }
+  .step { grid-template-columns: 2rem minmax(0, 1fr); gap: 0 0.75rem; }
+}
+@media (prefers-reduced-motion: no-preference) { .toc a { transition: border-color 120ms, color 120ms; } }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <!-- 1-3. Header: eyebrow, an H1 naming what is explained, a two-sentence answer, the glance box, contents. -->
+  <header>
+    <span class="eyebrow">[TICKET] · [Area] · [Product]</span>
+    <h1>[What the X does]</h1>
+    <p class="lead">[Two sentences: the problem in business terms, and what the feature does about it.]</p>
+    <div class="glance">
+      <span class="eyebrow">At a glance</span>
+      <ul>
+        <li>[The one thing to remember.]</li>
+        <li>[What happens first.]</li>
+        <li>[What happens next.]</li>
+        <li>[What the reader gets at the end.]</li>
+      </ul>
+    </div>
+    <nav aria-label="Contents">
+      <ul class="toc">
+        <li><a href="#words">The words you need</a></li>
+        <li><a href="#problem">The problem</a></li>
+        <li><a href="#overview">The whole run</a></li>
+        <li><a href="#where">Where things sit</a></li>
+        <li><a href="#steps">Step by step</a></li>
+        <li><a href="#wrong">When something fails</a></li>
+        <li><a href="#open">Still open</a></li>
+        <li><a href="#objects">For developers</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 4. Rule 1: every domain term before it is used. 8-12 cards: definition, then one tiny example. -->
+  <section id="words" aria-labelledby="words-h">
+    <span class="eyebrow">Background</span>
+    <h2 id="words-h">The words you need</h2>
+    <p>[One line: these are the ideas the rest of the page leans on, each with a small example.]</p>
+    <dl class="terms">
+      <div class="term">
+        <dt>[Term]</dt>
+        <dd>[Plain definition in one or two sentences.]</dd>
+        <dd class="ex">[Tiny example with a real-looking id: <span class="id">[100-W0000294]</span>.]</dd>
+      </div>
+      <div class="term">
+        <dt>[Term]</dt>
+        <dd>[Plain definition.]</dd>
+        <dd class="ex">[Tiny example.]</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- 5. Rule 2: the running example, first shown as a small table with totals. Reuse its numbers everywhere. -->
+  <section id="problem" aria-labelledby="problem-h">
+    <span class="eyebrow">Why it exists</span>
+    <h2 id="problem-h">[The problem, in one line]</h2>
+    <p>[What went wrong or was manual before, in business terms. Only what you verified.]</p>
+    <p>[One line: the example below runs through the whole page.]</p>
+    <div class="table-wrap">
+      <table>
+        <caption>[Example: what the table shows]</caption>
+        <thead><tr><th>[Line]</th><th>[Input]</th><th>[Decision]</th><th class="num">[Good]</th><th class="num">[Bad]</th></tr></thead>
+        <tbody>
+          <tr><td>[Row]</td><td>[4 h × 100 € = 400 €]</td><td>[3 hours approved]</td><td class="num val-good">[300 €]</td><td class="num val-bad">[100 €]</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="3">Total</td><td class="num val-good">[360 €]</td><td class="num val-bad">[410 €]</td></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <!-- 6. Big-picture diagram: the phases in the order they run. The caption gives the reason for the order. -->
+  <section id="overview" aria-labelledby="overview-h">
+    <span class="eyebrow">The big picture</span>
+    <h2 id="overview-h">[The whole run, in the order it happens]</h2>
+    <p>[One line on the phases.]</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 900 215" role="img" aria-label="[The same claim as the caption, for screen readers.]">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head"/></marker>
+            <marker id="ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-muted"/></marker>
+          </defs>
+          <text x="10" y="18" class="d-label">1 · [PHASE]</text>
+          <text x="240" y="18" class="d-label">2 · [PHASE]</text>
+          <text x="470" y="18" class="d-label">3 · [PHASE]</text>
+          <text x="700" y="18" class="d-label">[LATER]</text>
+
+          <rect x="10" y="28" width="190" height="98" rx="6" class="d-box-bad"/>
+          <text x="24" y="56" class="d-title">[Phase 1 title]</text>
+          <text x="24" y="80" class="d-text">[detail, ~24 chars]</text>
+          <text x="24" y="100" class="d-text">[detail, ~24 chars]</text>
+
+          <rect x="240" y="28" width="190" height="98" rx="6" class="d-box"/>
+          <text x="254" y="56" class="d-title">[Phase 2 title]</text>
+          <text x="254" y="80" class="d-text">[detail]</text>
+          <text x="254" y="100" class="d-text">[detail]</text>
+
+          <rect x="470" y="28" width="190" height="98" rx="6" class="d-box-good"/>
+          <text x="484" y="56" class="d-title">[Phase 3 title]</text>
+          <text x="484" y="80" class="d-text">[detail]</text>
+          <text x="484" y="100" class="d-text">[detail]</text>
+
+          <rect x="700" y="28" width="190" height="98" rx="6" class="d-box-later"/>
+          <text x="714" y="56" class="d-title">[Later step]</text>
+          <text x="714" y="80" class="d-text">[detail]</text>
+          <text x="714" y="100" class="d-text">[detail]</text>
+
+          <line x1="200" y1="77" x2="236" y2="77" class="d-arrow" marker-end="url(#ah)"/>
+          <line x1="430" y1="77" x2="466" y2="77" class="d-arrow" marker-end="url(#ah)"/>
+          <path d="M105,126 L105,170 L795,170 L795,130" class="d-arrow-dash" marker-end="url(#ah-muted)"/>
+          <text x="450" y="192" text-anchor="middle" class="d-note">[what waits between phase 1 and the later step]</text>
+        </svg>
+      </div>
+      <figcaption>[Why the phases run in this order.]</figcaption>
+    </figure>
+  </section>
+
+  <!-- 7. Where-things-sit diagram: the records or systems and the one arrow that matters, in the bad/good colour. -->
+  <section id="where" aria-labelledby="where-h">
+    <span class="eyebrow">Where things sit</span>
+    <h2 id="where-h">[Where the data lives]</h2>
+    <p>[One line on the surprising part, e.g. where the moved lines really come from.]</p>
+    <figure>
+      <div class="diagram">
+        <svg viewBox="0 0 820 300" role="img" aria-label="[Same claim as the caption.]">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head"/></marker>
+            <marker id="ah2-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="d-head-bad"/></marker>
+          </defs>
+          <rect x="250" y="10" width="320" height="78" rx="6" class="d-box"/>
+          <text x="266" y="36" class="d-title">[Parent record]</text>
+          <text x="266" y="58" class="d-mono">[id 100-W0000294]</text>
+          <text x="266" y="77" class="d-text">[one fact]</text>
+
+          <rect x="20" y="170" width="330" height="112" rx="6" class="d-box-good"/>
+          <text x="36" y="196" class="d-title">[Left record]</text>
+          <text x="36" y="218" class="d-mono">[id]</text>
+          <text x="36" y="240" class="d-text">[fact]</text>
+          <text x="36" y="262" class="d-text">[what stays here, in the example's numbers]</text>
+
+          <rect x="470" y="170" width="330" height="112" rx="6" class="d-box-bad"/>
+          <text x="486" y="196" class="d-title">[Right record]</text>
+          <text x="486" y="218" class="d-mono">[id]</text>
+          <text x="486" y="240" class="d-text">[fact]</text>
+          <text x="486" y="262" class="d-bad-text">[what moves here, in the example's numbers]</text>
+
+          <path d="M330,88 L185,166" class="d-arrow" marker-end="url(#ah2)"/>
+          <text x="150" y="124" class="d-note">[relation,</text>
+          <text x="150" y="140" class="d-note">two short lines]</text>
+          <path d="M490,88 L635,166" class="d-arrow" marker-end="url(#ah2)"/>
+          <text x="590" y="124" class="d-note">[relation,</text>
+          <text x="590" y="140" class="d-note">two short lines]</text>
+
+          <line x1="350" y1="226" x2="466" y2="226" class="d-arrow-bad" marker-end="url(#ah2-bad)"/>
+          <text x="408" y="214" text-anchor="middle" class="d-bad-text">[the arrow</text>
+          <text x="408" y="246" text-anchor="middle" class="d-bad-text">that matters]</text>
+        </svg>
+      </div>
+      <figcaption>[What the picture shows and the exception to it.]</figcaption>
+    </figure>
+  </section>
+
+  <!-- 8. Rule 3: step by step, in points. Each step: what happens (bullets), then a Why line. -->
+  <section id="steps" aria-labelledby="steps-h">
+    <span class="eyebrow">Step by step</span>
+    <h2 id="steps-h">What happens, and why</h2>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num" aria-hidden="true">1</span>
+        <div class="step-body">
+          <h3>[Step heading]</h3>
+          <p class="purpose"><strong>Business purpose:</strong> [what the business gets from this step, in one sentence].</p>
+          <ul>
+            <li>[What happens, one idea per bullet.]</li>
+            <li>[The example's number at this step: <span class="val-bad">[410 €]</span>.]</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> [the reason a reader cannot get from the code: the order, the trap avoided, the business rule].</p>
+          <!-- A step that reuses an existing feature: one lettered part per feature, each with its purpose,
+               how its setup decides the result, and an example. -->
+          <div class="substep">
+            <h4><span class="sub-num">[1a]</span> [Existing feature the step runs]</h4>
+            <p class="purpose"><strong>Business purpose:</strong> [why the business has this feature].</p>
+            <ul>
+              <li>[How its setup decides the result.]</li>
+            </ul>
+            <p class="example">[One example with numbers, using a made-up setup labelled as such.]</p>
+          </div>
+          <p class="note"><strong>[In this flow today]:</strong> [where the real flow differs from the normal use of the feature].</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num" aria-hidden="true">2</span>
+        <div class="step-body">
+          <h3>[Step with a mechanism worth a before/after table]</h3>
+          <div class="table-wrap">
+            <table>
+              <caption>[What the table shows]</caption>
+              <thead><tr><th>[Line]</th><th>[Where]</th><th class="num">[Qty]</th><th class="num">[Amount]</th></tr></thead>
+              <tbody>
+                <tr><td>[Original]</td><td><span class="id">[-01]</span></td><td class="num">[4]</td><td class="num">[400 €]</td></tr>
+                <tr><td>[Reversal]</td><td><span class="id">[-01]</span></td><td class="num">[−4]</td><td class="num">[−400 €]</td></tr>
+                <tr><td>[New share]</td><td><span class="id">[-02]</span></td><td class="num val-bad">[1]</td><td class="num val-bad">[100 €]</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul class="chips" aria-label="[Status path]">
+            <li class="chip">[Created]</li><li class="chip-sep" aria-hidden="true">→</li>
+            <li class="chip chip-on">[Reviewed]</li><li class="chip-sep" aria-hidden="true">→</li>
+            <li class="chip chip-later">[later]</li>
+          </ul>
+          <p class="why"><strong>Why:</strong> [reason].</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 9. Failure cases: situation, then what happens and what to do. -->
+  <section id="wrong" aria-labelledby="wrong-h">
+    <span class="eyebrow">Failure handling</span>
+    <h2 id="wrong-h">When something fails</h2>
+    <ul class="cases">
+      <li class="case"><b>[Situation]</b><span>[What happens, and what the user does about it.]</span></li>
+      <li class="case"><b>[Situation]</b><span>[What happens.]</span></li>
+    </ul>
+  </section>
+
+  <!-- 10. Still open: untested, waiting on someone, or known limits. Flag words: waiting, to do, note. -->
+  <section id="open" aria-labelledby="open-h">
+    <span class="eyebrow">Not settled yet</span>
+    <h2 id="open-h">Still open</h2>
+    <ul class="open">
+      <li><span class="flag">waiting</span><b>[Question.]</b> [Who it waits on and what depends on it.]</li>
+      <li><span class="flag">to do</span>[Known gap.]</li>
+      <li><span class="flag">note</span>[Limit worth knowing.]</li>
+    </ul>
+  </section>
+
+  <!-- 11. Technical reference, collapsed: object names with their plain role. -->
+  <section id="objects" aria-labelledby="objects-h">
+    <span class="eyebrow">Reference</span>
+    <h2 id="objects-h">For developers: where it lives</h2>
+    <details>
+      <summary>[The objects in the project]</summary>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Object</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>[ObjectName]</code></td><td>[Plain role, linked to a step number where it helps.]</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- 12. Footer: date, sources, what is made up. -->
+  <footer>
+    Written [date] from [the code / documents it was checked against].
+    [Which numbers and ids are made up, and which come from a real test.]
+  </footer>
+
+</main>
+</body>
+</html>

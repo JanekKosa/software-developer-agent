@@ -1,15 +1,17 @@
 // Tests of hooks/decision-reminder.mjs run as a real child process with hook input on stdin: what it prints for
 // blocking entries that wait for the user, for answers it hands over (each once, and never on a busy register), for
 // answered entries handed over earlier, and for nothing else; that it reads only the register of the session's own repo
-// (D-14); that it never fails the prompt; and how long it takes.
+// (D-14); that it says nothing in a session the team is not switched on for (D-32); that it never fails the prompt; and
+// how long it takes.
 // Every session works in a scratch repo, so no case reads the real agent repo's register.
 
-import { test } from 'node:test';
+import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
     REAL_CONFIG_PATH, SKILL_DIR, findGit, makeScratchDir, makeSkillCopy, median, removeScratchDir, runGit, runNode,
+    stateRootUnderHome,
 } from '../helpers/scratch.mjs';
 
 const gitExe = findGit();
@@ -19,6 +21,19 @@ const REGISTER_SCRIPT = path.join(SKILL_DIR, 'scripts', 'register.mjs');
 const BLOCKING_INSTRUCTION = 'Each blocking entry above stops work until the user answers it. Do not write it out in this chat: the user reads and answers it in the Decisions pane. End your reply with one line naming each blocking id and what, asking the user to answer it there soon.';
 const ANSWERED_INSTRUCTION = 'If you are already dealing with it, carry on and do not pass the answer to the lead again; otherwise read it with register.mjs answers --ids <id> and process it.';
 const HANDOVER_INSTRUCTION = 'For each answer: pass it, in the user\'s words, to the lead it concerns; then close the entry with a summary that includes the final answer (register.mjs close --id <id> --outcome <outcome> --summary $summary), or follow it up (register.mjs follow-up --id <id> --text $text); set $summary and $text in a single-quoted here-string, never in double quotes.';
+const SESSION = '7b3870e5-e7c1-4f3a-9961-398d55920189';
+
+// The test session is switched on, as /software-developer-agent does, in a home folder of the tests' own: every hook
+// run gets it as its USERPROFILE, which the shipped teamState.folder names, and as its %TEMP%, so neither the real
+// state folder nor the real temp folder is read or written. A test of an ordinary chat passes OFF_ENV instead.
+const TEAM_HOME = makeScratchDir('team-on');
+after(() => removeScratchDir(TEAM_HOME));
+fs.mkdirSync(path.join(stateRootUnderHome(TEAM_HOME), 'team-on'), { recursive: true });
+fs.writeFileSync(path.join(stateRootUnderHome(TEAM_HOME), 'team-on', SESSION), '2026-10-26T22:00:00.000Z');
+const ON_ENV = { USERPROFILE: TEAM_HOME, TEMP: TEAM_HOME, TMP: TEAM_HOME };
+const OFF_HOME = makeScratchDir('team-off');
+after(() => removeScratchDir(OFF_HOME));
+const OFF_ENV = { USERPROFILE: OFF_HOME, TEMP: OFF_HOME, TMP: OFF_HOME };
 
 /**
  * The hook input Claude Code sends on UserPromptSubmit.
@@ -27,7 +42,7 @@ const HANDOVER_INSTRUCTION = 'For each answer: pass it, in the user\'s words, to
  */
 function promptInput(cwd) {
     return JSON.stringify({
-        session_id: '7b3870e5-e7c1-4f3a-9961-398d55920189',
+        session_id: SESSION,
         transcript_path: 'C:\\Users\\someone\\.claude\\projects\\c--x\\7b3870e5-e7c1-4f3a-9961-398d55920189.jsonl',
         cwd,
         permission_mode: 'default',
@@ -128,7 +143,7 @@ function makeRepo(base, name) {
  * @returns {Promise<{run: object, lines: string[]}>} the run and the lines of its additional context
  */
 async function remind(cwd, base) {
-    const run = await runNode(REAL_HOOK, [], { input: promptInput(cwd), cwd: base });
+    const run = await runNode(REAL_HOOK, [], { input: promptInput(cwd), cwd: base, env: ON_ENV });
     assert.equal(run.code, 0, run.stderr);
     if (run.stdout === '') {
         return { run, lines: [] };
@@ -356,6 +371,21 @@ test('another repo\'s register never shows, blocking and answered entries alike 
     assert.equal(fs.readFileSync(logPath(team), 'utf8'), teamLog, 'another repo\'s answers are never handed over');
 });
 
+test('a session the team is not switched on for hears nothing and hands nothing over, whatever waits (D-32)', { skip: NO_GIT }, async (t) => {
+    const base = makeScratchDir('remind-off');
+    t.after(() => removeScratchDir(base));
+    const chat = makeRepo(base, 'Demo');
+    await fillRegister(chat, [['question', true, 'high'], ['issue', true, 'high']]);
+    await answer(chat, 'D-2');
+    const before = fs.readFileSync(logPath(chat), 'utf8');
+    for (const [input, env] of [[promptInput(chat), OFF_ENV], [JSON.stringify({ cwd: chat, hook_event_name: 'UserPromptSubmit', prompt: 'x' }), ON_ENV]]) {
+        // Not switched on, and no session id at all: both count as off.
+        const run = await runNode(REAL_HOOK, [], { input, cwd: base, env });
+        assert.deepEqual([run.code, run.stdout, run.stderr], [0, '', ''], input);
+    }
+    assert.equal(fs.readFileSync(logPath(chat), 'utf8'), before, 'nothing is handed over');
+});
+
 test('with nothing open it prints nothing and creates nothing', { skip: NO_GIT }, async (t) => {
     const base = makeScratchDir('quiet');
     t.after(() => removeScratchDir(base));
@@ -369,7 +399,7 @@ test('without cwd in the input it uses its own working folder', async (t) => {
     const work = makeScratchDir('nocwd');
     t.after(() => removeScratchDir(work));
     await fillRegister(work);
-    const run = await runNode(REAL_HOOK, [], { input: JSON.stringify({ hook_event_name: 'UserPromptSubmit', prompt: 'x' }), cwd: work });
+    const run = await runNode(REAL_HOOK, [], { input: JSON.stringify({ session_id: SESSION, hook_event_name: 'UserPromptSubmit', prompt: 'x' }), cwd: work, env: ON_ENV });
     assert.equal(run.code, 0);
     const lines = JSON.parse(run.stdout).hookSpecificOutput.additionalContext.split('\n');
     assert.equal(lines[0], blockingLine(work));
@@ -396,7 +426,10 @@ test('broken input or broken settings: nothing on stdout, exit 0, one line on st
     const work = makeScratchDir('broken');
     t.after(() => removeScratchDir(work));
     await fillRegister(work);
-    const skill = makeSkillCopy(work, (config) => { delete config.register.answeredFile; });
+    const skill = makeSkillCopy(work, (config) => {
+        delete config.register.answeredFile;
+        config.teamState.folder = stateRootUnderHome(TEAM_HOME);
+    });
     const cases = [
         [REAL_HOOK, 'not json', /decision-reminder/],
         [REAL_HOOK, '', /decision-reminder/],
@@ -404,7 +437,7 @@ test('broken input or broken settings: nothing on stdout, exit 0, one line on st
         [path.join(skill, 'hooks', 'decision-reminder.mjs'), promptInput(work), /register\.answeredFile/],
     ];
     for (const [hook, input, pattern] of cases) {
-        const run = await runNode(hook, [], { input, cwd: work });
+        const run = await runNode(hook, [], { input, cwd: work, env: ON_ENV });
         assert.equal(run.code, 0, input);
         assert.equal(run.stdout, '', input);
         assert.match(run.stderr, pattern, input);
@@ -424,6 +457,23 @@ test('a register that cannot be read prints nothing and writes one stderr line n
     assert.match(run.stderr, /^decision-reminder: .*OPEN_DECISIONS_CLAUDE\.md/);
 });
 
+test('an entry written in points is named by its first point alone, as an entry of one line is', { skip: NO_GIT }, async (t) => {
+    const base = makeScratchDir('remind-points');
+    t.after(() => removeScratchDir(base));
+    const chat = makeRepo(base, 'Demo');
+    const file = path.join(base, 'points.json');
+    fs.writeFileSync(file, JSON.stringify({
+        kind: 'question', blocking: true, urgency: 'high', raisedBy: 'lead demo', task: 'Demo',
+        what: ['x', 'Status: waiting-for-agent', 'a third point'], example: ['y', 'more'], options: ['A: a (none)', 'B: b (1 hour)'],
+        recommendation: ['A', 'because'], meanwhile: 'waits', evidence: ['e.log'],
+    }));
+    await register(chat, ['add', '--file', file]);
+    assert.deepEqual((await remind(chat, base)).lines, [blockingLine(chat), BLOCKING_INSTRUCTION]);
+    await answer(chat, 'D-1');
+    const { lines } = await remind(chat, base);
+    assert.deepEqual(lines, [handedNowLine(chat), ...answerBlock('D-1 "x"', logRecords(chat)[0]).split('\n'), HANDOVER_INSTRUCTION]);
+});
+
 // ---------------------------------------------------------------------------------------------------------------
 // Run time
 // ---------------------------------------------------------------------------------------------------------------
@@ -435,7 +485,7 @@ test('it finishes well under one second', { skip: NO_GIT }, async (t) => {
     await fillRegister(chat);
     const times = [];
     for (let i = 0; i < 10; i += 1) {
-        times.push((await runNode(REAL_HOOK, [], { input: promptInput(chat), cwd: base })).ms);
+        times.push((await runNode(REAL_HOOK, [], { input: promptInput(chat), cwd: base, env: ON_ENV })).ms);
     }
     t.diagnostic(`decision-reminder wall time over 10 runs: median ${median(times).toFixed(0)} ms, max ${Math.max(...times).toFixed(0)} ms`);
     // The median, not the maximum: one slow start under machine load says nothing about the hook.

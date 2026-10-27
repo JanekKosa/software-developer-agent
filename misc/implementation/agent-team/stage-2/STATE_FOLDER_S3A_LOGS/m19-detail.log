@@ -1,0 +1,8 @@
+  ok    paths under teamState.folder: lib\config.mjs answers every case of the table as written (the table is S1's rule)
+  ok    paths under teamState.folder: usage-probe.ps1 and watch-usage-and-context.ps1 each answer every case of the table word for word as lib\config.mjs
+  ok    paths under teamState.folder: start-session-in-vscode.ps1 and run-heavy.ps1 each answer every case of the table word for word as lib\config.mjs
+  FAIL  paths under teamState.folder: the four scripts that read such a path hold the same text of the rule's three functions :: run-heavy.ps1: Get-StatePathFault: expected <function Get-StatePathFault([string]$value) {
+  ok    paths under teamState.folder: the shipped settings put the relaunch log and the slot holders where the layout says (D-39)
+  ok    paths under teamState.folder: the shipped settings put the reading, the probe's folder and the watch's records where the layout says (D-39)
+5 passed, 1 failed
+restored: True

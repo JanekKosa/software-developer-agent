@@ -1,0 +1,122 @@
+FAIL  dry run prints the whole plan and writes nothing
+      ASSERT: dry-run exit code
+        expected: 0
+        actual:   2
+FAIL  apply copies exactly the planned files, keeps their times and leaves the rest
+      ASSERT: apply exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 0
+        actual:   2
+FAIL  apply copies the config first, the libraries next and the gate lib\agent-team.mjs last
+      ASSERT: the code order
+        expected: orchestration.config.json|lib\config.mjs|lib\limit-stop.mjs|hooks\context-guard.mjs|tests\new.test.mjs|lib\agent-team.mjs
+        actual:   
+FAIL  a second apply finds everything the same and writes nothing
+      ASSERT: first apply
+        expected: 0
+        actual:   2
+FAIL  an identical file already in the new place is SAME and the rest is copied
+      ASSERT: apply
+        expected: 0
+        actual:   2
+FAIL  refuses a code conflict: live and staged both changed one file
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  refuses a base file missing from the staged copy
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  refuses a new staged file that live already has with other content
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  refuses while a limit-stop server listens
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  refuses while a watch runs with an old mark
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  refuses while a watch runs with a new mark
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  a mark whose process is gone or started at another time is no running watch
+      ASSERT: apply; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 0
+        actual:   2
+FAIL  refuses when a new-place file differs from the old file it would receive
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  refuses a staged setting that is not a plain path under the root
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  refuses a base list line that is not path, tab, hash
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+PASS  refuses -Apply and -RemoveOld together
+FAIL  names every reason at once, and the dry run refuses too
+      ASSERT: exit code
+        expected: 1
+        actual:   2
+FAIL  never copies a name that fails the session id check
+      ASSERT: apply; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 0
+        actual:   2
+FAIL  runs as a child process with the exit codes the main session sees
+      ASSERT: child dry run; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 0
+        actual:   2
+FAIL  RemoveOld before the switch-over refuses and deletes nothing
+      ASSERT: refused exit code; output:
+      CUTOVER FAILED | unexpected: The property 'id' cannot be found on this object. Verify that the property exists. (line 241); nothing more was done.
+        expected: 1
+        actual:   2
+FAIL  RemoveOld deletes only identical old copies and keeps the rest with the reason
+      ASSERT: apply
+        expected: 0
+        actual:   2
+FAIL  trim cuts a copy of the real log back to its first 841 bytes
+      At C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_TRIM_LOG_CLAUDE.ps1:39 char:88
+      + … h bytes of $LogPath hash to $headHash, not $ExpectedHeadHash: not the …
+      +                                              ~~~~~~~~~~~~~~~~~~
+      Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.
+FAIL  trim keeps a real line written after the test lines, and one between them
+      At C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_TRIM_LOG_CLAUDE.ps1:39 char:88
+      + … h bytes of $LogPath hash to $headHash, not $ExpectedHeadHash: not the …
+      +                                              ~~~~~~~~~~~~~~~~~~
+      Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.
+FAIL  trim refuses when the first 841 bytes are not the real ones and changes nothing
+      At C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_TRIM_LOG_CLAUDE.ps1:39 char:88
+      + … h bytes of $LogPath hash to $headHash, not $ExpectedHeadHash: not the …
+      +                                              ~~~~~~~~~~~~~~~~~~
+      Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.
+FAIL  trim of a log that is already 841 bytes does nothing
+      At C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_TRIM_LOG_CLAUDE.ps1:39 char:88
+      + … h bytes of $LogPath hash to $headHash, not $ExpectedHeadHash: not the …
+      +                                              ~~~~~~~~~~~~~~~~~~
+      Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.
+FAIL  trim refuses a log shorter than 841 bytes
+      At C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_TRIM_LOG_CLAUDE.ps1:39 char:88
+      + … h bytes of $LogPath hash to $headHash, not $ExpectedHeadHash: not the …
+      +                                              ~~~~~~~~~~~~~~~~~~
+      Variable reference is not valid. ':' was not followed by a valid variable name character. Consider using ${} to delimit the name.
+CASES | 1 of 26 passed
+CLEANUP | run folder removed: True; helper processes started and stopped by id: 7696

@@ -21,10 +21,19 @@ const REGISTER = {
     answeredFile: 'ANSWERED_DECISIONS_CLAUDE.md',
     resolvedFile: 'RESOLVED_DECISIONS_CLAUDE.md',
     answersLogFile: 'ANSWERS_LOG_CLAUDE.jsonl',
-    commitInRepos: [],
     lockWaitSeconds: 10,
     lockStaleSeconds: 60,
 };
+
+/**
+ * The settings registerLocation reads, with this PC's settings file looked for in a scratch folder.
+ * @param {string} stateDir scratch folder that stands for teamState.folder
+ * @param {object} [register] the register settings
+ * @returns {object} the settings
+ */
+function settings(stateDir, register = REGISTER) {
+    return { teamState: { folder: stateDir }, pcSettings: { file: 'pc-settings.json' }, register };
+}
 
 /**
  * One answers-log record with its keys in the stored order.
@@ -98,7 +107,7 @@ function entry(over = {}) {
 function scratchLocation(t) {
     const dir = makeScratchDir('reg');
     t.after(() => removeScratchDir(dir));
-    return registerLocation(dir, { register: REGISTER });
+    return registerLocation(dir, settings(dir));
 }
 
 /**
@@ -133,7 +142,9 @@ test('formatEntryLines gives the layout, with the Status and Urgency lines under
         '- Task: KSeF import',
         '- What: Should a rejected invoice be retried?',
         '- Example: Invoice 1001 for 250.00 PLN was rejected at 10:02.',
-        '- Options: A: retry once (1 hour). B: leave it to the user (none).',
+        '- Options:',
+        '  - A: retry once (1 hour).',
+        '  - B: leave it to the user (none).',
         '- Recommendation: A, because most rejections are timeouts.',
         '- Meanwhile: work continues assuming A',
         '- Evidence: temp\\ksef\\run3.log, src\\import.ts',
@@ -936,8 +947,8 @@ test('new files are CRLF with a title, a blank line and a description, entries o
     assert.equal(lines[2].includes('ANSWERED_DECISIONS_CLAUDE.md'), false);
     assert.equal(lines[3], '');
     assert.equal(lines[4], `## D-1 ${DOT} question ${DOT} blocking`);
-    assert.equal(lines[15], '');
-    assert.equal(lines[16], `## D-2 ${DOT} question ${DOT} blocking`);
+    assert.equal(lines[17], '');
+    assert.equal(lines[18], `## D-2 ${DOT} question ${DOT} blocking`);
     assert.equal(text.endsWith('\r\n') && !text.endsWith('\r\n\r\n'), true);
 });
 
@@ -1097,14 +1108,14 @@ test('registerLocation names a missing setting', (t) => {
     for (const name of ['answeredFile', 'answersLogFile', 'lockWaitSeconds', 'lockStaleSeconds']) {
         const register = { ...REGISTER };
         delete register[name];
-        assert.throws(() => registerLocation(dir, { register }), new RegExp(`'register\\.${name}'`), name);
+        assert.throws(() => registerLocation(dir, settings(dir, register)), new RegExp(`'register\\.${name}'`), name);
     }
 });
 
 test('registerLocation gives the answers log path from its setting, and keeps the log and its temp files out of git', (t) => {
     const dir = makeScratchDir('reg-log');
     t.after(() => removeScratchDir(dir));
-    const loc = registerLocation(dir, { register: { ...REGISTER, answersLogFile: 'OTHER_LOG.jsonl' } });
+    const loc = registerLocation(dir, settings(dir, { ...REGISTER, answersLogFile: 'OTHER_LOG.jsonl' }));
     assert.equal(loc.answersLogPath, `${loc.folderPath}\\OTHER_LOG.jsonl`);
     assert.ok(loc.excludeLines.includes('/decisions/OTHER_LOG.jsonl'));
     assert.ok(loc.excludeLines.includes('/decisions/.OTHER_LOG.jsonl.*.tmp'));
@@ -1114,7 +1125,7 @@ test('registerLocation gives the answers log path from its setting, and keeps th
 test('the lock wait and the stale age come from the settings', (t) => {
     const dir = makeScratchDir('reg-lock');
     t.after(() => removeScratchDir(dir));
-    const loc = registerLocation(dir, { register: { ...REGISTER, lockWaitSeconds: 0.3, lockStaleSeconds: 2 } });
+    const loc = registerLocation(dir, settings(dir, { ...REGISTER, lockWaitSeconds: 0.3, lockStaleSeconds: 2 }));
     fs.mkdirSync(loc.folderPath);
     fs.writeFileSync(loc.lockPath, 'held by the test');
     const started = Date.now();

@@ -1,0 +1,15 @@
+FAIL  dry run prints the whole plan and writes nothing
+      The term 'C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_CUTOVER_CLAUDE.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+      Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+FAIL  apply copies exactly the planned files, keeps their times and leaves the rest
+      The term 'C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_CUTOVER_CLAUDE.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+      Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+FAIL  apply copies the config first, the libraries next and the gate lib\agent-team.mjs last
+      The term 'C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_CUTOVER_CLAUDE.ps1' is not recognized as a name of a cmdlet, function, script file, or executable program.
+      Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+CLEANUP | run folder removed: True; helper processes started and stopped by id: 
+Remove-Item: C:\Repos\My projects\software-developer-agent\misc\implementation\agent-team\stage-2\STATE_FOLDER_CUTOVER_TESTS_CLAUDE.ps1:584
+Line |
+ 584 |  …  -LiteralPath $dir) { Remove-Item -LiteralPath $dir -Recurse -Force }
+     |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | The directory is not empty. : 'C:\Users\user\AppData\Local\Temp\s3b-t-de70cb67\c3\home'.

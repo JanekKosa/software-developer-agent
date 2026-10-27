@@ -19,6 +19,18 @@ export const SKILL_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url
 export const REAL_CONFIG_PATH = path.join(SKILL_DIR, 'orchestration.config.json');
 
 /**
+ * The team's state folder under a home folder, as the shipped setting teamState.folder names it
+ * (%USERPROFILE%\.claude\state\software-developer-agent; a test pins the two together). A test that runs a script of
+ * the real skill folder as a child process sets the child's USERPROFILE to a scratch home, so every state file the
+ * script reads or writes lies under this path in scratch, never under the real one.
+ * @param {string} home the scratch folder the child gets as its USERPROFILE
+ * @returns {string} the state folder the child resolves
+ */
+export function stateRootUnderHome(home) {
+    return path.join(home, '.claude', 'state', 'software-developer-agent');
+}
+
+/**
  * Git executables tried in order. The first is Visual Studio 2026's bundled git, because the git on PATH of the
  * development machine is broken (see the machine-pitfalls skill); plain 'git' covers every other machine.
  */
@@ -54,7 +66,9 @@ export function removeScratchDir(dir) {
 
 /**
  * Builds a scratch copy of the skill folder (lib, hooks, scripts) with the given settings, so a test can run the
- * real scripts against settings it controls, through the same "settings beside the scripts" lookup they use.
+ * real scripts against settings it controls, through the same "settings beside the scripts" lookup they use. The
+ * copy's state root (teamState.folder) is <parentDir>\state unless adjust changes it, so no script run from a copy
+ * reaches the real state folder; the folder itself is not created.
  * @param {string} parentDir scratch folder to build the copy in
  * @param {(config: object) => void} [adjust] changes applied to a copy of the real settings
  * @returns {string} path of the copied skill folder
@@ -68,6 +82,7 @@ export function makeSkillCopy(parentDir, adjust) {
         }
     }
     const config = JSON.parse(fs.readFileSync(REAL_CONFIG_PATH, 'utf8'));
+    config.teamState = { ...config.teamState, folder: path.join(parentDir, 'state') };
     if (adjust) {
         adjust(config);
     }

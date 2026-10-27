@@ -1,12 +1,33 @@
 // Loads orchestration.config.json, the one settings file of the orchestration hooks and scripts. Every script reads
 // it from its own skill folder (the folder above the script's folder); a missing setting is an error that names the
-// setting, never a silent default.
+// setting, never a silent default. Every file the team writes for itself lies under one root, teamState.folder, and
+// each such setting is a path under it (requireStatePath).
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const CONFIG_FILE_NAME = 'orchestration.config.json';
+
+/** The setting that names the root of the team's own files. */
+const STATE_ROOT_KEY = 'teamState.folder';
+
+/** An absolute Windows path: a drive letter, a colon and a backslash. */
+const ABSOLUTE_ROOT = /^[A-Za-z]:\\/;
+
+/**
+ * Why a path under the root is refused, checked in this order; the first that matches is named in the error.
+ * Together they keep every such path inside the root.
+ */
+const STATE_PATH_RULES = [
+    [(value) => value === '', 'is empty'],
+    [(value) => value.includes(':'), "has a drive or a ':'"],
+    [(value) => /^[\\/]|[\\/]$/.test(value), "starts or ends with '\\' or '/'"],
+    [(value) => value.includes('/'), "has a '/'; parts are joined by '\\'"],
+    [(value) => /[*?"<>|%]/.test(value), 'has one of * ? " < > | %'],
+    [(value) => value.split('\\').includes(''), 'has an empty part'],
+    [(value) => value.split('\\').some((part) => part === '.' || part === '..'), "has a '.' or '..' part"],
+];
 
 /**
  * Gives the skill folder of a script: the folder above the folder the script sits in.
@@ -96,4 +117,32 @@ export function requirePathSetting(config, keyPath) {
         }
         return found;
     });
+}
+
+/**
+ * Reads one setting that names a file or folder of the team's own (a marker folder, a log) and gives its absolute
+ * path under the root teamState.folder. The root may hold %NAME% parts (as requirePathSetting reads them) and must be
+ * absolute once they are filled in. The setting itself is one or more plain names joined by '\', so it can never
+ * point outside the root.
+ * @param {object} config settings from loadConfig
+ * @param {string|string[]} keyPath as for requireSetting, for example 'limitStop.logFile'
+ * @returns {string} the root joined with the setting's value
+ * @throws {Error} naming teamState.folder when the root is missing, not text, names a variable that is not set, or is
+ *   not absolute; naming the setting when it is missing, not text, or breaks one of the rules of STATE_PATH_RULES
+ */
+export function requireStatePath(config, keyPath) {
+    const root = requirePathSetting(config, STATE_ROOT_KEY);
+    if (!ABSOLUTE_ROOT.test(root)) {
+        throw new Error(`${CONFIG_FILE_NAME} setting '${STATE_ROOT_KEY}' must be an absolute path (a drive letter, ':' and '\\'), not ${JSON.stringify(root)}`);
+    }
+    const value = requireSetting(config, keyPath);
+    const name = Array.isArray(keyPath) ? keyPath.join('.') : keyPath;
+    if (typeof value !== 'string') {
+        throw new Error(`${CONFIG_FILE_NAME} setting '${name}' must be text, a path under '${STATE_ROOT_KEY}', not ${JSON.stringify(value)}`);
+    }
+    const broken = STATE_PATH_RULES.find(([breaks]) => breaks(value));
+    if (broken) {
+        throw new Error(`${CONFIG_FILE_NAME} setting '${name}' must be a path under '${STATE_ROOT_KEY}' but ${broken[1]}: ${JSON.stringify(value)}`);
+    }
+    return path.join(root, value);
 }

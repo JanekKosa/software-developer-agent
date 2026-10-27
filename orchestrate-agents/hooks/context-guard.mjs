@@ -16,12 +16,13 @@
 // is told before any fallback runs). lib/limit-stop.mjs decides it, as it does for the Usage and context watch's check.
 // The texts come in this order: the stop text, the FAILED line, the size message. It never blocks or fails a tool
 // call: each part that breaks writes one stderr line and the other parts still speak; no server at all writes nothing.
+// In a session the user did not switch the team on for (lib/agent-team.mjs) it does nothing at all (2026-10-26).
 
 import { spawnSync } from 'node:child_process';
-import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs';
-import { loadConfig, requireNumberSetting, requireSetting, skillDirOf } from '../lib/config.mjs';
+import { loadConfig, requireNumberSetting, requireSetting, requireStatePath, skillDirOf } from '../lib/config.mjs';
+import { isTeamOn } from '../lib/agent-team.mjs';
 import { acquireLock } from '../lib/file-lock.mjs';
 import { hookContextOutput, parseHookInput, readStdinText, reportHookError } from '../lib/hook-io.mjs';
 import {
@@ -50,9 +51,6 @@ const MAIN_ASKER = 'the main session';
 /** Who told the main session of a failure, as the log line that keeps it from being said twice names it. */
 const TOLD_BY = 'the context-guard hook';
 
-// A marker folder name must stay one folder under %TEMP%: no separators, no drive, no '.' or '..'.
-const SINGLE_FOLDER_NAME = /^(?!\.{1,2}$)[^\\/:*?"<>|]+$/;
-
 const LEVEL_RANK = { none: 0, warn: 1, stop: 2 };
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -76,6 +74,9 @@ try {
  */
 async function guardOutput(input) {
     const config = loadConfig(skillDirOf(import.meta.url));
+    if (!isTeamOn(config, input.session_id)) {
+        return '';
+    }
     if (!input.agent_id) {
         return mainSessionOutput(config, input);
     }
@@ -356,13 +357,9 @@ function capsFor(config, agentType) {
  */
 function guardSettings(config) {
     const tailKB = requireNumberSetting(config, 'contextGuard.transcriptTailKB');
-    const markerFolder = requireSetting(config, 'contextGuard.markerFolder');
-    if (typeof markerFolder !== 'string' || !SINGLE_FOLDER_NAME.test(markerFolder)) {
-        throw new Error(`orchestration.config.json setting 'contextGuard.markerFolder' must be one folder name, not ${JSON.stringify(markerFolder)}`);
-    }
     return {
         tailBytes: Math.round(tailKB * 1024),
-        markerDir: path.join(os.tmpdir(), markerFolder),
+        markerDir: requireStatePath(config, 'contextGuard.markerFolder'),
         markerLockStaleMs: requireNumberSetting(config, 'contextGuard.markerLockStaleSeconds') * 1000,
     };
 }

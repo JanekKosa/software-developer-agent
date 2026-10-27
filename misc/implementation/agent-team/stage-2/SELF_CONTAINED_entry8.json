@@ -1,0 +1,18 @@
+{
+  "kind": "question",
+  "blocking": false,
+  "urgency": "low",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "The install and the scripts are written for Windows: folder links (junctions), PowerShell 7, Windows folders such as %TEMP%, and VS Code's code.cmd. You said the agent will run on different PCs; nothing says yet whether one of them is a Mac or a Linux machine.",
+  "example": "With A, running install.ps1 on a Mac stops at once with \"Windows only\" and changes nothing. With B it installs there too.",
+  "options": [
+    "A: Windows only: the README says so, and install.ps1 checks for Windows, Node and PowerShell 7 before it changes anything (part of one run).",
+    "B: Windows, Mac and Linux (several runs over the links, the paths and every script; this PC cannot test the other two)."
+  ],
+  "recommendation": "A, unless one of your PCs is a Mac or runs Linux, because B is several runs that cannot be tested here.",
+  "meanwhile": "Work goes on assuming A.",
+  "evidence": [
+    "C:\\Repos\\My projects\\software-developer-agent\\scripts\\install.ps1"
+  ]
+}

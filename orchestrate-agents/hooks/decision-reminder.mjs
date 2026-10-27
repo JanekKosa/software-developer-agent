@@ -9,9 +9,11 @@
 // The hand-over waits for the register's lock only register.hookLockWaitSeconds; a busy register leaves the answers for
 // the watch or the next prompt and writes one stderr line. Prints nothing when there is nothing to say. It never fails
 // the prompt: any error, an unreadable register included, leaves out what it concerns, exits 0 and writes one stderr
-// line.
+// line. In a session the user did not switch the team on for (lib/agent-team.mjs) it does nothing at all (2026-10-26,
+// D-32: an ordinary chat gets nothing of the team).
 
 import path from 'node:path';
+import { isTeamOn } from '../lib/agent-team.mjs';
 import { loadConfig, requireNumberSetting, skillDirOf } from '../lib/config.mjs';
 import {
     WAITING_FOR_AGENT, handOverAnswers, handOverText, itemLabel, openItems, registerLocation, unprocessedAnswers,
@@ -25,7 +27,7 @@ const ANSWERED_INSTRUCTION = 'If you are already dealing with it, carry on and d
 try {
     const input = parseHookInput(await readStdinText());
     const config = loadConfig(skillDirOf(import.meta.url));
-    const context = registerContext(registerLocation(input.cwd ?? process.cwd(), config), config);
+    const context = isTeamOn(config, input.session_id) ? registerContext(registerLocation(input.cwd ?? process.cwd(), config), config) : [];
     if (context.length > 0) {
         process.stdout.write(hookContextOutput('UserPromptSubmit', context.join('\n')));
     }
@@ -35,7 +37,7 @@ try {
 
 /**
  * The register's part of the context, each line naming the repo's folder and root, for example 'Decision register of
- * xpp-agent (C:\Repos\My projects\xpp-agent): blocking and waiting for the user: D-4 "Drop the old path?" (urgency
+ * demo (D:\Work\demo): blocking and waiting for the user: D-4 "Drop the old path?" (urgency
  * high).' An open file that cannot be read gives nothing; an answers log that cannot be read leaves out the answers.
  * Either writes one stderr line naming its file.
  * @param {object} location from registerLocation

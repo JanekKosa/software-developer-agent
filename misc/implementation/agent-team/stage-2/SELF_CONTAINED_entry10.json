@@ -1,0 +1,19 @@
+{
+  "kind": "issue",
+  "blocking": false,
+  "urgency": "medium",
+  "raisedBy": "lead self-contained (inventory)",
+  "task": "Agent team: works from this repo alone",
+  "what": "A working file that the other lead's search wrote this morning quotes two lines with a client's name (the names of two build log files). The file sits in this public repo's working folder and is not committed yet; at the next commit it would be published. Nothing committed so far names a client.",
+  "example": "Lines 480 and 481 of the state-folder sweep file name two log files after the client.",
+  "options": [
+    "A: before the next commit, the main session replaces the client's name in those two lines with an invented one (a minute).",
+    "B: leave that file out of the commit (it is a search result nobody needs later).",
+    "C: commit it as it is (the name becomes public)."
+  ],
+  "recommendation": "A, because the file stays as a record and the name stays private.",
+  "meanwhile": "Nothing waits on it until the next commit.",
+  "evidence": [
+    "C:\\Repos\\My projects\\software-developer-agent\\misc\\implementation\\agent-team\\stage-2\\STATE_FOLDER_SWEEP_CLAUDE.md"
+  ]
+}

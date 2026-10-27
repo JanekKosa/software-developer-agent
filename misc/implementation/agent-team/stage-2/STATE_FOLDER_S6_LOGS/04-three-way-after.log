@@ -1,0 +1,22 @@
+ours       hooks\context-guard.mjs                          B=E0E57696F445 L=E0E57696F445 S=B2FAF0A9D615
+ours       lib\agent-team.mjs                               B=CB05AE4B2A16 L=CB05AE4B2A16 S=2938DE2B4A70
+ours       lib\config.mjs                                   B=B586F0F08D62 L=B586F0F08D62 S=D796286CEFC8
+ours       lib\limit-stop.mjs                               B=51294C321884 L=51294C321884 S=5B264EE21163
+ours       orchestration.config.json                        B=48595EF71D31 L=48595EF71D31 S=1F40C85DFB8F
+ours       references\agent-team-guide.html                 B=E17384189255 L=E17384189255 S=24B698727AB3
+ours       references\usage-limits.md                       B=C2AEE91D8006 L=C2AEE91D8006 S=CAFD0C0D8878
+ours       scripts\limit-stop-server.mjs                    B=DB231AADDD68 L=DB231AADDD68 S=E3779E621F6C
+ours       scripts\run-heavy.ps1                            B=2DD7C334B101 L=2DD7C334B101 S=0FB54BB38E0B
+ours       scripts\start-session-in-vscode.ps1              B=710949B19764 L=710949B19764 S=9043737420C9
+ours       scripts\team-on.mjs                              B=72C1382C9249 L=72C1382C9249 S=73DFC709D334
+ours       scripts\usage-probe.ps1                          B=CF17C042848C L=CF17C042848C S=44925AF05C6D
+ours       scripts\watch-usage-and-context.ps1              B=7730A889B3A4 L=7730A889B3A4 S=1490BA30191F
+ours       SKILL.md                                         B=0DA1B4564C17 L=0DA1B4564C17 S=DF45CE043A6A
+ours       tests\helpers\scratch.mjs                        B=591EDAEE5461 L=591EDAEE5461 S=C715E10715E3
+ours       tests\hooks\context-guard.test.mjs               B=041411BE1462 L=041411BE1462 S=8EF4F13D90A5
+ours       tests\hooks\decision-reminder.test.mjs           B=0460BD3BF491 L=0460BD3BF491 S=457BBC64D79C
+ours       tests\lib\agent-team.test.mjs                    B=CA461E9AD014 L=CA461E9AD014 S=F4C8F160C54B
+ours       tests\lib\state-path.test.mjs                    B=(none) L=(none) S=4E224B97523E
+ours       tests\limit-scripts.tests.ps1                    B=612ECB865DB9 L=612ECB865DB9 S=07F90736BA5A
+ours       tests\scripts\limit-stop-server.test.mjs         B=CF3F21D8497E L=CF3F21D8497E S=6A7F8783CDAC
+COUNTS | files 47 | same 26 | ours 21 | live-only 0 | conflict 0
