@@ -25,7 +25,8 @@ Split out of `machine-pitfalls` on 2026-10-27: these hold on any Windows PC. Sym
 - **`Remove-Item -Recurse -Force` on a large tree can fail with *"The directory is not empty"* although nothing
   is locked.** Windows finishes removing a file a moment after the call returns, so a folder can still look full
   when its own turn comes. Seen deleting 27 package folders (650 MB): three errors, yet 0 files left and only
-  two empty folders. Count the files that remain before looking for a lock, then run the same command again.
+  two empty folders. Count the files that remain before looking for a lock, then run the same command again after a pause of about
+  a second: an immediate retry fails the same way (seen 2026-10-27 on small scratch folders under `%TEMP%` too).
 - **Node's `fs.rmSync(path, { recursive: true })` returns without an error and removes nothing when the path
   holds a letter outside ASCII** (Node 24.13.0, Windows). Seen with a temp folder named `...-é-...`: the call
   came back clean and the folder was still there. `Remove-Item -LiteralPath` removed it. Keep scratch folder

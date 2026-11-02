@@ -421,3 +421,49 @@ spot-check two claims).
 - Live and changed by UNCHECKED S3a: `orchestrate-agents\` (lib config/pc-settings reading, docs through the repo
   link, which exists since 15:21), agent files' paths. Its Node suite passed (worker's run, 277/277).
 - `scripts\install.ps1` is gone; `scripts\init.ps1` exists (UNCHECKED S3b1). Nobody has run init on this PC.
+
+## Successor lead (2026-10-28 16:02; new session, the predecessor stopped at the weekly usage limit)
+
+### Read in (16:00 to 16:05)
+
+- Read: repo `CLAUDE.md`, the lead brief, this file's Hand-off, State, successor list and Plan (lines 220-352), the
+  2026-10-27 hand-over's "The self-contained task" and "New requirement" sections, the sizes file, the S3 contract,
+  the S3a and S3b1 task files, both progress files' Hand-off sections (S3b1's "Contract for S3b2" too). Not read: the
+  F/S1/S2 files, `SELF_CONTAINED_START_CLAUDE.md`, the searchers' outputs, the code.
+- Models for this chat (the user, 2026-10-28 15:30/15:38): workers run Fable 5.1 at `high` (`model: "fable"`,
+  `effort: "high"` on every Agent call); the agent files, skills and settings stay as they are.
+- Facts at 16:02: this PC's real home (22 entries: `.claude\skills`, `.copilot\skills`, `.claude\agents`, repo link)
+  is unchanged since S3b1's snapshot of 2026-10-27 15:22 (0 differences); `windows-pitfalls` is not linked yet. Hash
+  list `S3FIN_HASHES_BEFORE.csv` (2746 files: both repos + xpp-agent\Docs, minus .git and node_modules) and
+  `real-home-lead-start.txt` in my scratchpad
+  `C:\Users\user\AppData\Local\Temp\claude\c--Repos-My-projects-software-developer-agent\1ba21dbb-5e57-472c-a5fa-82032f07ed28\scratchpad\`.
+  `~\.claude\settings.json` hash 082C302521282BFA (2174 chars). Free memory 1921 MB. The old workers' scratchpad
+  (`...\56c67d3d-b3c0-43be-a82c-b3a9cdc23274\scratchpad\`) still exists with S3b1's never-run invariant and mutation
+  scripts. Left in %TEMP%: two `init tests-*` folders (S3b1's), four `oa-*` folders (the PS suite's). Register: only
+  D-56 open (main's). Git status: only the register files, the hand-over, `entry-main.json`, `files-and-links.md`.
+
+### Plan from here (16:05)
+
+Why: the two stopped runs are finished first (cheap, disjoint files), the new requirement (root config + settings
+page) is registered while they run, so the user can answer before it is built; init part 2 goes next because the
+config runs change init; the config runs pair up (file + reader + agent files vs the page + its server) on a written
+contract; docs and the clean-machine check go last because both describe or test the finished init.
+
+1. **S3a-finish** (`SELF_CONTAINED_S3A_FINISH_TASK_CLAUDE.md`) beside **S3b1-finish**
+   (`SELF_CONTAINED_S3B1_FINISH_TASK_CLAUDE.md`). S3a-finish: PS suite (want 122), `oa-*` cleanup, report; the open
+   question answered in the task file (keep the contract). S3b1-finish: retry pause, cleanup of `init tests-*`,
+   invariant (6 changed / 9 in place expected), mutation 26, second green run, real-home check (0 on 22), report.
+2. While they run: register the new requirement in points (C1 where settings live and how model/effort reach the
+   agent files; C2 the settings page served by a local Node script vs a file picker), non-blocking, medium.
+3. Check both finish runs: Node 277, PS 122, `scripts\init.tests.ps1` 29+, hash compare against
+   `S3FIN_HASHES_BEFORE.csv` (only their files), real home 0 differences on 22, settings.json hash unchanged.
+4. **S3b2** (init steps 4-6: per-PC file at `<teamState.folder>\<pcSettings.file>`, settings merge with backup, plugin
+   steps proven by S2 with `CLAUDE_CONFIG_DIR`; tests on a scratch home + scratch config; mutation check). It reads the
+   config through ONE function so C1 can move the config file with a one-line change.
+5. **C1** (root config file: every setting from `orchestration.config.json`, the agent files' model/effort, with a
+   note per setting; reader; init writes the agent files' model/effort lines; tests) beside **C2** (settings page +
+   tiny local Node server, one command; tests), on a written C contract. After the user's answers to C1/C2 (or their
+   recommendations, as `meanwhile` says).
+6. **S5** docs beside **S4** clean-machine check. 7. Summary. Then part D (D-40), probably a successor's.
+
+### Runs started today

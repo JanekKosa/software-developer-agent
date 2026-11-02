@@ -1,5 +1,7 @@
 # Hand-over: main session of 2026-10-27 (agent team), at the weekly usage limit
 
+> **Note (2026-10-28 15:40):** the chat of 2026-10-28 (session 1ba21dbb) took this hand-over up and carried on at the user's word despite the weekly limit. Before acting on this file, read the register and the lead file's latest section for the current state.
+
 Written by the main session at 2026-10-27 16:00. The weekly limit reached 98% at about 15:55; it resets 2026-10-31
 07:00. The limit-stop server stopped every agent; the one running lead ended with `LEAD STOPPED`. No agent is running.
 Every decision and the user's words are in `decisions\` (closed entries carry a summary). Nothing is open there.
@@ -56,16 +58,30 @@ file at the repo root for every setting and hard-coded value. Claude Code reads 
 files, so the init script would write them from the root file; the lead registers how that works (in points) before
 building it.
 
+Then the user added: "actually so that i can change the settings easily a nice html should be prepared where i can
+change them". So the root config gets a local HTML settings page: it shows every setting with its note, lets the user
+change values and saves them back to the root file (then says to re-run init when a change needs it, such as model or
+effort). The user wants it to save with no prompt at all ("th euser doesnt even have to be prompted to pick the
+file"). A page opened straight from disk cannot read or write a file without the user picking it once (browser
+security; Chrome even blocks reading a local JSON by fetch from file://). The no-prompt way is a tiny local Node
+script that serves the page and reads and writes the JSON (Node is already required), started by one command. The
+lead registers this, in points, with the file-picker way as the alternative.
+
+D-56 (the user chose A, 16:14): local `main` is rewritten (9c5c2a5, 2245912) with both addresses blanked; the
+working file is blanked too. The force push was refused by the auto-mode guard and waits for the user:
+`git push --force-with-lease=main:a7c0f039f533660a8837e2526b42b03f1326394c origin main`. Close D-56 after it.
+
 ## The main session's own steps still to do
 
 1. File the two traps the workers reported into `windows-pitfalls` (listed in the lead file's `## Hand-off`).
-2. Before any commit: delete `misc\implementation\agent-team\stage-2\STATE_FOLDER_STAGING\` and
-   `STATE_FOLDER_STAGING_BASE_CLAUDE.txt` (only the vehicle of the switch-over; never commit them).
+2. Done at 16:1x: the staging copy and its base list were deleted before the commit.
 3. At the end of the self-contained task: the steps its summary lists (re-point skill links, remove xpp-agent's copies
    of `report-changes`, `explain-clearly` and `claude-code-mods`, trim xpp-agent's machine-pitfalls to this PC's own
    traps, switch the pane's install to this repo).
-4. Nothing since the first commits (10abe9f here, b6d7deb in claude-code-extensions) is committed, in any repo. Commit
-   only when the user asks (VS 2026's git by full path; machine-pitfalls).
+4. Committed and pushed at the user's request after this hand-over: a7c0f03 here and fe62209 in claude-code-extensions
+   (S3a and S3b1 included, unchecked, as the commit message says). Since then only the register changed (D-56: the
+   user's two email addresses are public in an old decision since the first push; waiting for the user). Commit only
+   when the user asks (VS 2026's git by full path; machine-pitfalls).
 
 ## Traps seen today
 
